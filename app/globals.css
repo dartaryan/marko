@@ -335,3 +335,50 @@
 .preview-content .hljs {
   background: var(--color-code-bg) !important;
 }
+
+/* ============================================
+   Mermaid Diagram Styles (Story 1.3)
+   All colors use the 17-property custom system
+   ============================================ */
+
+.mermaid-wrapper {
+  margin: 1.25rem 0;
+  display: flex;
+  justify-content: center;
+  direction: ltr; /* Mermaid SVG diagrams are always LTR */
+  overflow-x: auto;
+}
+
+.mermaid-wrapper svg {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+
+.mermaid-error {
+  background-color: var(--color-blockquote-bg);
+  border-inline-start: 4px solid var(--color-blockquote-border);
+  border-radius: 0 0.25rem 0.25rem 0;
+  padding: 0.75rem 1rem;
+  margin: 1rem 0;
+  direction: rtl;
+}
+
+.mermaid-error-title {
+  color: var(--color-h1);
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.mermaid-error-source {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-secondary-text);
+  background-color: var(--color-code-bg);
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  overflow-x: auto;
+  white-space: pre;
+  direction: ltr; /* Source code is always LTR */
+}
