@@ -1,7 +1,7 @@
 'use client';
 import { useRef } from 'react';
 import { EditorTextarea } from './EditorTextarea';
-import { MermaidInsertButton } from './MermaidInsertButton';
+import { EditorToolbar } from './EditorToolbar';
 
 interface EditorPanelProps {
   content: string;
@@ -33,10 +33,10 @@ export function EditorPanel({ content, onChange }: EditorPanelProps) {
       className="flex flex-col border-e border-border"
       aria-label="עורך מארקדאון"
     >
-      <div className="flex h-9 items-center justify-between border-b border-border px-4">
+      <div className="flex h-9 items-center border-b border-border px-4">
         <span className="text-sm font-medium text-muted-foreground">עורך</span>
-        <MermaidInsertButton onInsert={insertTextAtCursor} />
       </div>
+      <EditorToolbar textareaRef={textareaRef} onInsert={insertTextAtCursor} />
       <div className="flex-1 overflow-hidden">
         <EditorTextarea ref={textareaRef} value={content} onChange={onChange} />
       </div>

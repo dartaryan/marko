@@ -45,8 +45,8 @@ development_status:
   1-1-project-initialization-and-root-layout: done
   1-2-editor-and-preview-layout-with-markdown-rendering: done
   1-3-mermaid-diagram-rendering: done
-  1-4-formatting-toolbar: backlog
-  1-5-view-modes-and-presentation-mode: backlog
+  1-4-formatting-toolbar: review
+  1-5-view-modes-and-presentation-mode: ready-for-dev
   1-6-editor-utilities-and-direction-override: backlog
   1-7-v1-localstorage-migration: backlog
   epic-1-retrospective: optional
