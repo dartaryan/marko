@@ -1,0 +1,25 @@
+'use client';
+import { MarkdownRenderer } from './MarkdownRenderer';
+
+interface PreviewPanelProps {
+  content: string;
+}
+
+export function PreviewPanel({ content }: PreviewPanelProps) {
+  return (
+    <section
+      className="flex flex-col"
+      aria-label="תצוגה מקדימה"
+    >
+      <div className="flex h-9 items-center border-b border-border px-4">
+        <span className="text-sm font-medium text-muted-foreground">תצוגה מקדימה</span>
+      </div>
+      <div
+        className="flex-1 overflow-hidden"
+        style={{ backgroundColor: 'var(--color-preview-bg)' }}
+      >
+        <MarkdownRenderer content={content} />
+      </div>
+    </section>
+  );
+}

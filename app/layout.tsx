@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Noto_Sans_Hebrew } from "next/font/google";
+import { Noto_Sans_Hebrew, JetBrains_Mono } from "next/font/google";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import "./globals.css";
 
@@ -7,6 +7,12 @@ const notoSansHebrew = Noto_Sans_Hebrew({
   subsets: ["hebrew", "latin"],
   display: "swap",
   variable: "--font-body",
+});
+
+const jetBrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
@@ -21,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="he" dir="rtl" suppressHydrationWarning>
-      <body className={`${notoSansHebrew.variable} font-sans antialiased`}>
+      <body className={`${notoSansHebrew.variable} ${jetBrainsMono.variable} font-sans antialiased`}>
         <ConvexClientProvider>{children}</ConvexClientProvider>
       </body>
     </html>
