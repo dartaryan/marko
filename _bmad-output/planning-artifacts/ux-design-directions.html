@@ -1,0 +1,1392 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marko v2 - Design Direction Mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #10B981;
+    --primary-hover: #059669;
+    --primary-light: #D1FAE5;
+    --bg: #ffffff;
+    --bg-dark: #1a1a2e;
+    --surface: #f8f9fa;
+    --surface-dark: #16213e;
+    --text: #1f2937;
+    --text-dark: #e2e8f0;
+    --text-muted: #6b7280;
+    --border: #e5e7eb;
+    --border-dark: #334155;
+    --header-bg: #f0fdf4;
+    --header-bg-dark: #0f172a;
+    --panel-bg: #ffffff;
+    --panel-bg-dark: #1e293b;
+    --h1-color: #065f46;
+    --h2-color: #047857;
+    --h3-color: #10B981;
+    --code-bg: #f1f5f9;
+    --blockquote-bg: #f0fdf4;
+    --blockquote-border: #10B981;
+    --overlay: rgba(0,0,0,0.5);
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.1);
+    --shadow-lg: 0 10px 25px rgba(0,0,0,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Varela Round', sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+  }
+  code, pre { font-family: 'JetBrains Mono', monospace; }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: #1e293b;
+    border-bottom: 1px solid #334155;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    direction: ltr;
+  }
+  .nav h1 { font-size: 16px; color: #10B981; white-space: nowrap; }
+  .nav-tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+  .nav-tab {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid #334155;
+    background: transparent;
+    color: #94a3b8;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+  .nav-tab:hover { background: #334155; color: #e2e8f0; }
+  .nav-tab.active { background: #10B981; color: white; border-color: #10B981; }
+
+  /* Sections */
+  .section {
+    display: none;
+    padding: 80px 24px 40px;
+    min-height: 100vh;
+  }
+  .section.active { display: block; }
+  .section-title {
+    font-size: 28px;
+    color: #10B981;
+    margin-bottom: 8px;
+    text-align: center;
+    direction: ltr;
+  }
+  .section-desc {
+    color: #94a3b8;
+    text-align: center;
+    margin-bottom: 32px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    direction: ltr;
+    line-height: 1.6;
+  }
+
+  /* Mockup Container */
+  .mockup {
+    max-width: 1200px;
+    margin: 0 auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    border: 1px solid #334155;
+  }
+
+  /* ===== MOCKUP: EDITOR HEADER ===== */
+  .editor-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    height: 48px;
+    background: var(--header-bg);
+    border-bottom: 2px solid var(--primary);
+    direction: rtl;
+  }
+  .editor-header-dark {
+    background: var(--header-bg-dark);
+    border-bottom-color: var(--primary);
+  }
+  .header-right { display: flex; align-items: center; gap: 8px; }
+  .header-left { display: flex; align-items: center; gap: 8px; }
+  .header-center { display: flex; align-items: center; gap: 4px; }
+
+  .logo {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .logo-icon { width: 24px; height: 24px; }
+
+  /* View toggles */
+  .view-toggles {
+    display: flex;
+    background: rgba(16,185,129,0.1);
+    border-radius: 6px;
+    padding: 2px;
+    gap: 2px;
+  }
+  .view-toggle {
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .view-toggle.active {
+    background: var(--primary);
+    color: white;
+  }
+
+  /* Header buttons */
+  .header-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+  }
+  .header-btn:hover { border-color: var(--primary); color: var(--primary); }
+  .header-btn-dark {
+    border-color: var(--border-dark);
+    background: var(--surface-dark);
+    color: #94a3b8;
+  }
+
+  .header-dropdown {
+    padding: 4px 12px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .separator {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+    margin: 0 4px;
+  }
+
+  /* Auth button states */
+  .auth-btn {
+    padding: 4px 12px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+  }
+  .auth-btn:hover { background: var(--primary); color: white; }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* ===== MOCKUP: MAIN PANELS ===== */
+  .editor-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 500px;
+    direction: rtl;
+  }
+  .panel {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .panel-editor { background: var(--bg); border-left: 1px solid var(--border); }
+  .panel-preview { background: var(--surface); }
+  .panel-editor-dark { background: var(--bg-dark); border-left-color: var(--border-dark); }
+  .panel-preview-dark { background: var(--surface-dark); }
+
+  .panel-header {
+    padding: 8px 16px;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 12px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    background: var(--bg);
+  }
+  .toolbar-dark { background: var(--bg-dark); border-bottom-color: var(--border-dark); }
+  .toolbar-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.15s;
+  }
+  .toolbar-btn:hover { background: rgba(16,185,129,0.1); color: var(--primary); }
+  .toolbar-separator {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+    margin: 0 4px;
+  }
+
+  /* AI sparkle button - highlighted */
+  .toolbar-btn-ai {
+    color: var(--primary);
+    position: relative;
+  }
+  .toolbar-btn-ai::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 6px;
+    border: 1px dashed var(--primary);
+    opacity: 0;
+    animation: pulse-border 2s infinite;
+  }
+  @keyframes pulse-border {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 0.5; }
+  }
+
+  /* Editor textarea mockup */
+  .editor-content {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    direction: rtl;
+  }
+  .editor-text {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-wrap;
+  }
+  .editor-text-dark { color: var(--text-dark); }
+
+  /* Preview content */
+  .preview-content {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    direction: rtl;
+  }
+  .preview-content h1 {
+    font-size: 2em;
+    color: var(--h1-color);
+    border-bottom: 3px solid var(--primary);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+  .preview-content h2 {
+    font-size: 1.5em;
+    color: var(--h2-color);
+    border-bottom: 2px solid var(--primary-light);
+    padding-bottom: 6px;
+    margin-bottom: 12px;
+    margin-top: 24px;
+  }
+  .preview-content h3 {
+    font-size: 1.25em;
+    color: var(--h3-color);
+    margin-bottom: 8px;
+    margin-top: 20px;
+  }
+  .preview-content p {
+    line-height: 1.7;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  .preview-content code {
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  .preview-content blockquote {
+    border-right: 4px solid var(--blockquote-border);
+    background: var(--blockquote-bg);
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .preview-content ul { padding-right: 24px; margin-bottom: 12px; }
+  .preview-content li { line-height: 1.7; margin-bottom: 4px; }
+
+  /* ===== COMMAND PALETTE ===== */
+  .cmd-palette-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 120px;
+    z-index: 100;
+  }
+  .cmd-palette {
+    width: 480px;
+    background: var(--bg);
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    direction: rtl;
+  }
+  .cmd-palette-dark {
+    background: var(--surface-dark);
+    border-color: var(--border-dark);
+  }
+  .cmd-input-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+  }
+  .cmd-input-icon { color: var(--primary); font-size: 18px; }
+  .cmd-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    direction: rtl;
+  }
+  .cmd-input::placeholder { color: var(--text-muted); }
+  .cmd-kbd {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+  }
+  .cmd-group-label {
+    padding: 8px 16px 4px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .cmd-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .cmd-item:hover { background: rgba(16,185,129,0.08); }
+  .cmd-item.selected { background: rgba(16,185,129,0.12); }
+  .cmd-item-icon { font-size: 16px; color: var(--primary); width: 20px; text-align: center; }
+  .cmd-item-text { flex: 1; }
+  .cmd-item-title { font-size: 14px; color: var(--text); }
+  .cmd-item-desc { font-size: 11px; color: var(--text-muted); }
+  .cmd-item-shortcut {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+  .cmd-footer {
+    padding: 8px 16px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* Gate check - anonymous user prompt */
+  .cmd-gate {
+    padding: 16px;
+    text-align: center;
+    border-top: 1px solid var(--border);
+  }
+  .cmd-gate-text { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
+  .cmd-gate-btn {
+    padding: 8px 20px;
+    border-radius: 6px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* ===== UPGRADE BANNER ===== */
+  .upgrade-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    border-bottom: 1px solid #d1fae5;
+    font-size: 13px;
+    direction: rtl;
+  }
+  .upgrade-banner-dark {
+    background: linear-gradient(135deg, #064e3b20, #065f4620);
+    border-bottom-color: #065f46;
+  }
+  .upgrade-icon { color: var(--primary); font-size: 16px; }
+  .upgrade-text { flex: 1; color: var(--text); }
+  .upgrade-text span { color: var(--primary); font-weight: 700; }
+  .upgrade-btn {
+    padding: 4px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    font-family: inherit;
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .upgrade-dismiss {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ===== PRESENTATION MODE ===== */
+  .presentation-mockup {
+    background: var(--bg);
+    min-height: 500px;
+    padding: 60px 80px;
+    direction: rtl;
+    position: relative;
+  }
+  .presentation-controls {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    display: flex;
+    gap: 8px;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+  }
+  .presentation-controls:hover { opacity: 1; }
+  .pres-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+  }
+
+  /* ===== PDF EXPORT DIALOG ===== */
+  .export-dialog-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+  }
+  .export-dialog {
+    width: 420px;
+    background: var(--bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    direction: rtl;
+  }
+  .export-dialog-header {
+    padding: 20px 24px 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .export-dialog-desc {
+    padding: 4px 24px 16px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+  .export-dialog-body { padding: 0 24px 20px; }
+  .export-field { margin-bottom: 16px; }
+  .export-label {
+    display: block;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 6px;
+    font-weight: 700;
+  }
+  .export-input {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    font-family: inherit;
+    font-size: 14px;
+    direction: rtl;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .export-input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px rgba(16,185,129,0.2); }
+  .export-input-suffix {
+    display: flex;
+    align-items: center;
+  }
+  .export-input-suffix input { border-radius: 0 6px 6px 0; border-left: none; }
+  .export-suffix-label {
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px 0 0 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .export-row {
+    display: flex;
+    gap: 12px;
+  }
+  .export-row .export-field { flex: 1; }
+  .export-select {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    font-family: inherit;
+    font-size: 14px;
+    background: var(--bg);
+    color: var(--text);
+    direction: rtl;
+  }
+  .export-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .export-checkbox input {
+    accent-color: var(--primary);
+    width: 16px;
+    height: 16px;
+  }
+  .export-dialog-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+  .export-btn-primary {
+    padding: 8px 20px;
+    border-radius: 6px;
+    border: none;
+    background: var(--primary);
+    color: white;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .export-btn-secondary {
+    padding: 8px 20px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  /* Toast mockup */
+  .toast-mockup {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: var(--shadow-lg);
+    direction: rtl;
+    z-index: 50;
+  }
+  .toast-spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast-check { color: var(--primary); font-size: 16px; }
+
+  /* Annotations */
+  .annotation {
+    position: absolute;
+    background: #7c3aed;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 200;
+    direction: ltr;
+    pointer-events: none;
+  }
+  .annotation::before {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background: #7c3aed;
+    transform: rotate(45deg);
+  }
+  .annotation-bottom::before { top: -4px; left: 20px; }
+  .annotation-top::before { bottom: -4px; left: 20px; }
+  .annotation-right::before { right: -4px; top: 50%; margin-top: -4px; }
+  .annotation-left::before { left: -4px; top: 50%; margin-top: -4px; }
+
+  /* Comparison labels */
+  .comparison-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto 24px;
+  }
+  .comparison-label {
+    text-align: center;
+    font-size: 14px;
+    color: #94a3b8;
+    margin-bottom: 8px;
+    direction: ltr;
+  }
+  .comparison-box {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #334155;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+
+  /* Detail notes */
+  .notes {
+    max-width: 800px;
+    margin: 32px auto 0;
+    padding: 24px;
+    background: #1e293b;
+    border-radius: 12px;
+    border: 1px solid #334155;
+    direction: ltr;
+  }
+  .notes h3 { color: #10B981; font-size: 16px; margin-bottom: 12px; }
+  .notes ul { padding-left: 20px; }
+  .notes li { color: #94a3b8; font-size: 13px; line-height: 1.8; }
+  .notes li strong { color: #e2e8f0; }
+
+  .mockup-relative { position: relative; }
+
+  /* Footer */
+  .editor-footer {
+    padding: 6px 16px;
+    font-size: 11px;
+    color: var(--text-muted);
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+    text-align: center;
+    direction: rtl;
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <h1>Marko v2 Design Directions</h1>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('overview')">Overview</button>
+    <button class="nav-tab" onclick="showSection('ai-entry')">1. AI Entry Point</button>
+    <button class="nav-tab" onclick="showSection('auth')">2. Authentication UI</button>
+    <button class="nav-tab" onclick="showSection('upgrade')">3. Upgrade Prompt</button>
+    <button class="nav-tab" onclick="showSection('presentation')">4. Presentation Mode</button>
+    <button class="nav-tab" onclick="showSection('pdf-export')">5. PDF Export Dialog</button>
+  </div>
+</nav>
+
+<!-- ===== OVERVIEW ===== -->
+<div id="overview" class="section active">
+  <h2 class="section-title">Marko v2 - New Element Integration</h2>
+  <p class="section-desc">
+    The design direction is clear: preserve the v1 soul, elevate with shadcn/ui.<br>
+    These mockups show how the 5 new v2 elements integrate into the existing layout<br>
+    without disrupting what users already know and love.
+  </p>
+
+  <div class="mockup mockup-relative">
+    <!-- Full editor with all new elements highlighted -->
+    <div class="editor-header">
+      <div class="header-right">
+        <div class="logo">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+          Marko
+        </div>
+        <div class="separator"></div>
+        <div class="view-toggles">
+          <button class="view-toggle">עורך</button>
+          <button class="view-toggle active">שניהם</button>
+          <button class="view-toggle">תצוגה</button>
+        </div>
+      </div>
+      <div class="header-left">
+        <div class="header-dropdown">דוגמה</div>
+        <div class="header-dropdown">העתק &#9662;</div>
+        <div class="header-dropdown">ייצא &#9662;</div>
+        <div class="separator"></div>
+        <button class="header-btn" title="ערכת נושא">&#9790;</button>
+        <button class="header-btn" title="כיוון">RTL</button>
+        <button class="header-btn" title="צבעים">&#127912;</button>
+        <div class="separator"></div>
+        <div class="auth-btn">&#9889; התחבר</div>
+      </div>
+    </div>
+    <div class="editor-main">
+      <div class="panel panel-editor">
+        <div class="panel-header">
+          <span>עורך</span>
+        </div>
+        <div class="toolbar">
+          <button class="toolbar-btn" title="Bold"><b>B</b></button>
+          <button class="toolbar-btn" title="Italic"><i>I</i></button>
+          <button class="toolbar-btn" title="Strikethrough"><s>S</s></button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn">H&#9662;</button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn">&#8226;</button>
+          <button class="toolbar-btn">1.</button>
+          <button class="toolbar-btn">&#9745;</button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn">&#128279;</button>
+          <button class="toolbar-btn">&#128248;</button>
+          <button class="toolbar-btn">&#9638;</button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn">&lt;/&gt;</button>
+          <button class="toolbar-btn">&#9671;&#9662;</button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn toolbar-btn-ai" title="AI - Ctrl+K">&#10024;</button>
+        </div>
+        <div class="editor-content">
+          <div class="editor-text">
+# סיכום פגישת צוות
+
+## נושאים שנדונו
+
+### תכנון ספרינט הבא
+הצוות דן בעדיפויות לספרינט הקרוב.
+המשימות העיקריות כוללות:
+- שיפור ביצועי הייצוא ל-PDF
+- תמיכה ב-RTL אוטומטית
+- אינטגרציה עם `Claude API`
+
+> **הערה חשובה:** יש לסיים את המיגרציה
+> לפני סוף החודש.
+
+### החלטות
+1. **מועד השקה:** 15 באפריל
+2. **תקציב:** אושר
+3. **צוות:** 3 מפתחים
+          </div>
+        </div>
+      </div>
+      <div class="panel panel-preview">
+        <div class="panel-header">
+          <span>תצוגה מקדימה</span>
+        </div>
+        <div class="preview-content">
+          <h1>סיכום פגישת צוות</h1>
+          <h2>נושאים שנדונו</h2>
+          <h3>תכנון ספרינט הבא</h3>
+          <p>הצוות דן בעדיפויות לספרינט הקרוב. המשימות העיקריות כוללות:</p>
+          <ul>
+            <li>שיפור ביצועי הייצוא ל-PDF</li>
+            <li>תמיכה ב-RTL אוטומטית</li>
+            <li>אינטגרציה עם <code>Claude API</code></li>
+          </ul>
+          <blockquote><strong>הערה חשובה:</strong> יש לסיים את המיגרציה לפני סוף החודש.</blockquote>
+          <h3>החלטות</h3>
+          <p>1. <strong>מועד השקה:</strong> 15 באפריל<br>
+          2. <strong>תקציב:</strong> אושר<br>
+          3. <strong>צוות:</strong> 3 מפתחים</p>
+        </div>
+      </div>
+    </div>
+    <div class="editor-footer">Marko v2.0 | hebrew-markdown-export</div>
+  </div>
+
+  <div class="notes">
+    <h3>New v2 Elements in This Layout</h3>
+    <ul>
+      <li><strong>AI Sparkle Icon (toolbar, far right):</strong> Single entry point for AI features. Pulsing border draws attention on first visit.</li>
+      <li><strong>Auth Button (header, far left):</strong> Minimal "Login" button that becomes an avatar after login. No navigation bar.</li>
+      <li><strong>Everything else:</strong> Identical to v1 layout. Same toolbar groups, same view toggles, same color panel access.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 1. AI ENTRY POINT ===== -->
+<div id="ai-entry" class="section">
+  <h2 class="section-title">1. AI Entry Point - Command Palette</h2>
+  <p class="section-desc">
+    The sparkle icon in the toolbar opens a command palette (cmdk).<br>
+    Keyboard shortcut: Ctrl+K / Cmd+K. RTL-native. Contextual AI actions.
+  </p>
+
+  <div class="comparison-row">
+    <div>
+      <div class="comparison-label">Toolbar with AI sparkle icon</div>
+      <div class="comparison-box">
+        <div class="toolbar" style="background: white; border-bottom: none;">
+          <button class="toolbar-btn"><b>B</b></button>
+          <button class="toolbar-btn"><i>I</i></button>
+          <button class="toolbar-btn"><s>S</s></button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn">H&#9662;</button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn">&#8226;</button>
+          <button class="toolbar-btn">1.</button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn">&#128279;</button>
+          <button class="toolbar-btn">&#128248;</button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn">&lt;/&gt;</button>
+          <button class="toolbar-btn">&#9671;&#9662;</button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn toolbar-btn-ai" style="font-size:16px;" title="AI">&#10024;</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="comparison-label">AI icon position: after last toolbar group</div>
+      <div class="comparison-box" style="padding: 16px; background: #1e293b;">
+        <p style="font-size: 13px; color: #94a3b8; line-height: 1.8;">
+          The sparkle icon sits after the last toolbar separator, in the natural scan endpoint.
+          It's visually distinct (green/primary color) but same size as other toolbar buttons.
+          Tooltip reads: "שאל את מארקו AI (Ctrl+K)"
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup mockup-relative" style="max-width: 600px;">
+    <div style="background: white; padding-top: 60px; min-height: 400px; position: relative;">
+      <div class="cmd-palette-overlay" style="position: absolute; padding-top: 40px;">
+        <div class="cmd-palette">
+          <div class="cmd-input-wrapper">
+            <span class="cmd-input-icon">&#10024;</span>
+            <input class="cmd-input" placeholder="...מה לעשות עם המסמך" readonly>
+            <span class="cmd-kbd">Esc</span>
+          </div>
+          <div class="cmd-group-label">פעולות AI</div>
+          <div class="cmd-item selected">
+            <span class="cmd-item-icon">&#128221;</span>
+            <div class="cmd-item-text">
+              <div class="cmd-item-title">סכם את המסמך</div>
+              <div class="cmd-item-desc">צור סיכום תמציתי של התוכן</div>
+            </div>
+          </div>
+          <div class="cmd-item">
+            <span class="cmd-item-icon">&#127760;</span>
+            <div class="cmd-item-text">
+              <div class="cmd-item-title">תרגם לאנגלית</div>
+              <div class="cmd-item-desc">תרגם את המסמך או קטע נבחר</div>
+            </div>
+          </div>
+          <div class="cmd-item">
+            <span class="cmd-item-icon">&#9745;</span>
+            <div class="cmd-item-text">
+              <div class="cmd-item-title">חלץ משימות</div>
+              <div class="cmd-item-desc">זהה פריטי פעולה מהמסמך</div>
+            </div>
+          </div>
+          <div class="cmd-item">
+            <span class="cmd-item-icon">&#9998;</span>
+            <div class="cmd-item-text">
+              <div class="cmd-item-title">שפר ניסוח</div>
+              <div class="cmd-item-desc">הצע שיפורי סגנון ובהירות</div>
+            </div>
+          </div>
+          <div class="cmd-footer">
+            <span>&#8593;&#8595; ניווט</span>
+            <span>&#9166; בחירה</span>
+            <span>Esc סגירה</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h3>Design Decisions</h3>
+    <ul>
+      <li><strong>RTL-native:</strong> Input placeholder, action labels, and descriptions all flow right-to-left.</li>
+      <li><strong>Contextual actions:</strong> The palette shows actions relevant to document content, not a generic menu.</li>
+      <li><strong>Keyboard-first:</strong> Arrow keys navigate, Enter selects, Esc closes. Mouse works too.</li>
+      <li><strong>No chatbot:</strong> This is an action menu, not a conversation. Select an action, get a result.</li>
+      <li><strong>Gate check:</strong> Anonymous users see a "Register free" prompt inside the palette, not a blocking modal.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 2. AUTHENTICATION UI ===== -->
+<div id="auth" class="section">
+  <h2 class="section-title">2. Authentication UI</h2>
+  <p class="section-desc">
+    Minimal auth integration in the header. No navigation bar. No SaaS chrome.<br>
+    Three states: anonymous, logged in (free), logged in (paid).
+  </p>
+
+  <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
+    <!-- State 1: Anonymous -->
+    <div>
+      <div class="comparison-label">State 1: Anonymous (no account)</div>
+      <div class="comparison-box">
+        <div class="editor-header">
+          <div class="header-right">
+            <div class="logo">
+              <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+              Marko
+            </div>
+          </div>
+          <div class="header-left">
+            <div class="header-dropdown">ייצא &#9662;</div>
+            <div class="separator"></div>
+            <button class="header-btn">&#9790;</button>
+            <button class="header-btn">&#127912;</button>
+            <div class="separator"></div>
+            <div class="auth-btn">&#128100; הרשמה / התחברות</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- State 2: Logged in free -->
+    <div>
+      <div class="comparison-label">State 2: Logged in (free tier)</div>
+      <div class="comparison-box">
+        <div class="editor-header">
+          <div class="header-right">
+            <div class="logo">
+              <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+              Marko
+            </div>
+          </div>
+          <div class="header-left">
+            <div class="header-dropdown">ייצא &#9662;</div>
+            <div class="separator"></div>
+            <button class="header-btn">&#9790;</button>
+            <button class="header-btn">&#127912;</button>
+            <div class="separator"></div>
+            <div class="avatar">BA</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- State 3: Logged in paid -->
+    <div>
+      <div class="comparison-label">State 3: Logged in (paid tier) - avatar with badge</div>
+      <div class="comparison-box">
+        <div class="editor-header">
+          <div class="header-right">
+            <div class="logo">
+              <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+              Marko
+            </div>
+          </div>
+          <div class="header-left">
+            <div class="header-dropdown">ייצא &#9662;</div>
+            <div class="separator"></div>
+            <button class="header-btn">&#9790;</button>
+            <button class="header-btn">&#127912;</button>
+            <div class="separator"></div>
+            <div style="position: relative;">
+              <div class="avatar">BA</div>
+              <div style="position:absolute;top:-2px;right:-2px;width:10px;height:10px;background:#f59e0b;border-radius:50%;border:2px solid var(--header-bg);"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h3>Design Decisions</h3>
+    <ul>
+      <li><strong>Single button, far left:</strong> Auth lives at the end of the header actions, after the separator. Visually separated from tool actions.</li>
+      <li><strong>Anonymous:</strong> Subtle outlined button "Login / Register". Not prominent. Tool works without it.</li>
+      <li><strong>Logged in:</strong> Initials avatar replaces the button. Clicking opens a dropdown: account info, tier status, logout.</li>
+      <li><strong>Paid badge:</strong> Small gold dot on the avatar indicates paid tier. Subtle, not flashy.</li>
+      <li><strong>No navbar:</strong> There is no "Home / Pricing / Features" navigation. The editor IS the product.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 3. UPGRADE PROMPT ===== -->
+<div id="upgrade" class="section">
+  <h2 class="section-title">3. Upgrade Prompt</h2>
+  <p class="section-desc">
+    When a free user hits their AI usage limit, an inline banner appears.<br>
+    Dismissible. Informative. Never blocks the workflow.
+  </p>
+
+  <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px;">
+    <!-- Variant 1: Below toolbar -->
+    <div>
+      <div class="comparison-label">Variant A: Below the editor toolbar</div>
+      <div class="comparison-box">
+        <div class="toolbar" style="background: white;">
+          <button class="toolbar-btn"><b>B</b></button>
+          <button class="toolbar-btn"><i>I</i></button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn">H&#9662;</button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn">&#8226;</button>
+          <button class="toolbar-btn">1.</button>
+          <span class="toolbar-separator"></span>
+          <button class="toolbar-btn toolbar-btn-ai">&#10024;</button>
+        </div>
+        <div class="upgrade-banner">
+          <span class="upgrade-icon">&#10024;</span>
+          <span class="upgrade-text">ניצלת <span>3 מתוך 3</span> פעולות AI החודש. שדרג לגישה בלתי מוגבלת.</span>
+          <button class="upgrade-btn">שדרג עכשיו</button>
+          <button class="upgrade-dismiss">&times;</button>
+        </div>
+        <div style="padding: 40px; background: white; text-align: center; color: #94a3b8; font-size: 13px;">
+          [Editor content continues here]
+        </div>
+      </div>
+    </div>
+
+    <!-- Variant 2: Inside command palette -->
+    <div>
+      <div class="comparison-label">Variant B: Inside the command palette (when opening AI)</div>
+      <div class="comparison-box" style="background: #1e293b; padding: 24px; display: flex; justify-content: center;">
+        <div class="cmd-palette" style="width: 480px;">
+          <div class="cmd-input-wrapper">
+            <span class="cmd-input-icon">&#10024;</span>
+            <input class="cmd-input" placeholder="...מה לעשות עם המסמך" readonly>
+          </div>
+          <div class="cmd-group-label">פעולות AI</div>
+          <div class="cmd-item" style="opacity: 0.5;">
+            <span class="cmd-item-icon">&#128221;</span>
+            <div class="cmd-item-text"><div class="cmd-item-title">סכם את המסמך</div></div>
+          </div>
+          <div class="cmd-item" style="opacity: 0.5;">
+            <span class="cmd-item-icon">&#127760;</span>
+            <div class="cmd-item-text"><div class="cmd-item-title">תרגם לאנגלית</div></div>
+          </div>
+          <div class="cmd-gate">
+            <div class="cmd-gate-text">ניצלת את כל פעולות ה-AI החינמיות החודש.<br>שדרג לגישה בלתי מוגבלת ל-AI.</div>
+            <button class="cmd-gate-btn">שדרג עכשיו</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Variant 3: Toast notification -->
+    <div>
+      <div class="comparison-label">Variant C: Toast notification after failed AI attempt</div>
+      <div class="comparison-box" style="background: white; padding: 60px 24px; position: relative; min-height: 120px;">
+        <div class="toast-mockup" style="direction: rtl;">
+          <span>&#10024;</span>
+          <span>הגעת למגבלת AI החודשית. <a href="#" style="color: #10B981; text-decoration: underline;">שדרג</a> לגישה מלאה.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h3>Design Decisions</h3>
+    <ul>
+      <li><strong>Recommendation: Use both B and C together.</strong> Show limit inside the command palette (Variant B) when user opens AI, and a toast (Variant C) after a failed attempt. Variant A (toolbar banner) is optional and more intrusive.</li>
+      <li><strong>Never modal:</strong> No popup that blocks the screen. No "Subscribe now!" overlay.</li>
+      <li><strong>Dismissible:</strong> Banner has an X button. Toast auto-dismisses. User is never stuck.</li>
+      <li><strong>Informative:</strong> Shows usage (3/3) so user understands the boundary. Not "you can't do this" but "you've used your allocation."</li>
+      <li><strong>Upgrade link, not a wall:</strong> The upgrade button is a gentle CTA, not a demand.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 4. PRESENTATION MODE ===== -->
+<div id="presentation" class="section">
+  <h2 class="section-title">4. Presentation Mode</h2>
+  <p class="section-desc">
+    Full-screen, distraction-free preview. All chrome fades away.<br>
+    Controls appear on hover. Escape returns to editor.
+  </p>
+
+  <div class="mockup" style="max-width: 1000px;">
+    <div class="presentation-mockup">
+      <div class="presentation-controls">
+        <button class="pres-btn" title="Exit (Esc)">&#10005;</button>
+        <button class="pres-btn" title="Theme">&#9790;</button>
+        <button class="pres-btn" title="Export">&#128190;</button>
+      </div>
+      <h1 style="font-size: 2.5em; color: var(--h1-color); border-bottom: 3px solid var(--primary); padding-bottom: 12px; margin-bottom: 24px;">סיכום פגישת צוות</h1>
+      <h2 style="font-size: 1.8em; color: var(--h2-color); border-bottom: 2px solid var(--primary-light); padding-bottom: 8px; margin-bottom: 16px; margin-top: 32px;">נושאים שנדונו</h2>
+      <h3 style="font-size: 1.4em; color: var(--h3-color); margin-bottom: 12px; margin-top: 24px;">תכנון ספרינט הבא</h3>
+      <p style="font-size: 1.1em; line-height: 1.9; color: var(--text); margin-bottom: 16px;">הצוות דן בעדיפויות לספרינט הקרוב. המשימות העיקריות כוללות:</p>
+      <ul style="padding-right: 32px; margin-bottom: 16px; font-size: 1.1em; line-height: 2;">
+        <li>שיפור ביצועי הייצוא ל-PDF</li>
+        <li>תמיכה ב-RTL אוטומטית</li>
+        <li>אינטגרציה עם <code style="background: var(--code-bg); padding: 2px 8px; border-radius: 4px;">Claude API</code></li>
+      </ul>
+      <blockquote style="border-right: 4px solid var(--blockquote-border); background: var(--blockquote-bg); padding: 16px 20px; margin: 16px 0; border-radius: 0 8px 8px 0; font-size: 1.1em; line-height: 1.8;">
+        <strong>הערה חשובה:</strong> יש לסיים את המיגרציה לפני סוף החודש.
+      </blockquote>
+      <h3 style="font-size: 1.4em; color: var(--h3-color); margin-bottom: 12px; margin-top: 24px;">החלטות</h3>
+      <p style="font-size: 1.1em; line-height: 2; color: var(--text);">
+        1. <strong>מועד השקה:</strong> 15 באפריל<br>
+        2. <strong>תקציב:</strong> אושר<br>
+        3. <strong>צוות:</strong> 3 מפתחים
+      </p>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h3>Design Decisions</h3>
+    <ul>
+      <li><strong>Full viewport:</strong> No header, no footer, no sidebar. The rendered content fills the screen.</li>
+      <li><strong>Larger text:</strong> Font sizes increase ~10-15% for readability on projected screens.</li>
+      <li><strong>Hover controls (top-left):</strong> Exit (X), theme toggle, and export. Fade in on mouse move, fade out after 3s idle.</li>
+      <li><strong>Escape to exit:</strong> Press Esc to return to the normal editor view.</li>
+      <li><strong>Color theme preserved:</strong> Whatever preset the user selected carries into presentation mode.</li>
+      <li><strong>Entry point:</strong> New "Presentation" option in the view toggle group, or a dedicated button in the header.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===== 5. PDF EXPORT DIALOG ===== -->
+<div id="pdf-export" class="section">
+  <h2 class="section-title">5. PDF Export Dialog</h2>
+  <p class="section-desc">
+    Enhanced export modal with smart defaults and optional advanced controls.<br>
+    Phase 1: filename + instant export. Phase 3: margins, paper size, cover page.
+  </p>
+
+  <div class="comparison-row">
+    <!-- Phase 1: Simple -->
+    <div>
+      <div class="comparison-label">Phase 1: Simple (MVP)</div>
+      <div class="comparison-box" style="background: white; padding: 24px; display: flex; justify-content: center; min-height: 360px; align-items: flex-start; padding-top: 40px;">
+        <div class="export-dialog" style="box-shadow: var(--shadow-lg);">
+          <div class="export-dialog-header">ייצא ל-PDF</div>
+          <div class="export-dialog-desc">המסמך יייוצא עם הצבעים ועיצוב הנוכחי.</div>
+          <div class="export-dialog-body">
+            <div class="export-field">
+              <label class="export-label">שם קובץ</label>
+              <div class="export-input-suffix">
+                <span class="export-suffix-label">.pdf</span>
+                <input class="export-input" value="סיכום-פגישת-צוות" style="border-radius: 0 6px 6px 0;">
+              </div>
+            </div>
+          </div>
+          <div class="export-dialog-footer">
+            <button class="export-btn-primary">&#128190; ייצא PDF</button>
+            <button class="export-btn-secondary">ביטול</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3: Advanced -->
+    <div>
+      <div class="comparison-label">Phase 3: Advanced Options</div>
+      <div class="comparison-box" style="background: white; padding: 24px; display: flex; justify-content: center; min-height: 360px; align-items: flex-start; padding-top: 40px;">
+        <div class="export-dialog" style="box-shadow: var(--shadow-lg);">
+          <div class="export-dialog-header">ייצא ל-PDF</div>
+          <div class="export-dialog-desc">התאם את הגדרות הייצוא.</div>
+          <div class="export-dialog-body">
+            <div class="export-field">
+              <label class="export-label">שם קובץ</label>
+              <div class="export-input-suffix">
+                <span class="export-suffix-label">.pdf</span>
+                <input class="export-input" value="סיכום-פגישת-צוות" style="border-radius: 0 6px 6px 0;">
+              </div>
+            </div>
+            <div class="export-row">
+              <div class="export-field">
+                <label class="export-label">גודל דף</label>
+                <select class="export-select">
+                  <option>A4</option>
+                  <option>Letter</option>
+                  <option>A3</option>
+                </select>
+              </div>
+              <div class="export-field">
+                <label class="export-label">שוליים</label>
+                <select class="export-select">
+                  <option>רגיל (15mm)</option>
+                  <option>צר (8mm)</option>
+                  <option>רחב (25mm)</option>
+                </select>
+              </div>
+            </div>
+            <div class="export-field">
+              <label class="export-checkbox">
+                <input type="checkbox"> הוסף עמוד שער
+              </label>
+            </div>
+            <div class="export-field">
+              <label class="export-checkbox">
+                <input type="checkbox" checked> מספור עמודים
+              </label>
+            </div>
+          </div>
+          <div class="export-dialog-footer">
+            <button class="export-btn-primary">&#128190; ייצא PDF</button>
+            <button class="export-btn-secondary">ביטול</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast with progress -->
+  <div style="max-width: 800px; margin: 24px auto 0;">
+    <div class="comparison-label">PDF Generation Toast (with progress)</div>
+    <div class="comparison-box" style="background: white; padding: 60px 24px; position: relative; min-height: 120px;">
+      <div class="toast-mockup">
+        <div class="toast-spinner"></div>
+        <span>...מייצר PDF</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width: 800px; margin: 16px auto 0;">
+    <div class="comparison-label">PDF Generation Complete Toast</div>
+    <div class="comparison-box" style="background: white; padding: 60px 24px; position: relative; min-height: 120px;">
+      <div class="toast-mockup">
+        <span class="toast-check">&#10003;</span>
+        <span>PDF נוצר בהצלחה!</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="notes">
+    <h3>Design Decisions</h3>
+    <ul>
+      <li><strong>Phase 1 is dead simple:</strong> Filename (auto-filled from first heading) + export button. That's it.</li>
+      <li><strong>Phase 3 adds progressive disclosure:</strong> Paper size, margins, cover page, page numbers. Still fits in one dialog.</li>
+      <li><strong>Progress toast:</strong> Sonner toast with spinner during PDF generation. Updates to checkmark on completion.</li>
+      <li><strong>Smart defaults:</strong> A4, normal margins, no cover page, page numbers on. Most users never change these.</li>
+      <li><strong>RTL dialog:</strong> All labels, inputs, and buttons flow right-to-left natively.</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
