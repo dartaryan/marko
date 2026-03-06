@@ -44,7 +44,7 @@ development_status:
   epic-1: in-progress
   1-1-project-initialization-and-root-layout: done
   1-2-editor-and-preview-layout-with-markdown-rendering: done
-  1-3-mermaid-diagram-rendering: review
+  1-3-mermaid-diagram-rendering: done
   1-4-formatting-toolbar: backlog
   1-5-view-modes-and-presentation-mode: backlog
   1-6-editor-utilities-and-direction-override: backlog

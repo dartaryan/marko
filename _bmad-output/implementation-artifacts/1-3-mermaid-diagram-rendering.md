@@ -1,6 +1,6 @@
 # Story 1.3: Mermaid Diagram Rendering
 
-Status: review
+Status: done
 
 ## Story
 
