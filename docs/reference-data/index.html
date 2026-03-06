@@ -1,0 +1,4867 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>עורך Markdown עברי | Hebrew Markdown Editor</title>
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="עורך Markdown עברי | Hebrew Markdown Editor">
+    <meta property="og:description" content="כלי ווב מתקדם לכתיבה, עריכה וייצוא של תוכן Markdown בעברית עם תמיכה מלאה ב-RTL, דיאגרמות Mermaid, ייצוא ל-PDF, HTML ו-Word">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dartaryan.github.io/hebrew-markdown-export/">
+    <meta property="og:image" content="https://dartaryan.github.io/hebrew-markdown-export/og-image.png">
+    <meta property="og:locale" content="he_IL">
+    <meta property="og:site_name" content="Hebrew Markdown Editor">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="עורך Markdown עברי | Hebrew Markdown Editor">
+    <meta name="twitter:description" content="כלי מתקדם לכתיבת Markdown בעברית עם תמיכה ב-RTL, דיאגרמות, התאמת צבעים וייצוא מקצועי">
+    <meta name="twitter:image" content="https://dartaryan.github.io/hebrew-markdown-export/og-image.png">
+
+    <!-- General Meta -->
+    <meta name="description" content="עורך Markdown עברי מתקדם עם תמיכה מלאה ב-RTL, דיאגרמות Mermaid, ייצוא ל-PDF ו-Word. פתרון מושלם לכתיבת תוכן טכני בעברית.">
+    <meta name="keywords" content="markdown, עברית, RTL, עורך, editor, hebrew, mermaid, PDF, Word, export">
+    <meta name="author" content="BEN AKIVA">
+    <meta name="theme-color" content="#064E3B">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- PWA -->
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="apple-touch-icon" href="pen.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="pen.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <!-- Highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <!-- Mermaid.js for diagrams -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #10B981;
+            --secondary: #6EE7B7;
+            --accent: #2DD4BF;
+            --dark: #064E3B;
+            --darker: #022c22;
+            --background: #FFFFFF;
+            --surface: #F0FDF4;
+            --foreground: #064E3B;
+            --text-secondary: #047857;
+            --text-muted: #6B7280;
+            --border: #d1fae5;
+            --border-light: #ecfdf5;
+            --card-shadow: 0 10px 40px rgba(6, 78, 59, 0.15);
+            --card-hover-shadow: 0 20px 60px rgba(6, 78, 59, 0.25);
+            --code-bg: #0d1117;
+            --success: #10B981;
+            --font-body: 'Varela Round', system-ui, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        [data-theme="dark"] {
+            --background: #0f1f1a;
+            --surface: #132520;
+            --foreground: #ecfdf5;
+            --text-secondary: #a7f3d0;
+            --text-muted: #6ee7b7;
+            --border: #064e3b;
+            --border-light: #052e24;
+            --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            --card-hover-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            --code-bg: #0d1117;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: linear-gradient(180deg, var(--dark) 0%, #0a6b4d 50%, var(--primary) 100%);
+            min-height: 100vh;
+            color: var(--foreground);
+            overflow-x: hidden;
+        }
+
+        /* Geometric background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(110, 231, 183, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(45, 212, 191, 0.1) 0%, transparent 50%),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2310B981' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(6, 78, 59, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 0.6rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .header.hidden {
+            transform: translateY(-100%);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark);
+            box-shadow: 0 4px 12px rgba(110, 231, 183, 0.3);
+        }
+
+        .logo-icon svg {
+            stroke: var(--dark);
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .logo-text span {
+            color: var(--secondary);
+        }
+
+        .header-credit {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.25rem 0.6rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            margin-right: 0.5rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+            flex-wrap: nowrap;
+            padding: 0.35rem 0.5rem;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* Header action groups */
+        .header-action-group {
+            display: flex;
+            gap: 0.35rem;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .header-action-separator {
+            width: 1px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.15);
+            margin: 0 0.15rem;
+            flex-shrink: 0;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            border: none;
+            border-radius: 25px;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            border: 2px solid transparent;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border-color: var(--secondary);
+        }
+
+        .btn-primary:hover {
+            background: var(--dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(110, 231, 183, 0.2);
+            color: white;
+            border-color: transparent;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(110, 231, 183, 0.3);
+            border-color: var(--secondary);
+        }
+
+        .btn-icon {
+            padding: 0.6rem;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .btn-icon:hover {
+            background: rgba(110, 231, 183, 0.2);
+            color: var(--secondary);
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* View Toggle Button Group */
+        .view-toggle-group {
+            display: flex;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 25px;
+            padding: 3px;
+            gap: 2px;
+        }
+
+        .view-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            padding: 0.45rem 0.85rem;
+            border: none;
+            border-radius: 22px;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+            white-space: nowrap;
+        }
+
+        .view-toggle-btn:hover {
+            background: rgba(110, 231, 183, 0.15);
+            color: var(--secondary);
+        }
+
+        .view-toggle-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+
+        .view-toggle-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        /* View Modes for Main Container */
+        .main .panel {
+            transition: all 0.3s ease-out;
+        }
+
+        .main.editor-only .panel:nth-child(2) {
+            display: none;
+        }
+
+        .main.editor-only {
+            grid-template-columns: 1fr;
+            min-height: auto;
+        }
+
+        .main.editor-only .panel:first-child {
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            min-height: calc(100vh - 7rem);
+        }
+
+        .main.preview-only .panel:first-child {
+            display: none;
+        }
+
+        .main.preview-only {
+            grid-template-columns: 1fr;
+            min-height: auto;
+        }
+
+        .main.preview-only .panel:nth-child(2) {
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+            min-height: calc(100vh - 7rem);
+        }
+
+        /* Main Layout */
+        .main {
+            position: relative;
+            z-index: 1;
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 5rem 2rem 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            min-height: 100vh;
+        }
+
+        /* Panels */
+        .panel {
+            background: var(--background);
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--card-shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        .panel:hover {
+            box-shadow: var(--card-hover-shadow);
+            transform: translateY(-5px);
+        }
+
+        .panel-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-title-icon {
+            width: 24px;
+            height: 24px;
+            padding: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 8px;
+            color: white;
+        }
+
+        .panel-title-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .panel-actions {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .panel-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            transition: all 0.2s ease;
+        }
+
+        .panel-btn:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .panel-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .panel-body {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            min-height: 500px;
+        }
+
+        /* Scrollable editor content wrapper */
+        .panel-editor-content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        .panel-editor-scroll {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+        }
+
+        .panel-editor-scroll .editor-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0);
+            transition: box-shadow 0.2s ease;
+        }
+
+        .panel-editor-scroll .editor-toolbar.scrolled {
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .editor-textarea-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 400px;
+            position: relative;
+        }
+
+        .editor-textarea-wrapper .editor-textarea {
+            flex: 1;
+            resize: none;
+        }
+
+        /* Textarea */
+        .editor-textarea {
+            width: 100%;
+            height: 100%;
+            padding: 1.5rem;
+            border: none;
+            resize: none;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.8;
+            background: var(--background);
+            color: var(--foreground);
+            direction: rtl;
+            text-align: right;
+            unicode-bidi: plaintext;
+        }
+
+        .editor-textarea:focus {
+            outline: none;
+        }
+
+        .editor-textarea::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* Preview */
+        .preview-content {
+            padding: 1.5rem;
+            overflow-y: auto;
+            height: 100%;
+            direction: rtl;
+        }
+
+        /* Markdown Styles */
+        .preview-content h1,
+        .preview-content h2,
+        .preview-content h3,
+        .preview-content h4,
+        .preview-content h5,
+        .preview-content h6 {
+            font-family: var(--font-body);
+            color: var(--foreground);
+            margin-top: 1.5em;
+            margin-bottom: 0.75em;
+            line-height: 1.3;
+        }
+
+        .preview-content h1:first-child,
+        .preview-content h2:first-child,
+        .preview-content h3:first-child {
+            margin-top: 0;
+        }
+
+        .preview-content h1 {
+            font-size: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .preview-content h2 {
+            font-size: 1.5rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid var(--secondary);
+        }
+
+        .preview-content h3 { font-size: 1.25rem; color: var(--text-secondary); }
+        .preview-content h4 { font-size: 1.1rem; }
+        .preview-content h5 { font-size: 1rem; }
+        .preview-content h6 { font-size: 0.9rem; color: var(--text-muted); }
+
+        .preview-content p {
+            margin-bottom: 1em;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .preview-content strong {
+            font-weight: 700;
+            color: var(--foreground);
+        }
+
+        .preview-content em {
+            font-style: italic;
+        }
+
+        .preview-content del {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .preview-content a {
+            color: var(--primary);
+            text-decoration: none;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .preview-content a:hover {
+            border-bottom-color: var(--primary);
+        }
+
+        .preview-content ul,
+        .preview-content ol {
+            margin-bottom: 1em;
+            padding-right: 1.5em;
+        }
+
+        .preview-content li {
+            margin-bottom: 0.5em;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+
+        .preview-content li > ul,
+        .preview-content li > ol {
+            margin-top: 0.5em;
+            margin-bottom: 0;
+        }
+
+        .preview-content blockquote {
+            margin: 1em 0;
+            padding: 1em 1.25em;
+            border-right: 4px solid var(--primary);
+            background: var(--surface);
+            border-radius: 0 12px 12px 0;
+            color: var(--text-secondary);
+        }
+
+        .preview-content blockquote p:last-child {
+            margin-bottom: 0;
+        }
+
+        .preview-content code {
+            font-family: var(--font-mono);
+            font-size: 0.85em;
+            background: var(--surface);
+            padding: 0.2em 0.5em;
+            border-radius: 6px;
+            color: var(--primary);
+            border: 1px solid var(--border);
+        }
+
+        .preview-content pre {
+            margin: 1em 0;
+            padding: 1.25em;
+            background: var(--code-bg);
+            border-radius: 16px;
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            direction: ltr;
+            text-align: left;
+        }
+
+        .preview-content pre code {
+            background: none;
+            padding: 0;
+            color: #e6edf3;
+            font-size: 0.875rem;
+            border: none;
+        }
+
+        .preview-content table {
+            width: 100%;
+            margin: 1em 0;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .preview-content th,
+        .preview-content td {
+            padding: 0.75em 1em;
+            border: 1px solid var(--border);
+            text-align: right;
+        }
+
+        .preview-content th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .preview-content tr:nth-child(even) {
+            background: var(--surface);
+        }
+
+        .preview-content hr {
+            border: none;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), transparent);
+            margin: 2em 0;
+            border-radius: 3px;
+        }
+
+        .preview-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 1em 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Task list */
+        .preview-content input[type="checkbox"] {
+            margin-left: 0.5em;
+            accent-color: var(--primary);
+            transform: scale(1.2);
+        }
+        
+        /* Mermaid diagrams */
+        .mermaid {
+            direction: ltr;
+            text-align: center;
+            margin: 1.5em 0;
+            background: var(--surface);
+            padding: 1.5em;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+        
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--dark);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border: 2px solid var(--secondary);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast svg {
+            width: 20px;
+            height: 20px;
+            color: var(--secondary);
+        }
+
+        /* Dropdown menu */
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 0.5rem;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.2s ease;
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .dropdown.open .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .dropdown-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.85rem 1.25rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: right;
+            font-family: var(--font-body);
+        }
+        
+        .dropdown-item:hover {
+            background: var(--surface);
+            color: var(--primary);
+        }
+        
+        .dropdown-item svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .dropdown-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 0.25rem 0;
+        }
+
+        /* Footer */
+        .footer {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .footer-logo svg {
+            width: 28px;
+            height: 28px;
+            stroke: var(--secondary);
+        }
+
+        .footer-text {
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+
+        .footer-credit {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem 1.25rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .footer-credit:hover {
+            background: rgba(110, 231, 183, 0.2);
+            border-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .footer-credit svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main {
+                grid-template-columns: 1fr;
+                padding: 5rem 1rem 1rem;
+            }
+
+            .panel {
+                min-height: 400px;
+            }
+
+            .panel-body {
+                min-height: 350px;
+            }
+
+            .btn span {
+                display: none;
+            }
+
+            .btn svg {
+                margin: 0;
+            }
+
+            .header {
+                padding: 0.75rem 1rem;
+            }
+
+            /* View toggle responsive */
+            .view-toggle-btn span {
+                display: none;
+            }
+
+            .view-toggle-btn {
+                padding: 0.45rem 0.65rem;
+            }
+
+            .view-toggle-group {
+                padding: 2px;
+            }
+
+            /* Override view modes on mobile since layout is already stacked */
+            .main.editor-only,
+            .main.preview-only {
+                grid-template-columns: 1fr;
+            }
+
+            .main.editor-only .panel:first-child,
+            .main.preview-only .panel:nth-child(2) {
+                max-width: 100%;
+                min-height: calc(100vh - 6rem);
+            }
+
+            /* Hide text in RTL and color buttons on mobile */
+            .direction-toggle-btn span,
+            .color-settings-btn span {
+                display: none;
+            }
+
+            .direction-toggle-btn,
+            .color-settings-btn {
+                min-width: auto;
+                padding: 0.4rem 0.5rem;
+            }
+
+            /* Header actions toolbar compact */
+            .header-actions {
+                gap: 0.35rem;
+                padding: 0.3rem 0.4rem;
+            }
+
+            .header-action-separator {
+                height: 20px;
+                margin: 0 0.1rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                padding: 0.5rem 0.75rem;
+                gap: 0.5rem;
+                align-items: stretch;
+            }
+
+            .logo {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .header-actions {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.4rem;
+                padding: 0.5rem 0.6rem;
+                border-radius: 14px;
+                background: rgba(0, 0, 0, 0.2);
+            }
+
+            .header-action-group {
+                gap: 0.25rem;
+            }
+
+            .header-action-separator {
+                display: none;
+            }
+
+            .logo-text {
+                font-size: 1rem;
+            }
+
+            .header-credit {
+                display: none;
+            }
+
+            .view-toggle-group {
+                gap: 1px;
+            }
+
+            .view-toggle-btn {
+                padding: 0.4rem 0.55rem;
+            }
+
+            .view-toggle-btn svg {
+                width: 13px;
+                height: 13px;
+            }
+
+            .btn {
+                padding: 0.45rem 0.65rem;
+            }
+
+            .btn svg {
+                width: 16px;
+                height: 16px;
+            }
+
+            .dropdown-menu {
+                min-width: 140px;
+            }
+
+            .main {
+                padding: 7.5rem 0.75rem 0.75rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .header {
+                padding: 0.4rem 0.5rem;
+                gap: 0.4rem;
+            }
+
+            .logo-text {
+                font-size: 0.9rem;
+            }
+
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+            }
+
+            .logo-icon svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            .header-actions {
+                padding: 0.4rem 0.5rem;
+                gap: 0.3rem;
+                border-radius: 12px;
+            }
+
+            .header-action-group {
+                gap: 0.2rem;
+            }
+
+            .view-toggle-group {
+                padding: 2px;
+                gap: 1px;
+            }
+
+            .view-toggle-btn {
+                padding: 0.3rem 0.45rem;
+            }
+
+            .view-toggle-btn svg {
+                width: 12px;
+                height: 12px;
+            }
+
+            .btn {
+                padding: 0.35rem 0.5rem;
+            }
+
+            .btn svg {
+                width: 15px;
+                height: 15px;
+            }
+
+            .main {
+                padding: 8rem 0.5rem 0.5rem;
+                gap: 0.75rem;
+            }
+
+            .panel {
+                border-radius: 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0.35rem 0.4rem;
+            }
+
+            .logo-text {
+                font-size: 0.85rem;
+            }
+
+            .logo-icon {
+                width: 28px;
+                height: 28px;
+            }
+
+            .logo-icon svg {
+                width: 16px;
+                height: 16px;
+            }
+
+            .header-actions {
+                padding: 0.35rem 0.4rem;
+                gap: 0.25rem;
+            }
+
+            .view-toggle-btn {
+                padding: 0.25rem 0.4rem;
+            }
+
+            .view-toggle-btn svg {
+                width: 11px;
+                height: 11px;
+            }
+
+            .btn {
+                padding: 0.3rem 0.45rem;
+            }
+
+            .btn svg {
+                width: 14px;
+                height: 14px;
+            }
+
+            .main {
+                padding: 8.5rem 0.4rem 0.4rem;
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white !important;
+            }
+            
+            body::before {
+                display: none;
+            }
+            
+            .header, .panel:first-child, .footer {
+                display: none !important;
+            }
+
+            .main {
+                display: block;
+                padding: 0;
+            }
+
+            .panel {
+                border: none;
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .panel::before {
+                display: none;
+            }
+            
+            .panel-header {
+                display: none;
+            }
+
+            .preview-content {
+                padding: 0;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--surface);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark);
+        }
+
+        /* Loading animation */
+        .btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+
+        .btn.loading svg {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animations */
+        @keyframes slideInFromBottom {
+            from {
+                transform: translateY(30px);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .panel {
+            animation: slideInFromBottom 0.4s ease-out;
+        }
+
+        .panel:nth-child(2) {
+            animation-delay: 0.05s;
+        }
+
+        /* ========== FORMATTING TOOLBAR STYLES ========== */
+        .editor-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+        }
+
+        .toolbar-group {
+            display: flex;
+            gap: 0.125rem;
+            padding: 0 0.5rem;
+            border-left: 1px solid var(--border);
+        }
+
+        .toolbar-group:last-child {
+            border-left: none;
+        }
+
+        .toolbar-group:first-child {
+            padding-right: 0;
+        }
+
+        .toolbar-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: all 0.15s ease;
+            position: relative;
+        }
+
+        .toolbar-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .toolbar-btn:active {
+            transform: translateY(0);
+        }
+
+        .toolbar-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Global tooltip - positioned outside overflow containers */
+        .global-tooltip {
+            position: fixed;
+            padding: 0.4rem 0.6rem;
+            background: var(--dark);
+            color: white;
+            font-size: 0.7rem;
+            border-radius: 6px;
+            white-space: nowrap;
+            z-index: 9999;
+            font-family: var(--font-body);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s ease;
+        }
+
+        .global-tooltip.visible {
+            opacity: 1;
+        }
+
+        .global-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--dark);
+        }
+
+        /* Toolbar Dropdowns */
+        .toolbar-dropdown {
+            position: relative;
+        }
+
+        .toolbar-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.25rem;
+            background: var(--background);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            box-shadow: var(--card-shadow);
+            min-width: 150px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-5px);
+            transition: all 0.15s ease;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .toolbar-dropdown.open .toolbar-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .toolbar-dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: none;
+            background: none;
+            text-align: right;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+
+        .toolbar-dropdown-item:hover {
+            background: var(--surface);
+            color: var(--primary);
+        }
+
+        /* Toolbar Separator */
+        .toolbar-separator {
+            width: 1px;
+            height: 24px;
+            background: var(--border);
+            margin: 0 0.25rem;
+        }
+
+        /* Color Settings Button */
+        .color-settings-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.75rem;
+            border: 2px solid var(--primary);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(45, 212, 191, 0.1));
+            border-radius: 20px;
+            cursor: pointer;
+            color: var(--primary);
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .color-settings-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .color-settings-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Direction Toggle Button */
+        .direction-toggle-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.75rem;
+            border: 2px solid var(--accent);
+            background: linear-gradient(135deg, rgba(45, 212, 191, 0.1), rgba(110, 231, 183, 0.1));
+            border-radius: 20px;
+            cursor: pointer;
+            color: var(--accent);
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            min-width: 70px;
+            justify-content: center;
+        }
+
+        .direction-toggle-btn:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(45, 212, 191, 0.3);
+        }
+
+        .direction-toggle-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .direction-toggle-btn.ltr-active {
+            border-color: #3B82F6;
+            color: #3B82F6;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(96, 165, 250, 0.1));
+        }
+
+        .direction-toggle-btn.ltr-active:hover {
+            background: #3B82F6;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* LTR Mode Styles */
+        .editor-textarea.ltr-mode {
+            direction: ltr;
+            text-align: left;
+        }
+
+        .preview-content.ltr-mode {
+            direction: ltr;
+            text-align: left;
+        }
+
+        .preview-content.ltr-mode ul,
+        .preview-content.ltr-mode ol {
+            padding-right: 0;
+            padding-left: 1.5em;
+        }
+
+        .preview-content.ltr-mode blockquote {
+            border-right: none;
+            border-left: 4px solid var(--primary);
+            border-radius: 12px 0 0 12px;
+        }
+
+        .preview-content.ltr-mode th,
+        .preview-content.ltr-mode td {
+            text-align: left;
+        }
+
+        /* ========== COLOR CUSTOMIZATION PANEL ========== */
+        .color-panel-toggle {
+            position: fixed;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 999;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            padding: 0.75rem 0.5rem;
+            cursor: pointer;
+            box-shadow: var(--card-shadow);
+            transition: all 0.2s ease;
+        }
+
+        .color-panel-toggle:hover {
+            background: var(--dark);
+            padding-left: 0.75rem;
+        }
+
+        .color-panel-toggle svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .color-panel {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 320px;
+            background: var(--background);
+            box-shadow: var(--card-shadow);
+            z-index: 1001;
+            transform: translateX(-100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .color-panel.open {
+            transform: translateX(0);
+        }
+
+        .color-panel-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .color-panel-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .color-panel-header {
+            padding: 1rem 1.25rem;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .color-panel-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--foreground);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .color-panel-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s ease;
+        }
+
+        .color-panel-close:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .color-panel-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .color-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .color-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .color-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .color-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .color-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .color-input {
+            width: 32px;
+            height: 32px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .color-input::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+
+        .color-input::-webkit-color-swatch {
+            border: none;
+            border-radius: 4px;
+        }
+
+        .color-hex {
+            width: 70px;
+            padding: 0.35rem 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            background: var(--surface);
+            text-align: center;
+        }
+
+        .color-panel-footer {
+            padding: 1rem 1.25rem;
+            border-top: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .preset-btn {
+            aspect-ratio: 1;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preset-btn:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+        }
+
+        .preset-btn.active {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--secondary);
+        }
+
+        .preset-btn::after {
+            content: attr(data-name);
+            position: absolute;
+            bottom: -22px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6rem;
+            white-space: nowrap;
+            background: var(--dark);
+            color: white;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.15s ease;
+        }
+
+        .preset-btn:hover::after {
+            opacity: 1;
+        }
+
+        .color-panel-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .color-panel-actions .btn {
+            flex: 1;
+            justify-content: center;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .color-panel .btn-secondary {
+            background: var(--border);
+            color: var(--foreground);
+        }
+
+        .color-panel .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Modal for prompts */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--background);
+            border-radius: 16px;
+            padding: 1.5rem;
+            min-width: 350px;
+            max-width: 90vw;
+            box-shadow: var(--card-shadow);
+            transform: scale(0.9);
+            transition: transform 0.2s ease;
+        }
+
+        .modal-overlay.open .modal {
+            transform: scale(1);
+        }
+
+        .modal-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--foreground);
+            margin-bottom: 1rem;
+        }
+
+        .modal-field {
+            margin-bottom: 1rem;
+        }
+
+        .modal-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            background: var(--surface);
+            color: var(--foreground);
+            direction: ltr;
+        }
+
+        .modal-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 0.5rem;
+            justify-content: flex-start;
+        }
+
+        /* Table builder modal */
+        .table-size-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 24px);
+            gap: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .table-size-cell {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-radius: 4px;
+            background: var(--surface);
+            cursor: pointer;
+            transition: all 0.1s ease;
+        }
+
+        .table-size-cell:hover,
+        .table-size-cell.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .table-size-info {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* Responsive toolbar */
+        @media (max-width: 768px) {
+            .editor-toolbar {
+                padding: 0.5rem;
+                gap: 0.125rem;
+            }
+
+            .toolbar-group {
+                padding: 0 0.25rem;
+            }
+
+            .toolbar-btn {
+                width: 28px;
+                height: 28px;
+            }
+
+            .toolbar-btn svg {
+                width: 14px;
+                height: 14px;
+            }
+
+            .color-panel {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .toolbar-group {
+                border-left: none;
+                padding: 0.25rem;
+            }
+
+            .editor-toolbar {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header" id="header">
+        <div class="logo">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            </div>
+            <div class="logo-text">עורך <span>Markdown</span> עברי</div>
+            <div class="header-credit">נוצר ע"י בן עקיבא</div>
+        </div>
+        <div class="header-actions">
+            <!-- Install PWA Button -->
+            <button class="btn btn-secondary" id="installBtn" onclick="installPWA()" style="display: none;" title="התקן אפליקציה">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <span>התקן</span>
+            </button>
+            <div class="header-action-separator" id="installSep" style="display: none;"></div>
+
+            <!-- View Toggle Group -->
+            <div class="header-action-group">
+                <div class="view-toggle-group" id="viewToggle">
+                    <button class="view-toggle-btn" onclick="setViewMode('editor')" data-view="editor" title="עורך בלבד">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        <span>עורך</span>
+                    </button>
+                    <button class="view-toggle-btn active" onclick="setViewMode('both')" data-view="both" title="שניהם">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="12" y1="3" x2="12" y2="21"/></svg>
+                        <span>שניהם</span>
+                    </button>
+                    <button class="view-toggle-btn" onclick="setViewMode('preview')" data-view="preview" title="תצוגה מקדימה בלבד">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                        <span>תצוגה</span>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="header-action-separator"></div>
+            
+            <!-- Actions Group -->
+            <div class="header-action-group">
+                <button class="btn btn-secondary" onclick="pasteFromClipboard()" title="הדבק">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><path d="M9 14l2 2 4-4"/></svg>
+                    <span>הדבק</span>
+                </button>
+                <button class="btn btn-secondary" onclick="clearEditor()" title="נקה">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+                    <span>נקה</span>
+                </button>
+                
+                <div class="dropdown" id="copyDropdown">
+                    <button class="btn btn-secondary" onclick="toggleDropdown('copyDropdown')" title="העתק">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                        <span>העתק</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" onclick="copyForWord(); closeDropdowns();">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            העתק ל-Word
+                        </button>
+                        <button class="dropdown-item" onclick="copyHTML(); closeDropdowns();">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                            העתק HTML
+                        </button>
+                        <button class="dropdown-item" onclick="copyPlainText(); closeDropdowns();">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+                            העתק טקסט רגיל
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-action-separator"></div>
+            
+            <!-- Export Group -->
+            <div class="header-action-group">
+                <div class="dropdown" id="exportDropdown">
+                    <button class="btn btn-primary" onclick="toggleDropdown('exportDropdown')" title="ייצא">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <span>ייצוא</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" onclick="exportPDF(); closeDropdowns();">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                            ייצא PDF (הדפסה)
+                        </button>
+                        <button class="dropdown-item" onclick="exportHTML(); closeDropdowns();">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                            ייצא HTML
+                        </button>
+                        <button class="dropdown-item" onclick="exportMarkdown(); closeDropdowns();">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                            ייצא Markdown
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="header-action-separator"></div>
+            
+            <!-- Theme Toggle -->
+            <div class="header-action-group">
+                <button class="btn btn-icon" onclick="toggleTheme()" title="החלף ערכת נושא">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="themeIcon"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main">
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <div class="panel-title-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </div>
+                    עורך
+                </div>
+                <div class="panel-actions">
+                    <button class="panel-btn" onclick="loadSample()" title="טען דוגמה">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                    </button>
+                    <!-- Direction Toggle -->
+                    <button class="direction-toggle-btn" id="directionToggle" onclick="toggleDirection()" title="החלף כיוון טקסט">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12H3"/><path d="m15 18 6-6-6-6"/><path d="m9 6-6 6 6 6"/></svg>
+                        <span id="directionLabel">RTL</span>
+                    </button>
+                    <!-- Color Settings Toggle -->
+                    <button class="color-settings-btn" onclick="toggleColorPanel()" title="התאמת צבעים">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="10.5" r="2.5"/><circle cx="8.5" cy="7.5" r="2.5"/><circle cx="6.5" cy="12.5" r="2.5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.555C21.965 6.012 17.461 2 12 2z"/></svg>
+                        <span>התאמת צבעים</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="panel-editor-content">
+                <div class="panel-editor-scroll">
+                    <!-- Formatting Toolbar - Sticky -->
+                    <div class="editor-toolbar" id="editorToolbar">
+                        <!-- Text Formatting -->
+                        <div class="toolbar-group">
+                            <button class="toolbar-btn" onclick="insertFormat('bold')" data-tooltip="מודגש (Ctrl+B)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/></svg>
+                            </button>
+                            <button class="toolbar-btn" onclick="insertFormat('italic')" data-tooltip="נטוי (Ctrl+I)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="4" x2="10" y2="4"/><line x1="14" y1="20" x2="5" y2="20"/><line x1="15" y1="4" x2="9" y2="20"/></svg>
+                            </button>
+                            <button class="toolbar-btn" onclick="insertFormat('strikethrough')" data-tooltip="קו חוצה (Ctrl+Shift+S)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.3 4.9c-2.3-.6-4.4-1-6.2-.9-2.7 0-5.3.7-5.3 3.6 0 1.5 1.8 3.3 3.6 3.9h.2m8.2 3.7c.3.4.4.8.4 1.3 0 2.9-2.7 3.6-6.2 3.6-2.3 0-4.4-.3-6.2-.9"/><line x1="4" y1="12" x2="20" y2="12"/></svg>
+                            </button>
+                            <button class="toolbar-btn" onclick="insertFormat('code')" data-tooltip="קוד בשורה (Ctrl+`)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Headers -->
+                        <div class="toolbar-group">
+                            <div class="toolbar-dropdown" id="headingDropdown">
+                                <button class="toolbar-btn" onclick="toggleToolbarDropdown('headingDropdown')" data-tooltip="כותרות">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12h12"/><path d="M6 20V4"/><path d="M18 20V4"/></svg>
+                                </button>
+                                <div class="toolbar-dropdown-menu">
+                                    <button class="toolbar-dropdown-item" onclick="insertHeading(1); closeToolbarDropdowns();">כותרת 1 - H1</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertHeading(2); closeToolbarDropdowns();">כותרת 2 - H2</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertHeading(3); closeToolbarDropdowns();">כותרת 3 - H3</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertHeading(4); closeToolbarDropdowns();">כותרת 4 - H4</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertHeading(5); closeToolbarDropdowns();">כותרת 5 - H5</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertHeading(6); closeToolbarDropdowns();">כותרת 6 - H6</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lists -->
+                        <div class="toolbar-group">
+                            <button class="toolbar-btn" onclick="insertFormat('ul')" data-tooltip="רשימה (Ctrl+U)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                            </button>
+                            <button class="toolbar-btn" onclick="insertFormat('ol')" data-tooltip="רשימה ממוספרת">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M4 6h1v4"/><path d="M4 10h2"/><path d="M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+                            </button>
+                            <button class="toolbar-btn" onclick="insertFormat('task')" data-tooltip="רשימת משימות">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Block Elements -->
+                        <div class="toolbar-group">
+                            <button class="toolbar-btn" onclick="insertFormat('quote')" data-tooltip="ציטוט (Ctrl+Q)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3z"/></svg>
+                            </button>
+                            <div class="toolbar-dropdown" id="codeBlockDropdown">
+                                <button class="toolbar-btn" onclick="toggleToolbarDropdown('codeBlockDropdown')" data-tooltip="בלוק קוד">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m10 9-3 3 3 3"/><path d="m14 9 3 3-3 3"/></svg>
+                                </button>
+                                <div class="toolbar-dropdown-menu">
+                                    <button class="toolbar-dropdown-item" onclick="insertCodeBlock(''); closeToolbarDropdowns();">ללא שפה</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertCodeBlock('javascript'); closeToolbarDropdowns();">JavaScript</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertCodeBlock('python'); closeToolbarDropdowns();">Python</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertCodeBlock('html'); closeToolbarDropdowns();">HTML</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertCodeBlock('css'); closeToolbarDropdowns();">CSS</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertCodeBlock('bash'); closeToolbarDropdowns();">Bash</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertCodeBlock('json'); closeToolbarDropdowns();">JSON</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertCodeBlock('sql'); closeToolbarDropdowns();">SQL</button>
+                                </div>
+                            </div>
+                            <button class="toolbar-btn" onclick="insertFormat('hr')" data-tooltip="קו מפריד">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Links & Media -->
+                        <div class="toolbar-group">
+                            <button class="toolbar-btn" onclick="openLinkModal()" data-tooltip="הוסף קישור (Ctrl+K)">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                            </button>
+                            <button class="toolbar-btn" onclick="openImageModal()" data-tooltip="הוסף תמונה">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Tables -->
+                        <div class="toolbar-group">
+                            <button class="toolbar-btn" onclick="openTableModal()" data-tooltip="הוסף טבלה">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Mermaid Diagrams -->
+                        <div class="toolbar-group">
+                            <div class="toolbar-dropdown" id="mermaidDropdown">
+                                <button class="toolbar-btn" onclick="toggleToolbarDropdown('mermaidDropdown')" data-tooltip="דיאגרמות Mermaid">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                                </button>
+                                <div class="toolbar-dropdown-menu">
+                                    <button class="toolbar-dropdown-item" onclick="insertMermaid('flowchart'); closeToolbarDropdowns();">תרשים זרימה</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertMermaid('sequence'); closeToolbarDropdowns();">דיאגרמת רצף</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertMermaid('pie'); closeToolbarDropdowns();">תרשים עוגה</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertMermaid('gantt'); closeToolbarDropdowns();">תרשים גנט</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertMermaid('classDiagram'); closeToolbarDropdowns();">דיאגרמת מחלקות</button>
+                                    <button class="toolbar-dropdown-item" onclick="insertMermaid('erDiagram'); closeToolbarDropdowns();">דיאגרמת ER</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="editor-textarea-wrapper">
+                        <textarea 
+                            class="editor-textarea" 
+                            id="editor" 
+                            placeholder="הקלד כאן את טקסט ה-Markdown שלך..."
+                            spellcheck="false"
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <div class="panel-title-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                    </div>
+                    תצוגה מקדימה
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="preview-content" id="preview"></div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                <span>עורך Markdown עברי</span>
+            </div>
+            <p class="footer-text">
+                כלי מתקדם לכתיבת Markdown בעברית עם תמיכה מלאה ב-RTL, דיאגרמות Mermaid, וייצוא מקצועי ל-PDF ו-Word
+            </p>
+            <a href="https://github.com/dartaryan/hebrew-markdown-export" target="_blank" rel="noopener noreferrer" class="footer-credit">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                </svg>
+                נבנה ע"י Ben Akiva
+            </a>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <span id="toastMessage"></span>
+    </div>
+
+    <div class="global-tooltip" id="globalTooltip"></div>
+
+    <!-- Color Panel Overlay -->
+    <div class="color-panel-overlay" id="colorPanelOverlay" onclick="toggleColorPanel()"></div>
+
+    <!-- Color Customization Panel -->
+    <div class="color-panel" id="colorPanel">
+        <div class="color-panel-header">
+            <div class="color-panel-title">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 0 0 0 14 4 4 0 1 1 0 8 10 10 0 1 0 0-20z"/></svg>
+                התאמת צבעים
+            </div>
+            <button class="color-panel-close" onclick="toggleColorPanel()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="color-panel-body">
+            <!-- Text Colors -->
+            <div class="color-section">
+                <div class="color-section-title">צבעי טקסט</div>
+                <div class="color-row">
+                    <span class="color-label">טקסט ראשי</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorPrimaryText" value="#064E3B" onchange="updateColor('primaryText', this.value)">
+                        <input type="text" class="color-hex" id="hexPrimaryText" value="#064E3B" onchange="updateColorFromHex('primaryText', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">טקסט משני</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorSecondaryText" value="#047857" onchange="updateColor('secondaryText', this.value)">
+                        <input type="text" class="color-hex" id="hexSecondaryText" value="#047857" onchange="updateColorFromHex('secondaryText', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">קישורים</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorLink" value="#10B981" onchange="updateColor('link', this.value)">
+                        <input type="text" class="color-hex" id="hexLink" value="#10B981" onchange="updateColorFromHex('link', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">קוד</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorCode" value="#10B981" onchange="updateColor('code', this.value)">
+                        <input type="text" class="color-hex" id="hexCode" value="#10B981" onchange="updateColorFromHex('code', this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heading Colors -->
+            <div class="color-section">
+                <div class="color-section-title">צבעי כותרות</div>
+                <div class="color-row">
+                    <span class="color-label">H1</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorH1" value="#064E3B" onchange="updateColor('h1', this.value)">
+                        <input type="text" class="color-hex" id="hexH1" value="#064E3B" onchange="updateColorFromHex('h1', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">קו תחתון H1</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorH1Border" value="#10B981" onchange="updateColor('h1Border', this.value)">
+                        <input type="text" class="color-hex" id="hexH1Border" value="#10B981" onchange="updateColorFromHex('h1Border', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">H2</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorH2" value="#064E3B" onchange="updateColor('h2', this.value)">
+                        <input type="text" class="color-hex" id="hexH2" value="#064E3B" onchange="updateColorFromHex('h2', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">קו תחתון H2</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorH2Border" value="#6EE7B7" onchange="updateColor('h2Border', this.value)">
+                        <input type="text" class="color-hex" id="hexH2Border" value="#6EE7B7" onchange="updateColorFromHex('h2Border', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">H3</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorH3" value="#047857" onchange="updateColor('h3', this.value)">
+                        <input type="text" class="color-hex" id="hexH3" value="#047857" onchange="updateColorFromHex('h3', this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Background Colors -->
+            <div class="color-section">
+                <div class="color-section-title">צבעי רקע</div>
+                <div class="color-row">
+                    <span class="color-label">רקע תצוגה מקדימה</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorPreviewBg" value="#FFFFFF" onchange="updateColor('previewBg', this.value)">
+                        <input type="text" class="color-hex" id="hexPreviewBg" value="#FFFFFF" onchange="updateColorFromHex('previewBg', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">רקע בלוק קוד</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorCodeBg" value="#0d1117" onchange="updateColor('codeBg', this.value)">
+                        <input type="text" class="color-hex" id="hexCodeBg" value="#0d1117" onchange="updateColorFromHex('codeBg', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">רקע ציטוט</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorBlockquoteBg" value="#F0FDF4" onchange="updateColor('blockquoteBg', this.value)">
+                        <input type="text" class="color-hex" id="hexBlockquoteBg" value="#F0FDF4" onchange="updateColorFromHex('blockquoteBg', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">כותרת טבלה</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorTableHeader" value="#10B981" onchange="updateColor('tableHeader', this.value)">
+                        <input type="text" class="color-hex" id="hexTableHeader" value="#10B981" onchange="updateColorFromHex('tableHeader', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">שורה זוגית בטבלה</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorTableAlt" value="#F0FDF4" onchange="updateColor('tableAlt', this.value)">
+                        <input type="text" class="color-hex" id="hexTableAlt" value="#F0FDF4" onchange="updateColorFromHex('tableAlt', this.value)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Accent Colors -->
+            <div class="color-section">
+                <div class="color-section-title">צבעי הדגשה</div>
+                <div class="color-row">
+                    <span class="color-label">גבול ציטוט</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorBlockquoteBorder" value="#10B981" onchange="updateColor('blockquoteBorder', this.value)">
+                        <input type="text" class="color-hex" id="hexBlockquoteBorder" value="#10B981" onchange="updateColorFromHex('blockquoteBorder', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">קו מפריד</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorHr" value="#10B981" onchange="updateColor('hr', this.value)">
+                        <input type="text" class="color-hex" id="hexHr" value="#10B981" onchange="updateColorFromHex('hr', this.value)">
+                    </div>
+                </div>
+                <div class="color-row">
+                    <span class="color-label">גבול טבלה</span>
+                    <div class="color-input-wrapper">
+                        <input type="color" class="color-input" id="colorTableBorder" value="#d1fae5" onchange="updateColor('tableBorder', this.value)">
+                        <input type="text" class="color-hex" id="hexTableBorder" value="#d1fae5" onchange="updateColorFromHex('tableBorder', this.value)">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="color-panel-footer">
+            <div class="color-section" style="margin-bottom: 0.75rem;">
+                <div class="color-section-title">חילוץ צבעים מתמונה</div>
+                <button class="btn btn-secondary" onclick="document.getElementById('imageColorInput').click()" style="width: 100%; justify-content: center;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    העלה תמונה
+                </button>
+                <input type="file" id="imageColorInput" accept="image/*" style="display: none;" onchange="extractColorsFromImage(this)">
+            </div>
+            <div class="color-section-title">ערכות נושא מוכנות</div>
+            <div class="preset-grid">
+                <button class="preset-btn active" data-name="קלאסי" data-preset="classic" onclick="applyPreset('classic')" style="background: linear-gradient(135deg, #10B981, #064E3B);"></button>
+                <button class="preset-btn" data-name="אוקיינוס" data-preset="ocean" onclick="applyPreset('ocean')" style="background: linear-gradient(135deg, #0EA5E9, #0369A1);"></button>
+                <button class="preset-btn" data-name="יער" data-preset="forest" onclick="applyPreset('forest')" style="background: linear-gradient(135deg, #22C55E, #15803D);"></button>
+                <button class="preset-btn" data-name="שקיעה" data-preset="sunset" onclick="applyPreset('sunset')" style="background: linear-gradient(135deg, #F97316, #DC2626);"></button>
+                <button class="preset-btn" data-name="מונוכרום" data-preset="mono" onclick="applyPreset('mono')" style="background: linear-gradient(135deg, #6B7280, #1F2937);"></button>
+                <button class="preset-btn" data-name="לבנדר" data-preset="lavender" onclick="applyPreset('lavender')" style="background: linear-gradient(135deg, #A78BFA, #7C3AED);"></button>
+                <button class="preset-btn" data-name="ורוד" data-preset="rose" onclick="applyPreset('rose')" style="background: linear-gradient(135deg, #FB7185, #E11D48);"></button>
+                <button class="preset-btn" data-name="זהב" data-preset="gold" onclick="applyPreset('gold')" style="background: linear-gradient(135deg, #FBBF24, #B45309);"></button>
+                <button class="preset-btn" data-name="טיל" data-preset="teal" onclick="applyPreset('teal')" style="background: linear-gradient(135deg, #2DD4BF, #0D9488);"></button>
+                <button class="preset-btn" data-name="לילה" data-preset="night" onclick="applyPreset('night')" style="background: linear-gradient(135deg, #1E293B, #0F172A);"></button>
+                <button class="preset-btn" data-name="רובי" data-preset="ruby" onclick="applyPreset('ruby')" style="background: linear-gradient(135deg, #E10514, #8B0000);"></button>
+                <button class="preset-btn" data-name="סאקורה" data-preset="sakura" onclick="applyPreset('sakura')" style="background: linear-gradient(135deg, #E891B2, #D4729A);"></button>
+                <button class="preset-btn" data-name="מנטה" data-preset="mint" onclick="applyPreset('mint')" style="background: linear-gradient(135deg, #4FD1C5, #2D5F58);"></button>
+                <button class="preset-btn" data-name="קפה" data-preset="coffee" onclick="applyPreset('coffee')" style="background: linear-gradient(135deg, #8D6E63, #3E2723);"></button>
+                <button class="preset-btn" data-name="שמיים" data-preset="sky" onclick="applyPreset('sky')" style="background: linear-gradient(135deg, #63B3ED, #1E3A5F);"></button>
+            </div>
+            <div class="color-panel-actions">
+                <button class="btn btn-secondary" onclick="resetColors()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                    איפוס
+                </button>
+                <button class="btn btn-primary" onclick="saveCustomPreset()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    שמור
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Link Modal -->
+    <div class="modal-overlay" id="linkModal">
+        <div class="modal">
+            <div class="modal-title">הוסף קישור</div>
+            <div class="modal-field">
+                <label class="modal-label">טקסט להצגה</label>
+                <input type="text" class="modal-input" id="linkText" placeholder="טקסט הקישור">
+            </div>
+            <div class="modal-field">
+                <label class="modal-label">כתובת URL</label>
+                <input type="text" class="modal-input" id="linkUrl" placeholder="https://example.com">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="insertLink()">הוסף</button>
+                <button class="btn btn-secondary" onclick="closeModal('linkModal')">ביטול</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Modal -->
+    <div class="modal-overlay" id="imageModal">
+        <div class="modal">
+            <div class="modal-title">הוסף תמונה</div>
+            <div class="modal-field">
+                <label class="modal-label">טקסט חלופי (alt)</label>
+                <input type="text" class="modal-input" id="imageAlt" placeholder="תיאור התמונה">
+            </div>
+            <div class="modal-field">
+                <label class="modal-label">כתובת התמונה</label>
+                <input type="text" class="modal-input" id="imageUrl" placeholder="https://example.com/image.jpg">
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="insertImage()">הוסף</button>
+                <button class="btn btn-secondary" onclick="closeModal('imageModal')">ביטול</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table Modal -->
+    <div class="modal-overlay" id="tableModal">
+        <div class="modal">
+            <div class="modal-title">הוסף טבלה</div>
+            <div class="modal-field">
+                <label class="modal-label">בחר גודל טבלה</label>
+                <div class="table-size-grid" id="tableSizeGrid"></div>
+                <div class="table-size-info" id="tableSizeInfo">3 × 3</div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="insertTable()">הוסף</button>
+                <button class="btn btn-secondary" onclick="closeModal('tableModal')">ביטול</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Filename Modal -->
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal">
+            <div class="modal-title">שם הקובץ</div>
+            <div class="modal-field">
+                <label class="modal-label">הזן שם לקובץ</label>
+                <div style="display: flex; align-items: center; gap: 0.5rem; direction: ltr;">
+                    <input type="text" class="modal-input" id="exportFilename" placeholder="markdown-document" style="flex: 1;">
+                    <span id="exportExtLabel" style="font-size: 0.9rem; color: var(--text-secondary); font-weight: 600; white-space: nowrap;"></span>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="confirmExport()">ייצא</button>
+                <button class="btn btn-secondary" onclick="closeModal('exportModal')">ביטול</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- What's New Modal -->
+    <div class="modal-overlay" id="whatsNewModal">
+        <div class="modal" style="max-width: 480px;">
+            <div class="modal-title" style="font-size: 1.3rem; display: flex; align-items: center; gap: 0.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                מה חדש?
+            </div>
+            <div id="changelogContent" style="overflow-y: auto; max-height: 50vh; padding: 0.5rem 0;"></div>
+            <div class="modal-actions">
+                <button class="btn btn-primary" onclick="dismissWhatsNew()">הבנתי!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Color Preview Modal (for image extraction) -->
+    <div class="modal-overlay" id="colorPreviewModal">
+        <div class="modal" style="min-width: 380px; max-width: 500px;">
+            <div class="modal-title" style="display: flex; align-items: center; gap: 0.5rem;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a7 7 0 0 0 0 14 4 4 0 1 1 0 8 10 10 0 1 0 0-20z"/></svg>
+                תצוגה מקדימה של צבעים
+            </div>
+            <div class="extracted-colors-strip" id="extractedColorsStrip" style="display: flex; gap: 0.5rem; justify-content: center; padding: 0.75rem 0; flex-wrap: wrap;"></div>
+            <div class="color-preview-doc" id="colorPreviewDoc" style="background: #fff; border-radius: 12px; padding: 1.25rem; border: 1px solid var(--border); direction: rtl;">
+                <div id="cpH1" style="height: 14px; width: 60%; border-radius: 3px; margin-bottom: 6px;"></div>
+                <div id="cpH1Border" style="height: 3px; width: 100%; border-radius: 2px; margin-bottom: 12px;"></div>
+                <div style="display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px;">
+                    <div id="cpText1" style="height: 8px; width: 100%; border-radius: 2px;"></div>
+                    <div id="cpText2" style="height: 8px; width: 85%; border-radius: 2px;"></div>
+                    <div id="cpText3" style="height: 8px; width: 92%; border-radius: 2px;"></div>
+                </div>
+                <div id="cpH2" style="height: 12px; width: 45%; border-radius: 3px; margin-bottom: 5px;"></div>
+                <div id="cpH2Border" style="height: 2px; width: 100%; border-radius: 2px; margin-bottom: 10px;"></div>
+                <div id="cpBlockquote" style="border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; display: flex; gap: 8px;">
+                    <div id="cpBqBorder" style="width: 4px; border-radius: 2px; min-height: 24px;"></div>
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
+                        <div id="cpBqText1" style="height: 7px; width: 80%; border-radius: 2px;"></div>
+                        <div id="cpBqText2" style="height: 7px; width: 65%; border-radius: 2px;"></div>
+                    </div>
+                </div>
+                <div style="border-radius: 8px; overflow: hidden; margin-bottom: 10px;">
+                    <div id="cpTableHeader" style="height: 20px; display: flex; align-items: center; padding: 0 8px;">
+                        <div style="height: 6px; width: 30%; background: rgba(255,255,255,0.5); border-radius: 2px;"></div>
+                    </div>
+                    <div id="cpTableRow1" style="height: 16px; border-bottom: 1px solid transparent;"></div>
+                    <div id="cpTableRow2" style="height: 16px;"></div>
+                </div>
+                <div id="cpCodeBlock" style="height: 32px; border-radius: 8px; margin-bottom: 10px;"></div>
+                <div id="cpHr" style="height: 2px; border-radius: 1px;"></div>
+            </div>
+            <div class="modal-actions" style="gap: 0.5rem;">
+                <button class="btn btn-primary" onclick="applyExtractedColors()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                    החל צבעים
+                </button>
+                <button class="btn btn-secondary" onclick="shuffleExtractedColors()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+                    ערבב
+                </button>
+                <button class="btn btn-secondary" onclick="closeModal('colorPreviewModal')">ביטול</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App version and changelog
+        const APP_VERSION = '1.3.0';
+        const CHANGELOG = [
+            {
+                version: '1.3.0',
+                date: '2026-03-02',
+                changes: [
+                    'כפתור הדבק ליד מחיקה',
+                    'שם קובץ אוטומטי מהכותרת הראשונה בייצוא',
+                    'חילוץ צבעים מתמונה (העלאת לוגו)',
+                    'ערכת נושא חדשה: רובי',
+                    'התקנת האפליקציה כ-PWA',
+                    'תפריט "מה חדש" עם גרסאות',
+                    'תיקון טולטיפים בסרגל הכלים'
+                ]
+            },
+            {
+                version: '1.2.0',
+                date: '2026-02-15',
+                changes: [
+                    'בחירת שם קובץ בייצוא',
+                    'תיקוני RTL בהדפסה',
+                    'שמירה אוטומטית ב-localStorage'
+                ]
+            },
+            {
+                version: '1.1.0',
+                date: '2026-02-01',
+                changes: [
+                    'מצב תצוגה: עורך / תצוגה מקדימה / שניהם',
+                    'סרגל כלים לעיצוב טקסט',
+                    'התאמת צבעים אישית עם 10 ערכות נושא'
+                ]
+            }
+        ];
+
+        // Configure marked
+        marked.setOptions({
+            breaks: true,
+            gfm: true,
+            headerIds: true,
+            highlight: function(code, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    try {
+                        return hljs.highlight(code, { language: lang }).value;
+                    } catch (e) {}
+                }
+                return hljs.highlightAuto(code).value;
+            }
+        });
+        
+        // Initialize Mermaid (basic init now, themed re-init after colors load)
+        let mermaidId = 0;
+        mermaid.initialize({
+            startOnLoad: false,
+            theme: 'default',
+            securityLevel: 'loose',
+            fontFamily: 'Varela Round, sans-serif'
+        });
+
+        function initMermaid() {
+            mermaid.initialize({
+                startOnLoad: false,
+                theme: 'base',
+                securityLevel: 'loose',
+                fontFamily: 'Varela Round, sans-serif',
+                themeVariables: {
+                    primaryColor: currentColors.tableHeader,
+                    primaryTextColor: '#ffffff',
+                    primaryBorderColor: currentColors.h1Border,
+                    lineColor: currentColors.link,
+                    secondaryColor: currentColors.blockquoteBg,
+                    secondaryTextColor: currentColors.primaryText,
+                    secondaryBorderColor: currentColors.h2Border,
+                    tertiaryColor: currentColors.tableAlt,
+                    tertiaryTextColor: currentColors.secondaryText,
+                    tertiaryBorderColor: currentColors.tableBorder,
+                    noteBkgColor: currentColors.blockquoteBg,
+                    noteTextColor: currentColors.secondaryText,
+                    noteBorderColor: currentColors.blockquoteBorder,
+                    textColor: currentColors.primaryText,
+                    mainBkg: currentColors.tableHeader,
+                    nodeBorder: currentColors.h1Border,
+                    clusterBkg: currentColors.tableAlt,
+                    clusterBorder: currentColors.tableBorder,
+                    titleColor: currentColors.h1,
+                    edgeLabelBackground: currentColors.previewBg,
+                    background: currentColors.previewBg
+                }
+            });
+        }
+
+        const editor = document.getElementById('editor');
+        const preview = document.getElementById('preview');
+
+        // Add scroll listener for sticky toolbar shadow effect
+        const editorScroll = document.querySelector('.panel-editor-scroll');
+        const editorToolbar = document.getElementById('editorToolbar');
+        if (editorScroll && editorToolbar) {
+            editorScroll.addEventListener('scroll', function() {
+                if (editorScroll.scrollTop > 5) {
+                    editorToolbar.classList.add('scrolled');
+                } else {
+                    editorToolbar.classList.remove('scrolled');
+                }
+            });
+        }
+
+        // Sample Hebrew Markdown content
+        const sampleMarkdown = `# ברוכים הבאים לעורך Markdown העברי
+
+זהו עורך **Markdown** מתקדם עם תמיכה מלאה בעברית ובכיוון RTL.
+
+## תכונות עיקריות
+
+### עיצוב טקסט
+- **טקסט מודגש** בעזרת כוכביות כפולות
+- *טקסט נטוי* בעזרת כוכבית בודדת
+- ~~טקסט מחוק~~ בעזרת טילדות
+- \`קוד בתוך שורה\` בעזרת גרש הפוך
+
+### רשימות
+
+#### רשימה לא ממוספרת:
+- פריט ראשון
+- פריט שני
+  - תת-פריט א׳
+  - תת-פריט ב׳
+- פריט שלישי
+
+#### רשימה ממוספרת:
+1. שלב ראשון
+2. שלב שני
+3. שלב שלישי
+
+#### רשימת משימות:
+- [x] משימה שהושלמה
+- [ ] משימה בהמתנה
+- [ ] משימה נוספת
+
+### ציטוטים
+
+> "הדרך הטובה ביותר לחזות את העתיד היא ליצור אותו."
+> 
+> — פיטר דרוקר
+
+### קוד
+
+\`\`\`javascript
+// דוגמה לקוד JavaScript
+function שלום(שם) {
+    console.log(\`שלום, \${שם}!\`);
+}
+
+שלום("עולם");
+\`\`\`
+
+### דיאגרמות Mermaid
+
+#### תרשים זרימה:
+
+\`\`\`mermaid
+flowchart TD
+    A[התחלה] --> B{האם יש נתונים?}
+    B -->|כן| C[עיבוד נתונים]
+    B -->|לא| D[טעינת נתונים]
+    D --> C
+    C --> E[הצגת תוצאות]
+    E --> F[סיום]
+\`\`\`
+
+#### דיאגרמת רצף:
+
+\`\`\`mermaid
+sequenceDiagram
+    participant U as משתמש
+    participant S as שרת
+    participant DB as מסד נתונים
+    
+    U->>S: בקשת התחברות
+    S->>DB: בדיקת פרטים
+    DB-->>S: אישור
+    S-->>U: טוקן גישה
+\`\`\`
+
+#### תרשים עוגה:
+
+\`\`\`mermaid
+pie title התפלגות משימות
+    "הושלמו" : 45
+    "בתהליך" : 30
+    "ממתינות" : 25
+\`\`\`
+
+### טבלאות
+
+| שם | תפקיד | מחלקה |
+|------|--------|---------|
+| דנה | מנהלת | פיתוח |
+| יוסי | מעצב | עיצוב |
+| מיכל | מפתחת | פיתוח |
+
+### קישורים ותמונות
+
+בקר באתר [Anthropic](https://www.anthropic.com) למידע נוסף.
+
+---
+
+## סיכום
+
+עורך זה מאפשר לך:
+1. לכתוב תוכן ב-Markdown בעברית
+2. לראות תצוגה מקדימה בזמן אמת
+3. ליצור דיאגרמות Mermaid
+4. לייצא את התוכן ל-PDF או להעתיק ל-Word
+
+*תהנה מהכתיבה!* ✨`;
+
+        // Render markdown
+        async function renderMarkdown() {
+            const markdown = editor.value;
+            let html = marked.parse(markdown);
+            
+            // Find mermaid code blocks and convert them
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = html;
+            
+            const codeBlocks = tempDiv.querySelectorAll('pre code.language-mermaid');
+            let mermaidCounter = 0;
+            
+            for (const block of codeBlocks) {
+                const mermaidCode = block.textContent;
+                const mermaidDiv = document.createElement('div');
+                mermaidDiv.className = 'mermaid';
+                mermaidDiv.id = `mermaid-${mermaidId++}`;
+                mermaidDiv.setAttribute('data-source', mermaidCode);
+                mermaidDiv.textContent = mermaidCode;
+                block.parentElement.replaceWith(mermaidDiv);
+            }
+            
+            preview.innerHTML = tempDiv.innerHTML;
+            
+            // Re-highlight code blocks
+            preview.querySelectorAll('pre code').forEach((block) => {
+                hljs.highlightElement(block);
+            });
+            
+            // Render mermaid diagrams
+            const mermaidNodes = preview.querySelectorAll('.mermaid');
+            if (mermaidNodes.length > 0) {
+                try {
+                    await mermaid.run({ nodes: mermaidNodes });
+                } catch (e) {
+                    // Silently ignore render errors (stale elements, empty diagrams)
+                }
+            }
+        }
+
+        // Debounce function
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // Save editor content to localStorage
+        function saveEditorContent() {
+            localStorage.setItem('mdEditorContent', editor.value);
+        }
+
+        // Event listener with debounce
+        editor.addEventListener('input', debounce(() => {
+            renderMarkdown();
+            saveEditorContent();
+        }, 150));
+
+        // Clear editor
+        function clearEditor() {
+            editor.value = '';
+            preview.innerHTML = '';
+            saveEditorContent();
+            showToast('העורך נוקה');
+        }
+
+        // View mode toggle
+        function setViewMode(mode) {
+            const main = document.querySelector('.main');
+            const buttons = document.querySelectorAll('.view-toggle-btn');
+            
+            // Remove all view mode classes
+            main.classList.remove('editor-only', 'preview-only');
+            
+            // Add the appropriate class based on mode
+            if (mode === 'editor') {
+                main.classList.add('editor-only');
+            } else if (mode === 'preview') {
+                main.classList.add('preview-only');
+            }
+            // 'both' mode has no additional class
+            
+            // Update active button state
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.view === mode) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Show toast notification
+            const modeNames = {
+                'editor': 'עורך בלבד',
+                'preview': 'תצוגה מקדימה בלבד',
+                'both': 'עורך ותצוגה מקדימה'
+            };
+            showToast(`תצוגה: ${modeNames[mode]}`);
+        }
+
+        // Load sample content
+        function loadSample() {
+            editor.value = sampleMarkdown;
+            renderMarkdown();
+            saveEditorContent();
+            showToast('דוגמה נטענה');
+        }
+
+        // Copy HTML
+        function copyHTML() {
+            const html = preview.innerHTML;
+            navigator.clipboard.writeText(html).then(() => {
+                showToast('HTML הועתק ללוח');
+            }).catch(() => {
+                showToast('שגיאה בהעתקה');
+            });
+        }
+        
+        // Copy plain text
+        function copyPlainText() {
+            const text = preview.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('טקסט הועתק ללוח');
+            }).catch(() => {
+                showToast('שגיאה בהעתקה');
+            });
+        }
+        
+        // Copy formatted content for Word (with RTL support)
+        function copyForWord() {
+            // Create a wrapper with all necessary RTL inline styles
+            const styledHTML = generateStyledHTML();
+            
+            // Create a temporary element
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = styledHTML;
+            document.body.appendChild(tempDiv);
+            
+            // Select and copy
+            const range = document.createRange();
+            range.selectNodeContents(tempDiv);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            
+            try {
+                // Copy both HTML and plain text formats
+                const blob = new Blob([styledHTML], { type: 'text/html' });
+                const clipboardItem = new ClipboardItem({
+                    'text/html': blob,
+                    'text/plain': new Blob([preview.innerText], { type: 'text/plain' })
+                });
+                navigator.clipboard.write([clipboardItem]).then(() => {
+                    showToast('הועתק! הדבק ב-Word עם Ctrl+V');
+                }).catch(() => {
+                    // Fallback
+                    document.execCommand('copy');
+                    showToast('הועתק! הדבק ב-Word עם Ctrl+V');
+                });
+            } catch (e) {
+                document.execCommand('copy');
+                showToast('הועתק! הדבק ב-Word עם Ctrl+V');
+            }
+            
+            selection.removeAllRanges();
+            document.body.removeChild(tempDiv);
+        }
+        
+        // Generate HTML with inline styles for Word compatibility
+        function generateStyledHTML() {
+            const content = preview.innerHTML;
+            
+            // Wrap with RTL container
+            let html = `<div dir="rtl" style="direction: rtl; text-align: right; font-family: 'David', 'Arial', sans-serif; font-size: 12pt; line-height: 1.6;">`;
+            
+            // Parse and add inline styles to all elements
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+            
+            // Style headers
+            tempDiv.querySelectorAll('h1').forEach(el => {
+                el.style.cssText = 'direction: rtl; text-align: right; font-size: 24pt; font-weight: bold; margin-top: 12pt; margin-bottom: 6pt; border-bottom: 2px solid #10B981;';
+            });
+            tempDiv.querySelectorAll('h2').forEach(el => {
+                el.style.cssText = 'direction: rtl; text-align: right; font-size: 18pt; font-weight: bold; margin-top: 12pt; margin-bottom: 6pt; border-bottom: 1px solid #6EE7B7;';
+            });
+            tempDiv.querySelectorAll('h3').forEach(el => {
+                el.style.cssText = 'direction: rtl; text-align: right; font-size: 14pt; font-weight: bold; margin-top: 10pt; margin-bottom: 4pt; color: #047857;';
+            });
+            tempDiv.querySelectorAll('h4, h5, h6').forEach(el => {
+                el.style.cssText = 'direction: rtl; text-align: right; font-size: 12pt; font-weight: bold; margin-top: 8pt; margin-bottom: 4pt;';
+            });
+            
+            // Style paragraphs
+            tempDiv.querySelectorAll('p').forEach(el => {
+                el.style.cssText = 'direction: rtl; text-align: right; margin-bottom: 8pt;';
+            });
+            
+            // Style lists - CRITICAL for RTL
+            tempDiv.querySelectorAll('ul, ol').forEach(el => {
+                el.style.cssText = 'direction: rtl; text-align: right; margin-right: 20pt; margin-left: 0; padding-right: 20pt; padding-left: 0; list-style-position: inside;';
+            });
+            
+            tempDiv.querySelectorAll('li').forEach(el => {
+                el.style.cssText = 'direction: rtl; text-align: right; margin-bottom: 4pt;';
+            });
+            
+            // Style blockquotes
+            tempDiv.querySelectorAll('blockquote').forEach(el => {
+                el.style.cssText = 'direction: rtl; text-align: right; border-right: 4px solid #10B981; border-left: none; padding-right: 12pt; padding-left: 0; margin-right: 0; margin-left: 0; color: #666; background-color: #F0FDF4;';
+            });
+            
+            // Style code
+            tempDiv.querySelectorAll('code').forEach(el => {
+                if (el.parentElement.tagName !== 'PRE') {
+                    el.style.cssText = 'background-color: #F0FDF4; padding: 2pt 4pt; border-radius: 3pt; font-family: Consolas, monospace; font-size: 10pt; color: #10B981;';
+                }
+            });
+            
+            tempDiv.querySelectorAll('pre').forEach(el => {
+                el.style.cssText = 'direction: ltr; text-align: left; background-color: #0d1117; padding: 10pt; border-radius: 4pt; font-family: Consolas, monospace; font-size: 10pt; overflow-x: auto; white-space: pre-wrap; color: #e6edf3;';
+            });
+            
+            // Style tables
+            tempDiv.querySelectorAll('table').forEach(el => {
+                el.style.cssText = 'direction: rtl; border-collapse: collapse; width: 100%; margin: 10pt 0;';
+            });
+            tempDiv.querySelectorAll('th, td').forEach(el => {
+                el.style.cssText = 'direction: rtl; text-align: right; border: 1px solid #d1fae5; padding: 6pt 10pt;';
+            });
+            tempDiv.querySelectorAll('th').forEach(el => {
+                el.style.cssText += 'background-color: #10B981; color: white; font-weight: bold;';
+            });
+            
+            // Style links
+            tempDiv.querySelectorAll('a').forEach(el => {
+                el.style.cssText = 'color: #10B981; text-decoration: none;';
+            });
+            
+            // Style strong and em
+            tempDiv.querySelectorAll('strong').forEach(el => {
+                el.style.cssText = 'font-weight: bold;';
+            });
+            tempDiv.querySelectorAll('em').forEach(el => {
+                el.style.cssText = 'font-style: italic;';
+            });
+            
+            html += tempDiv.innerHTML;
+            html += '</div>';
+            
+            return html;
+        }
+
+        // Export filename modal state
+        let pendingExportType = null;
+
+        function getFirstHeading() {
+            const match = editor.value.match(/^#{1,2}\s+(.+)$/m);
+            if (match) {
+                return match[1].trim()
+                    .replace(/[<>:"/\\|?*]/g, '')
+                    .replace(/\s+/g, '-')
+                    .substring(0, 50) || 'markdown-document';
+            }
+            return 'markdown-document';
+        }
+
+        function openExportModal(type) {
+            pendingExportType = type;
+            const extMap = { pdf: '.pdf', html: '.html', md: '.md' };
+            document.getElementById('exportFilename').value = getFirstHeading();
+            document.getElementById('exportExtLabel').textContent = extMap[type];
+            document.getElementById('exportModal').classList.add('open');
+            const input = document.getElementById('exportFilename');
+            input.focus();
+            input.select();
+        }
+
+        function confirmExport() {
+            const filename = document.getElementById('exportFilename').value.trim() || 'markdown-document';
+            closeModal('exportModal');
+            if (pendingExportType === 'pdf') {
+                doExportPDF(filename);
+            } else if (pendingExportType === 'html') {
+                doExportHTML(filename);
+            } else if (pendingExportType === 'md') {
+                doExportMarkdown(filename);
+            }
+            pendingExportType = null;
+        }
+
+        // Allow Enter key to confirm export
+        document.getElementById('exportFilename').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                confirmExport();
+            }
+        });
+
+        // Export wrappers that open the modal
+        function exportPDF() { openExportModal('pdf'); }
+        function exportHTML() { openExportModal('html'); }
+        function exportMarkdown() { openExportModal('md'); }
+
+        // Export to PDF using browser print
+        function doExportPDF(filename) {
+            const printWindow = window.open('', '_blank');
+            const styledHTML = generatePrintHTML();
+
+            printWindow.document.write(styledHTML);
+            printWindow.document.close();
+            printWindow.document.title = filename;
+
+            printWindow.onload = function() {
+                setTimeout(() => {
+                    printWindow.print();
+                }, 250);
+            };
+
+            showToast('חלון הדפסה נפתח - בחר "שמור כ-PDF"');
+        }
+        
+        // Generate print-optimized HTML
+        function generatePrintHTML() {
+            const dir = isLTR ? 'ltr' : 'rtl';
+            const lang = isLTR ? 'en' : 'he';
+            const textAlign = isLTR ? 'left' : 'right';
+            return `<!DOCTYPE html>
+<html lang="${lang}" dir="${dir}">
+<head>
+    <meta charset="UTF-8">
+    <title>מסמך Markdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Varela Round', 'David', Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.8;
+            direction: ${dir};
+            text-align: ${textAlign};
+            color: #064E3B;
+            background: white;
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Varela Round', 'David', serif;
+            margin-top: 1.2em;
+            margin-bottom: 0.6em;
+            line-height: 1.3;
+            page-break-after: avoid;
+            color: #064E3B;
+        }
+        
+        h1 {
+            font-size: 22pt;
+            border-bottom: 3px solid #10B981;
+            padding-bottom: 8pt;
+        }
+        
+        h2 {
+            font-size: 16pt;
+            border-bottom: 2px solid #6EE7B7;
+            padding-bottom: 4pt;
+        }
+        
+        h3 { font-size: 14pt; color: #047857; }
+        h4 { font-size: 12pt; }
+        
+        p {
+            margin-bottom: 0.8em;
+            color: #047857;
+        }
+        
+        ul, ol {
+            margin-bottom: 1em;
+            padding-${isLTR ? 'left' : 'right'}: 1.5em;
+            padding-${isLTR ? 'right' : 'left'}: 0;
+        }
+
+        li {
+            margin-bottom: 0.4em;
+            color: #047857;
+        }
+
+        blockquote {
+            margin: 1em 0;
+            padding: 0.8em 1em;
+            border-${isLTR ? 'left' : 'right'}: 4px solid #10B981;
+            background: #F0FDF4;
+            color: #047857;
+        }
+        
+        code {
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 10pt;
+            background: #F0FDF4;
+            padding: 2pt 4pt;
+            border-radius: 3pt;
+            color: #10B981;
+        }
+        
+        pre {
+            direction: ltr;
+            text-align: left;
+            margin: 1em 0;
+            padding: 12pt;
+            background: #0d1117;
+            border-radius: 8pt;
+            overflow-x: auto;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 9pt;
+            page-break-inside: avoid;
+            color: #e6edf3;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #e6edf3;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid #d1fae5;
+            padding: 8pt 12pt;
+            text-align: ${textAlign};
+        }
+        
+        th {
+            background: #10B981;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: #F0FDF4;
+        }
+        
+        a {
+            color: #10B981;
+            text-decoration: none;
+        }
+        
+        hr {
+            border: none;
+            height: 3px;
+            background: linear-gradient(to ${isLTR ? 'right' : 'left'}, #10B981, #6EE7B7, transparent);
+            margin: 1.5em 0;
+            border-radius: 3px;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        strong {
+            font-weight: 700;
+            color: #064E3B;
+        }
+        
+        em {
+            font-style: italic;
+        }
+        
+        del {
+            text-decoration: line-through;
+            color: #6B7280;
+        }
+    </style>
+</head>
+<body>
+    ${preview.innerHTML}
+</body>
+</html>`;
+        }
+        
+        // Export as HTML file
+        function doExportHTML(filename) {
+            const htmlContent = generatePrintHTML();
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename + '.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('קובץ HTML הורד');
+        }
+
+        // Export as Markdown file
+        function doExportMarkdown(filename) {
+            const markdown = editor.value;
+            const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename + '.md';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast('קובץ Markdown הורד');
+        }
+
+        // Dropdown functions
+        function toggleDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const isOpen = dropdown.classList.contains('open');
+            
+            // Close all dropdowns
+            closeDropdowns();
+            
+            // Toggle current
+            if (!isOpen) {
+                dropdown.classList.add('open');
+            }
+        }
+        
+        function closeDropdowns() {
+            document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('open'));
+        }
+        
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.dropdown')) {
+                closeDropdowns();
+            }
+        });
+
+        // Theme toggle
+        function toggleTheme() {
+            const body = document.body;
+            const isDark = body.getAttribute('data-theme') === 'dark';
+            body.setAttribute('data-theme', isDark ? '' : 'dark');
+            
+            const icon = document.getElementById('themeIcon');
+            if (isDark) {
+                icon.innerHTML = '<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>';
+            } else {
+                icon.innerHTML = '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+            }
+            
+            showToast(isDark ? 'מצב בהיר' : 'מצב כהה');
+        }
+
+        // Direction toggle (RTL/LTR)
+        let isLTR = false;
+        
+        function toggleDirection() {
+            isLTR = !isLTR;
+            const editorTextarea = document.getElementById('editor');
+            const previewContent = document.getElementById('preview');
+            const directionBtn = document.getElementById('directionToggle');
+            const directionLabel = document.getElementById('directionLabel');
+            
+            if (isLTR) {
+                editorTextarea.classList.add('ltr-mode');
+                previewContent.classList.add('ltr-mode');
+                directionBtn.classList.add('ltr-active');
+                directionLabel.textContent = 'LTR';
+                showToast('כיוון טקסט: שמאל לימין (LTR)');
+            } else {
+                editorTextarea.classList.remove('ltr-mode');
+                previewContent.classList.remove('ltr-mode');
+                directionBtn.classList.remove('ltr-active');
+                directionLabel.textContent = 'RTL';
+                showToast('כיוון טקסט: ימין לשמאל (RTL)');
+            }
+        }
+
+        // Toast notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2500);
+        }
+
+        // Hide header on scroll down, show on scroll up
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            const header = document.getElementById('header');
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                header.classList.add('hidden');
+            } else {
+                header.classList.remove('hidden');
+            }
+            lastScroll = currentScroll;
+        });
+
+        // Initialize: load saved content or sample
+        const savedContent = localStorage.getItem('mdEditorContent');
+        if (savedContent !== null) {
+            editor.value = savedContent;
+            renderMarkdown();
+        } else {
+            loadSample();
+        }
+
+        // ========== TOOLBAR FUNCTIONALITY ==========
+        
+        // Toggle toolbar dropdowns
+        function toggleToolbarDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const isOpen = dropdown.classList.contains('open');
+            closeToolbarDropdowns();
+            if (!isOpen) {
+                dropdown.classList.add('open');
+            }
+        }
+        
+        function closeToolbarDropdowns() {
+            document.querySelectorAll('.toolbar-dropdown').forEach(d => d.classList.remove('open'));
+        }
+        
+        // Close toolbar dropdowns when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.toolbar-dropdown')) {
+                closeToolbarDropdowns();
+            }
+        });
+        
+        // Insert formatting based on type
+        function insertFormat(type) {
+            const textarea = editor;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            const beforeText = textarea.value.substring(0, start);
+            const afterText = textarea.value.substring(end);
+            
+            let insertion = '';
+            let cursorOffset = 0;
+            
+            switch (type) {
+                case 'bold':
+                    if (selectedText) {
+                        insertion = `**${selectedText}**`;
+                        cursorOffset = insertion.length;
+                    } else {
+                        insertion = '**טקסט מודגש**';
+                        cursorOffset = 2;
+                    }
+                    break;
+                    
+                case 'italic':
+                    if (selectedText) {
+                        insertion = `*${selectedText}*`;
+                        cursorOffset = insertion.length;
+                    } else {
+                        insertion = '*טקסט נטוי*';
+                        cursorOffset = 1;
+                    }
+                    break;
+                    
+                case 'strikethrough':
+                    if (selectedText) {
+                        insertion = `~~${selectedText}~~`;
+                        cursorOffset = insertion.length;
+                    } else {
+                        insertion = '~~טקסט מחוק~~';
+                        cursorOffset = 2;
+                    }
+                    break;
+                    
+                case 'code':
+                    if (selectedText) {
+                        insertion = `\`${selectedText}\``;
+                        cursorOffset = insertion.length;
+                    } else {
+                        insertion = '`קוד`';
+                        cursorOffset = 1;
+                    }
+                    break;
+                    
+                case 'ul':
+                    if (selectedText) {
+                        const lines = selectedText.split('\n');
+                        insertion = lines.map(line => `- ${line}`).join('\n');
+                        cursorOffset = insertion.length;
+                    } else {
+                        insertion = '- פריט רשימה\n- פריט נוסף\n- פריט שלישי';
+                        cursorOffset = 2;
+                    }
+                    break;
+                    
+                case 'ol':
+                    if (selectedText) {
+                        const lines = selectedText.split('\n');
+                        insertion = lines.map((line, i) => `${i + 1}. ${line}`).join('\n');
+                        cursorOffset = insertion.length;
+                    } else {
+                        insertion = '1. פריט ראשון\n2. פריט שני\n3. פריט שלישי';
+                        cursorOffset = 3;
+                    }
+                    break;
+                    
+                case 'task':
+                    if (selectedText) {
+                        const lines = selectedText.split('\n');
+                        insertion = lines.map(line => `- [ ] ${line}`).join('\n');
+                        cursorOffset = insertion.length;
+                    } else {
+                        insertion = '- [ ] משימה לביצוע\n- [ ] משימה נוספת\n- [x] משימה שהושלמה';
+                        cursorOffset = 6;
+                    }
+                    break;
+                    
+                case 'quote':
+                    if (selectedText) {
+                        const lines = selectedText.split('\n');
+                        insertion = lines.map(line => `> ${line}`).join('\n');
+                        cursorOffset = insertion.length;
+                    } else {
+                        insertion = '> ציטוט מעניין כאן';
+                        cursorOffset = 2;
+                    }
+                    break;
+                    
+                case 'hr':
+                    insertion = '\n\n---\n\n';
+                    cursorOffset = insertion.length;
+                    break;
+            }
+            
+            textarea.value = beforeText + insertion + afterText;
+            
+            // Set cursor position
+            if (selectedText || type === 'hr') {
+                textarea.selectionStart = textarea.selectionEnd = start + cursorOffset;
+            } else {
+                textarea.selectionStart = start + cursorOffset;
+                textarea.selectionEnd = start + insertion.length - cursorOffset;
+            }
+            
+            textarea.focus();
+            renderMarkdown();
+        }
+        
+        // Insert heading
+        function insertHeading(level) {
+            const textarea = editor;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            const beforeText = textarea.value.substring(0, start);
+            const afterText = textarea.value.substring(end);
+            
+            const hashes = '#'.repeat(level);
+            const text = selectedText || `כותרת ${level}`;
+            const insertion = `${hashes} ${text}`;
+            
+            // Add newline before if not at start of line
+            const needsNewlineBefore = start > 0 && beforeText[beforeText.length - 1] !== '\n';
+            const prefix = needsNewlineBefore ? '\n' : '';
+            
+            textarea.value = beforeText + prefix + insertion + afterText;
+            
+            const newStart = start + prefix.length + hashes.length + 1;
+            textarea.selectionStart = newStart;
+            textarea.selectionEnd = newStart + text.length;
+            
+            textarea.focus();
+            renderMarkdown();
+        }
+        
+        // Insert code block
+        function insertCodeBlock(language) {
+            const textarea = editor;
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const selectedText = textarea.value.substring(start, end);
+            const beforeText = textarea.value.substring(0, start);
+            const afterText = textarea.value.substring(end);
+            
+            const code = selectedText || 'הקלד קוד כאן';
+            const insertion = `\n\`\`\`${language}\n${code}\n\`\`\`\n`;
+            
+            textarea.value = beforeText + insertion + afterText;
+            
+            const codeStart = start + 4 + language.length + 1;
+            textarea.selectionStart = codeStart;
+            textarea.selectionEnd = codeStart + code.length;
+            
+            textarea.focus();
+            renderMarkdown();
+        }
+        
+        // Insert Mermaid diagrams
+        function insertMermaid(type) {
+            const textarea = editor;
+            const start = textarea.selectionStart;
+            const beforeText = textarea.value.substring(0, start);
+            const afterText = textarea.value.substring(textarea.selectionEnd);
+            
+            let diagram = '';
+            
+            switch (type) {
+                case 'flowchart':
+                    diagram = `\`\`\`mermaid
+flowchart TD
+    A[התחלה] --> B{תנאי}
+    B -->|כן| C[פעולה 1]
+    B -->|לא| D[פעולה 2]
+    C --> E[סיום]
+    D --> E
+\`\`\``;
+                    break;
+                    
+                case 'sequence':
+                    diagram = `\`\`\`mermaid
+sequenceDiagram
+    participant A as משתתף 1
+    participant B as משתתף 2
+    A->>B: הודעה
+    B-->>A: תשובה
+\`\`\``;
+                    break;
+                    
+                case 'pie':
+                    diagram = `\`\`\`mermaid
+pie title התפלגות
+    "קטגוריה 1" : 40
+    "קטגוריה 2" : 35
+    "קטגוריה 3" : 25
+\`\`\``;
+                    break;
+                    
+                case 'gantt':
+                    diagram = `\`\`\`mermaid
+gantt
+    title לוח זמנים
+    dateFormat  YYYY-MM-DD
+    section שלב 1
+    משימה 1           :a1, 2024-01-01, 30d
+    משימה 2           :after a1, 20d
+    section שלב 2
+    משימה 3           :2024-02-15, 25d
+\`\`\``;
+                    break;
+                    
+                case 'classDiagram':
+                    diagram = `\`\`\`mermaid
+classDiagram
+    class מחלקה1 {
+        +String שם
+        +method1()
+    }
+    class מחלקה2 {
+        +String תיאור
+        +method2()
+    }
+    מחלקה1 --> מחלקה2
+\`\`\``;
+                    break;
+                    
+                case 'erDiagram':
+                    diagram = `\`\`\`mermaid
+erDiagram
+    CUSTOMER ||--o{ ORDER : places
+    ORDER ||--|{ LINE-ITEM : contains
+    CUSTOMER {
+        string name
+        string email
+    }
+    ORDER {
+        int orderNumber
+        date created
+    }
+\`\`\``;
+                    break;
+            }
+            
+            const insertion = '\n' + diagram + '\n';
+            textarea.value = beforeText + insertion + afterText;
+            textarea.selectionStart = textarea.selectionEnd = start + insertion.length;
+            
+            textarea.focus();
+            renderMarkdown();
+        }
+        
+        // Modal functions
+        function openLinkModal() {
+            const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+            document.getElementById('linkText').value = selectedText || '';
+            document.getElementById('linkUrl').value = '';
+            document.getElementById('linkModal').classList.add('open');
+            document.getElementById('linkUrl').focus();
+        }
+        
+        function openImageModal() {
+            const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+            document.getElementById('imageAlt').value = selectedText || '';
+            document.getElementById('imageUrl').value = '';
+            document.getElementById('imageModal').classList.add('open');
+            document.getElementById('imageUrl').focus();
+        }
+        
+        function openTableModal() {
+            // Initialize table size grid
+            const grid = document.getElementById('tableSizeGrid');
+            grid.innerHTML = '';
+            
+            for (let row = 0; row < 6; row++) {
+                for (let col = 0; col < 6; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'table-size-cell';
+                    cell.dataset.row = row + 1;
+                    cell.dataset.col = col + 1;
+                    
+                    cell.addEventListener('mouseenter', () => highlightTableCells(row + 1, col + 1));
+                    cell.addEventListener('click', () => selectTableSize(row + 1, col + 1));
+                    
+                    grid.appendChild(cell);
+                }
+            }
+            
+            // Default highlight
+            highlightTableCells(3, 3);
+            selectTableSize(3, 3);
+            
+            document.getElementById('tableModal').classList.add('open');
+        }
+        
+        let selectedTableRows = 3;
+        let selectedTableCols = 3;
+        
+        function highlightTableCells(rows, cols) {
+            const cells = document.querySelectorAll('.table-size-cell');
+            cells.forEach(cell => {
+                const r = parseInt(cell.dataset.row);
+                const c = parseInt(cell.dataset.col);
+                cell.classList.toggle('active', r <= rows && c <= cols);
+            });
+            document.getElementById('tableSizeInfo').textContent = `${cols} × ${rows}`;
+        }
+        
+        function selectTableSize(rows, cols) {
+            selectedTableRows = rows;
+            selectedTableCols = cols;
+            highlightTableCells(rows, cols);
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('open');
+        }
+        
+        // Insert link from modal
+        function insertLink() {
+            const text = document.getElementById('linkText').value || 'טקסט קישור';
+            const url = document.getElementById('linkUrl').value || 'https://';
+            
+            const textarea = editor;
+            const start = textarea.selectionStart;
+            const beforeText = textarea.value.substring(0, start);
+            const afterText = textarea.value.substring(textarea.selectionEnd);
+            
+            const insertion = `[${text}](${url})`;
+            textarea.value = beforeText + insertion + afterText;
+            textarea.selectionStart = textarea.selectionEnd = start + insertion.length;
+            
+            closeModal('linkModal');
+            textarea.focus();
+            renderMarkdown();
+        }
+        
+        // Insert image from modal
+        function insertImage() {
+            const alt = document.getElementById('imageAlt').value || 'תיאור תמונה';
+            const url = document.getElementById('imageUrl').value || 'https://';
+            
+            const textarea = editor;
+            const start = textarea.selectionStart;
+            const beforeText = textarea.value.substring(0, start);
+            const afterText = textarea.value.substring(textarea.selectionEnd);
+            
+            const insertion = `![${alt}](${url})`;
+            textarea.value = beforeText + insertion + afterText;
+            textarea.selectionStart = textarea.selectionEnd = start + insertion.length;
+            
+            closeModal('imageModal');
+            textarea.focus();
+            renderMarkdown();
+        }
+        
+        // Insert table from modal
+        function insertTable() {
+            const rows = selectedTableRows;
+            const cols = selectedTableCols;
+            
+            const textarea = editor;
+            const start = textarea.selectionStart;
+            const beforeText = textarea.value.substring(0, start);
+            const afterText = textarea.value.substring(textarea.selectionEnd);
+            
+            // Build table
+            let table = '\n';
+            
+            // Header row
+            table += '| ' + Array(cols).fill('כותרת').map((h, i) => `${h} ${i + 1}`).join(' | ') + ' |\n';
+            
+            // Separator row
+            table += '|' + Array(cols).fill('------').join('|') + '|\n';
+            
+            // Data rows
+            for (let r = 0; r < rows - 1; r++) {
+                table += '| ' + Array(cols).fill('תוכן').join(' | ') + ' |\n';
+            }
+            
+            table += '\n';
+            
+            textarea.value = beforeText + table + afterText;
+            textarea.selectionStart = textarea.selectionEnd = start + table.length;
+            
+            closeModal('tableModal');
+            textarea.focus();
+            renderMarkdown();
+        }
+        
+        // ========== KEYBOARD SHORTCUTS ==========
+        
+        editor.addEventListener('keydown', (e) => {
+            // Ctrl+B - Bold
+            if (e.ctrlKey && e.key === 'b') {
+                e.preventDefault();
+                insertFormat('bold');
+            }
+            
+            // Ctrl+I - Italic
+            if (e.ctrlKey && e.key === 'i') {
+                e.preventDefault();
+                insertFormat('italic');
+            }
+            
+            // Ctrl+Shift+S - Strikethrough
+            if (e.ctrlKey && e.shiftKey && e.key === 'S') {
+                e.preventDefault();
+                insertFormat('strikethrough');
+            }
+            
+            // Ctrl+` - Inline code
+            if (e.ctrlKey && e.key === '`') {
+                e.preventDefault();
+                insertFormat('code');
+            }
+            
+            // Ctrl+Q - Quote
+            if (e.ctrlKey && e.key === 'q') {
+                e.preventDefault();
+                insertFormat('quote');
+            }
+            
+            // Ctrl+U - Unordered list
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                insertFormat('ul');
+            }
+            
+            // Ctrl+K - Link
+            if (e.ctrlKey && e.key === 'k') {
+                e.preventDefault();
+                openLinkModal();
+            }
+            
+            // Tab - Insert 2 spaces (or tab behavior in lists)
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                const beforeText = editor.value.substring(0, start);
+                const afterText = editor.value.substring(end);
+                
+                editor.value = beforeText + '  ' + afterText;
+                editor.selectionStart = editor.selectionEnd = start + 2;
+                renderMarkdown();
+            }
+        });
+        
+        // ========== COLOR CUSTOMIZATION ==========
+        
+        // Default colors
+        const defaultColors = {
+            primaryText: '#064E3B',
+            secondaryText: '#047857',
+            link: '#10B981',
+            code: '#10B981',
+            h1: '#064E3B',
+            h1Border: '#10B981',
+            h2: '#064E3B',
+            h2Border: '#6EE7B7',
+            h3: '#047857',
+            previewBg: '#FFFFFF',
+            codeBg: '#0d1117',
+            blockquoteBg: '#F0FDF4',
+            tableHeader: '#10B981',
+            tableAlt: '#F0FDF4',
+            blockquoteBorder: '#10B981',
+            hr: '#10B981',
+            tableBorder: '#d1fae5'
+        };
+        
+        // Color presets
+        const colorPresets = {
+            classic: { ...defaultColors },
+            ocean: {
+                primaryText: '#0C4A6E',
+                secondaryText: '#0369A1',
+                link: '#0EA5E9',
+                code: '#0EA5E9',
+                h1: '#0C4A6E',
+                h1Border: '#0EA5E9',
+                h2: '#0C4A6E',
+                h2Border: '#38BDF8',
+                h3: '#0369A1',
+                previewBg: '#FFFFFF',
+                codeBg: '#0F172A',
+                blockquoteBg: '#F0F9FF',
+                tableHeader: '#0EA5E9',
+                tableAlt: '#F0F9FF',
+                blockquoteBorder: '#0EA5E9',
+                hr: '#0EA5E9',
+                tableBorder: '#BAE6FD'
+            },
+            forest: {
+                primaryText: '#14532D',
+                secondaryText: '#15803D',
+                link: '#22C55E',
+                code: '#22C55E',
+                h1: '#14532D',
+                h1Border: '#22C55E',
+                h2: '#14532D',
+                h2Border: '#4ADE80',
+                h3: '#15803D',
+                previewBg: '#FFFFFF',
+                codeBg: '#0F1A14',
+                blockquoteBg: '#F0FDF4',
+                tableHeader: '#22C55E',
+                tableAlt: '#DCFCE7',
+                blockquoteBorder: '#22C55E',
+                hr: '#22C55E',
+                tableBorder: '#BBF7D0'
+            },
+            sunset: {
+                primaryText: '#7C2D12',
+                secondaryText: '#C2410C',
+                link: '#F97316',
+                code: '#F97316',
+                h1: '#7C2D12',
+                h1Border: '#F97316',
+                h2: '#7C2D12',
+                h2Border: '#FB923C',
+                h3: '#C2410C',
+                previewBg: '#FFFBEB',
+                codeBg: '#1C1917',
+                blockquoteBg: '#FFF7ED',
+                tableHeader: '#F97316',
+                tableAlt: '#FFEDD5',
+                blockquoteBorder: '#F97316',
+                hr: '#F97316',
+                tableBorder: '#FED7AA'
+            },
+            mono: {
+                primaryText: '#1F2937',
+                secondaryText: '#4B5563',
+                link: '#6B7280',
+                code: '#374151',
+                h1: '#111827',
+                h1Border: '#6B7280',
+                h2: '#1F2937',
+                h2Border: '#9CA3AF',
+                h3: '#374151',
+                previewBg: '#FFFFFF',
+                codeBg: '#111827',
+                blockquoteBg: '#F9FAFB',
+                tableHeader: '#4B5563',
+                tableAlt: '#F3F4F6',
+                blockquoteBorder: '#6B7280',
+                hr: '#6B7280',
+                tableBorder: '#E5E7EB'
+            },
+            lavender: {
+                primaryText: '#4C1D95',
+                secondaryText: '#6D28D9',
+                link: '#8B5CF6',
+                code: '#8B5CF6',
+                h1: '#4C1D95',
+                h1Border: '#8B5CF6',
+                h2: '#4C1D95',
+                h2Border: '#A78BFA',
+                h3: '#6D28D9',
+                previewBg: '#FAFAFE',
+                codeBg: '#1E1B4B',
+                blockquoteBg: '#F5F3FF',
+                tableHeader: '#8B5CF6',
+                tableAlt: '#EDE9FE',
+                blockquoteBorder: '#8B5CF6',
+                hr: '#8B5CF6',
+                tableBorder: '#DDD6FE'
+            },
+            rose: {
+                primaryText: '#881337',
+                secondaryText: '#BE123C',
+                link: '#F43F5E',
+                code: '#F43F5E',
+                h1: '#881337',
+                h1Border: '#F43F5E',
+                h2: '#881337',
+                h2Border: '#FB7185',
+                h3: '#BE123C',
+                previewBg: '#FFF1F2',
+                codeBg: '#1C1917',
+                blockquoteBg: '#FFF1F2',
+                tableHeader: '#F43F5E',
+                tableAlt: '#FFE4E6',
+                blockquoteBorder: '#F43F5E',
+                hr: '#F43F5E',
+                tableBorder: '#FECDD3'
+            },
+            gold: {
+                primaryText: '#78350F',
+                secondaryText: '#B45309',
+                link: '#F59E0B',
+                code: '#D97706',
+                h1: '#78350F',
+                h1Border: '#F59E0B',
+                h2: '#78350F',
+                h2Border: '#FBBF24',
+                h3: '#B45309',
+                previewBg: '#FFFBEB',
+                codeBg: '#1C1917',
+                blockquoteBg: '#FEF3C7',
+                tableHeader: '#F59E0B',
+                tableAlt: '#FEF3C7',
+                blockquoteBorder: '#F59E0B',
+                hr: '#F59E0B',
+                tableBorder: '#FDE68A'
+            },
+            teal: {
+                primaryText: '#134E4A',
+                secondaryText: '#0F766E',
+                link: '#14B8A6',
+                code: '#14B8A6',
+                h1: '#134E4A',
+                h1Border: '#14B8A6',
+                h2: '#134E4A',
+                h2Border: '#2DD4BF',
+                h3: '#0F766E',
+                previewBg: '#FFFFFF',
+                codeBg: '#0F1A1A',
+                blockquoteBg: '#F0FDFA',
+                tableHeader: '#14B8A6',
+                tableAlt: '#CCFBF1',
+                blockquoteBorder: '#14B8A6',
+                hr: '#14B8A6',
+                tableBorder: '#99F6E4'
+            },
+            night: {
+                primaryText: '#E2E8F0',
+                secondaryText: '#94A3B8',
+                link: '#60A5FA',
+                code: '#60A5FA',
+                h1: '#F1F5F9',
+                h1Border: '#3B82F6',
+                h2: '#E2E8F0',
+                h2Border: '#60A5FA',
+                h3: '#CBD5E1',
+                previewBg: '#0F172A',
+                codeBg: '#020617',
+                blockquoteBg: '#1E293B',
+                tableHeader: '#334155',
+                tableAlt: '#1E293B',
+                blockquoteBorder: '#3B82F6',
+                hr: '#3B82F6',
+                tableBorder: '#334155'
+            },
+            ruby: {
+                primaryText: '#1A1A1A',
+                secondaryText: '#3D3D3D',
+                link: '#E10514',
+                code: '#E10514',
+                h1: '#1A1A1A',
+                h1Border: '#E10514',
+                h2: '#3D3D3D',
+                h2Border: '#E10514',
+                h3: '#6B6B6B',
+                previewBg: '#F8F6F3',
+                codeBg: '#1A1A1A',
+                blockquoteBg: '#F0EDE8',
+                tableHeader: '#E10514',
+                tableAlt: '#F0EDE8',
+                blockquoteBorder: '#E10514',
+                hr: '#E10514',
+                tableBorder: '#E5E0DA'
+            },
+            sakura: {
+                primaryText: '#4A2040',
+                secondaryText: '#6B3A5D',
+                link: '#E891B2',
+                code: '#D4729A',
+                h1: '#4A2040',
+                h1Border: '#E891B2',
+                h2: '#6B3A5D',
+                h2Border: '#F0B4CC',
+                h3: '#8B5A7E',
+                previewBg: '#FFF5F8',
+                codeBg: '#2D1526',
+                blockquoteBg: '#FCEEF3',
+                tableHeader: '#D4729A',
+                tableAlt: '#FCEEF3',
+                blockquoteBorder: '#E891B2',
+                hr: '#E891B2',
+                tableBorder: '#F5D5E2'
+            },
+            mint: {
+                primaryText: '#1B3A36',
+                secondaryText: '#2D5F58',
+                link: '#4FD1C5',
+                code: '#38B2AC',
+                h1: '#1B3A36',
+                h1Border: '#4FD1C5',
+                h2: '#2D5F58',
+                h2Border: '#81E6D9',
+                h3: '#388F86',
+                previewBg: '#F0FFFD',
+                codeBg: '#0F2624',
+                blockquoteBg: '#E6FFFA',
+                tableHeader: '#38B2AC',
+                tableAlt: '#E6FFFA',
+                blockquoteBorder: '#4FD1C5',
+                hr: '#4FD1C5',
+                tableBorder: '#B2F5EA'
+            },
+            coffee: {
+                primaryText: '#3E2723',
+                secondaryText: '#5D4037',
+                link: '#A1887F',
+                code: '#8D6E63',
+                h1: '#3E2723',
+                h1Border: '#8D6E63',
+                h2: '#5D4037',
+                h2Border: '#BCAAA4',
+                h3: '#6D4C41',
+                previewBg: '#FBF8F5',
+                codeBg: '#2C1E1A',
+                blockquoteBg: '#EFEBE9',
+                tableHeader: '#6D4C41',
+                tableAlt: '#EFEBE9',
+                blockquoteBorder: '#8D6E63',
+                hr: '#A1887F',
+                tableBorder: '#D7CCC8'
+            },
+            sky: {
+                primaryText: '#1E3A5F',
+                secondaryText: '#2C5282',
+                link: '#63B3ED',
+                code: '#4299E1',
+                h1: '#1E3A5F',
+                h1Border: '#63B3ED',
+                h2: '#2C5282',
+                h2Border: '#90CDF4',
+                h3: '#3182CE',
+                previewBg: '#F7FBFF',
+                codeBg: '#1A2A3E',
+                blockquoteBg: '#EBF8FF',
+                tableHeader: '#4299E1',
+                tableAlt: '#EBF8FF',
+                blockquoteBorder: '#63B3ED',
+                hr: '#63B3ED',
+                tableBorder: '#BEE3F8'
+            }
+        };
+        
+        // Current colors
+        let currentColors = { ...defaultColors };
+        
+        // Load colors from localStorage
+        function loadColors() {
+            const saved = localStorage.getItem('mdEditorColors');
+            if (saved) {
+                try {
+                    currentColors = { ...defaultColors, ...JSON.parse(saved) };
+                } catch (e) {
+                    currentColors = { ...defaultColors };
+                }
+            }
+            applyColors();
+            updateColorInputs();
+        }
+        
+        // Apply colors to preview
+        function applyColors() {
+            const style = document.getElementById('customColorStyle') || document.createElement('style');
+            style.id = 'customColorStyle';
+            
+            style.textContent = `
+                .preview-content { background: ${currentColors.previewBg}; }
+                .preview-content h1 { color: ${currentColors.h1}; border-bottom-color: ${currentColors.h1Border}; }
+                .preview-content h2 { color: ${currentColors.h2}; border-bottom-color: ${currentColors.h2Border}; }
+                .preview-content h3 { color: ${currentColors.h3}; }
+                .preview-content h4, .preview-content h5, .preview-content h6 { color: ${currentColors.primaryText}; }
+                .preview-content p, .preview-content li { color: ${currentColors.secondaryText}; }
+                .preview-content strong { color: ${currentColors.primaryText}; }
+                .preview-content a { color: ${currentColors.link}; }
+                .preview-content code { color: ${currentColors.code}; }
+                .preview-content pre { background: ${currentColors.codeBg}; }
+                .preview-content blockquote { 
+                    background: ${currentColors.blockquoteBg}; 
+                    border-right-color: ${currentColors.blockquoteBorder}; 
+                }
+                .preview-content th { background: ${currentColors.tableHeader}; }
+                .preview-content tr:nth-child(even) { background: ${currentColors.tableAlt}; }
+                .preview-content th, .preview-content td { border-color: ${currentColors.tableBorder}; }
+                .preview-content hr { background: linear-gradient(90deg, ${currentColors.hr}, ${adjustColor(currentColors.hr, 30)}, transparent); }
+                .preview-content .mermaid { background: ${currentColors.blockquoteBg}; border-color: ${currentColors.tableBorder}; }
+            `;
+            
+            if (!document.getElementById('customColorStyle')) {
+                document.head.appendChild(style);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('mdEditorColors', JSON.stringify(currentColors));
+
+            // Re-init Mermaid with new theme colors and re-render diagrams
+            initMermaid();
+            const mermaidDivs = Array.from(preview.querySelectorAll('.mermaid[data-source]'));
+            if (mermaidDivs.length > 0) {
+                mermaidDivs.forEach(div => {
+                    div.removeAttribute('data-processed');
+                    div.textContent = div.getAttribute('data-source');
+                    div.id = `mermaid-${mermaidId++}`;
+                });
+                setTimeout(() => {
+                    try {
+                        mermaid.run({ nodes: preview.querySelectorAll('.mermaid') });
+                    } catch (e) { /* ignore */ }
+                }, 50);
+            }
+        }
+        
+        // Adjust color brightness
+        function adjustColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = (num >> 16) + amt;
+            const G = (num >> 8 & 0x00FF) + amt;
+            const B = (num & 0x0000FF) + amt;
+            return '#' + (0x1000000 + 
+                (R < 255 ? R < 1 ? 0 : R : 255) * 0x10000 + 
+                (G < 255 ? G < 1 ? 0 : G : 255) * 0x100 + 
+                (B < 255 ? B < 1 ? 0 : B : 255)
+            ).toString(16).slice(1);
+        }
+        
+        // Update color inputs to reflect current colors
+        function updateColorInputs() {
+            Object.keys(currentColors).forEach(key => {
+                const colorInput = document.getElementById(`color${capitalize(key)}`);
+                const hexInput = document.getElementById(`hex${capitalize(key)}`);
+                if (colorInput) colorInput.value = currentColors[key];
+                if (hexInput) hexInput.value = currentColors[key];
+            });
+        }
+        
+        // Capitalize first letter
+        function capitalize(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        }
+        
+        // Update color from picker
+        function updateColor(key, value) {
+            currentColors[key] = value;
+            const hexInput = document.getElementById(`hex${capitalize(key)}`);
+            if (hexInput) hexInput.value = value;
+            applyColors();
+        }
+        
+        // Update color from hex input
+        function updateColorFromHex(key, value) {
+            if (/^#[0-9A-Fa-f]{6}$/.test(value)) {
+                currentColors[key] = value;
+                const colorInput = document.getElementById(`color${capitalize(key)}`);
+                if (colorInput) colorInput.value = value;
+                applyColors();
+            }
+        }
+        
+        // Apply preset
+        function applyPreset(presetName) {
+            if (colorPresets[presetName]) {
+                currentColors = { ...colorPresets[presetName] };
+                applyColors();
+                updateColorInputs();
+                
+                // Update active preset button
+                document.querySelectorAll('.preset-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.preset === presetName);
+                });
+                
+                showToast(`ערכת נושא "${getPresetDisplayName(presetName)}" הופעלה`);
+            }
+        }
+        
+        function getPresetDisplayName(preset) {
+            const names = {
+                classic: 'קלאסי',
+                ocean: 'אוקיינוס',
+                forest: 'יער',
+                sunset: 'שקיעה',
+                mono: 'מונוכרום',
+                lavender: 'לבנדר',
+                rose: 'ורוד',
+                gold: 'זהב',
+                teal: 'טיל',
+                night: 'לילה'
+            };
+            return names[preset] || preset;
+        }
+        
+        // Reset colors
+        function resetColors() {
+            currentColors = { ...defaultColors };
+            applyColors();
+            updateColorInputs();
+            
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.preset === 'classic');
+            });
+            
+            showToast('הצבעים אופסו לברירת המחדל');
+        }
+        
+        // Save custom preset
+        function saveCustomPreset() {
+            localStorage.setItem('mdEditorCustomPreset', JSON.stringify(currentColors));
+            showToast('ערכת הנושא המותאמת נשמרה');
+        }
+        
+        // Toggle color panel
+        function toggleColorPanel() {
+            const panel = document.getElementById('colorPanel');
+            const overlay = document.getElementById('colorPanelOverlay');
+            panel.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+        
+        // Load saved colors on init
+        loadColors();
+        initMermaid();
+
+        // ========== UPDATE EXPORT FUNCTIONS FOR COLORS ==========
+        
+        // Override generateStyledHTML to use custom colors
+        const originalGenerateStyledHTML = generateStyledHTML;
+        generateStyledHTML = function() {
+            const content = preview.innerHTML;
+            
+            let html = `<div dir="rtl" style="direction: rtl; text-align: right; font-family: 'David', 'Arial', sans-serif; font-size: 12pt; line-height: 1.6; background: ${currentColors.previewBg};">`;
+            
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = content;
+            
+            tempDiv.querySelectorAll('h1').forEach(el => {
+                el.style.cssText = `direction: rtl; text-align: right; font-size: 24pt; font-weight: bold; margin-top: 12pt; margin-bottom: 6pt; border-bottom: 2px solid ${currentColors.h1Border}; color: ${currentColors.h1};`;
+            });
+            tempDiv.querySelectorAll('h2').forEach(el => {
+                el.style.cssText = `direction: rtl; text-align: right; font-size: 18pt; font-weight: bold; margin-top: 12pt; margin-bottom: 6pt; border-bottom: 1px solid ${currentColors.h2Border}; color: ${currentColors.h2};`;
+            });
+            tempDiv.querySelectorAll('h3').forEach(el => {
+                el.style.cssText = `direction: rtl; text-align: right; font-size: 14pt; font-weight: bold; margin-top: 10pt; margin-bottom: 4pt; color: ${currentColors.h3};`;
+            });
+            tempDiv.querySelectorAll('h4, h5, h6').forEach(el => {
+                el.style.cssText = `direction: rtl; text-align: right; font-size: 12pt; font-weight: bold; margin-top: 8pt; margin-bottom: 4pt; color: ${currentColors.primaryText};`;
+            });
+            
+            tempDiv.querySelectorAll('p').forEach(el => {
+                el.style.cssText = `direction: rtl; text-align: right; margin-bottom: 8pt; color: ${currentColors.secondaryText};`;
+            });
+            
+            tempDiv.querySelectorAll('ul, ol').forEach(el => {
+                el.style.cssText = 'direction: rtl; text-align: right; margin-right: 20pt; margin-left: 0; padding-right: 20pt; padding-left: 0; list-style-position: inside;';
+            });
+            
+            tempDiv.querySelectorAll('li').forEach(el => {
+                el.style.cssText = `direction: rtl; text-align: right; margin-bottom: 4pt; color: ${currentColors.secondaryText};`;
+            });
+            
+            tempDiv.querySelectorAll('blockquote').forEach(el => {
+                el.style.cssText = `direction: rtl; text-align: right; border-right: 4px solid ${currentColors.blockquoteBorder}; border-left: none; padding-right: 12pt; padding-left: 0; margin-right: 0; margin-left: 0; background-color: ${currentColors.blockquoteBg}; color: ${currentColors.secondaryText};`;
+            });
+            
+            tempDiv.querySelectorAll('code').forEach(el => {
+                if (el.parentElement.tagName !== 'PRE') {
+                    el.style.cssText = `background-color: ${currentColors.blockquoteBg}; padding: 2pt 4pt; border-radius: 3pt; font-family: Consolas, monospace; font-size: 10pt; color: ${currentColors.code};`;
+                }
+            });
+            
+            tempDiv.querySelectorAll('pre').forEach(el => {
+                el.style.cssText = `direction: ltr; text-align: left; background-color: ${currentColors.codeBg}; padding: 10pt; border-radius: 4pt; font-family: Consolas, monospace; font-size: 10pt; overflow-x: auto; white-space: pre-wrap; color: #e6edf3;`;
+            });
+            
+            tempDiv.querySelectorAll('table').forEach(el => {
+                el.style.cssText = 'direction: rtl; border-collapse: collapse; width: 100%; margin: 10pt 0;';
+            });
+            tempDiv.querySelectorAll('th, td').forEach(el => {
+                el.style.cssText = `direction: rtl; text-align: right; border: 1px solid ${currentColors.tableBorder}; padding: 6pt 10pt;`;
+            });
+            tempDiv.querySelectorAll('th').forEach(el => {
+                el.style.cssText += `background-color: ${currentColors.tableHeader}; color: white; font-weight: bold;`;
+            });
+            
+            tempDiv.querySelectorAll('a').forEach(el => {
+                el.style.cssText = `color: ${currentColors.link}; text-decoration: none;`;
+            });
+            
+            tempDiv.querySelectorAll('strong').forEach(el => {
+                el.style.cssText = `font-weight: bold; color: ${currentColors.primaryText};`;
+            });
+            tempDiv.querySelectorAll('em').forEach(el => {
+                el.style.cssText = 'font-style: italic;';
+            });
+            
+            html += tempDiv.innerHTML;
+            html += '</div>';
+            
+            return html;
+        };
+        
+        // Override generatePrintHTML to use custom colors
+        const originalGeneratePrintHTML = generatePrintHTML;
+        generatePrintHTML = function() {
+            const dir = isLTR ? 'ltr' : 'rtl';
+            const lang = isLTR ? 'en' : 'he';
+            const textAlign = isLTR ? 'left' : 'right';
+            return `<!DOCTYPE html>
+<html lang="${lang}" dir="${dir}">
+<head>
+    <meta charset="UTF-8">
+    <title>מסמך Markdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+    <style>
+        @page {
+            size: A4;
+            margin: 2cm;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Varela Round', 'David', Arial, sans-serif;
+            font-size: 12pt;
+            line-height: 1.8;
+            direction: ${dir};
+            text-align: ${textAlign};
+            color: ${currentColors.primaryText};
+            background: ${currentColors.previewBg};
+        }
+        
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Varela Round', 'David', serif;
+            margin-top: 1.2em;
+            margin-bottom: 0.6em;
+            line-height: 1.3;
+            page-break-after: avoid;
+        }
+        
+        h1 {
+            font-size: 22pt;
+            border-bottom: 3px solid ${currentColors.h1Border};
+            padding-bottom: 8pt;
+            color: ${currentColors.h1};
+        }
+        
+        h2 {
+            font-size: 16pt;
+            border-bottom: 2px solid ${currentColors.h2Border};
+            padding-bottom: 4pt;
+            color: ${currentColors.h2};
+        }
+        
+        h3 { font-size: 14pt; color: ${currentColors.h3}; }
+        h4 { font-size: 12pt; color: ${currentColors.primaryText}; }
+        
+        p {
+            margin-bottom: 0.8em;
+            color: ${currentColors.secondaryText};
+        }
+        
+        ul, ol {
+            margin-bottom: 1em;
+            padding-${isLTR ? 'left' : 'right'}: 1.5em;
+            padding-${isLTR ? 'right' : 'left'}: 0;
+        }
+
+        li {
+            margin-bottom: 0.4em;
+            color: ${currentColors.secondaryText};
+        }
+
+        blockquote {
+            margin: 1em 0;
+            padding: 0.8em 1em;
+            border-${isLTR ? 'left' : 'right'}: 4px solid ${currentColors.blockquoteBorder};
+            background: ${currentColors.blockquoteBg};
+            color: ${currentColors.secondaryText};
+        }
+        
+        code {
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 10pt;
+            background: ${currentColors.blockquoteBg};
+            padding: 2pt 4pt;
+            border-radius: 3pt;
+            color: ${currentColors.code};
+        }
+        
+        pre {
+            direction: ltr;
+            text-align: left;
+            margin: 1em 0;
+            padding: 12pt;
+            background: ${currentColors.codeBg};
+            border-radius: 8pt;
+            overflow-x: auto;
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 9pt;
+            page-break-inside: avoid;
+            color: #e6edf3;
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: #e6edf3;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+            page-break-inside: avoid;
+        }
+        
+        th, td {
+            border: 1px solid ${currentColors.tableBorder};
+            padding: 8pt 12pt;
+            text-align: ${textAlign};
+        }
+        
+        th {
+            background: ${currentColors.tableHeader};
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background: ${currentColors.tableAlt};
+        }
+        
+        a {
+            color: ${currentColors.link};
+            text-decoration: none;
+        }
+        
+        hr {
+            border: none;
+            height: 3px;
+            background: linear-gradient(to ${isLTR ? 'right' : 'left'}, ${currentColors.hr}, ${adjustColor(currentColors.hr, 30)}, transparent);
+            margin: 1.5em 0;
+            border-radius: 3px;
+        }
+        
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        strong {
+            font-weight: 700;
+            color: ${currentColors.primaryText};
+        }
+        
+        em {
+            font-style: italic;
+        }
+        
+        del {
+            text-decoration: line-through;
+            color: #6B7280;
+        }
+    </style>
+</head>
+<body>
+    ${preview.innerHTML}
+</body>
+</html>`;
+        };
+        
+        // Close modals on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal('linkModal');
+                closeModal('imageModal');
+                closeModal('tableModal');
+                closeModal('exportModal');
+                closeModal('whatsNewModal');
+                closeModal('colorPreviewModal');
+                if (document.getElementById('colorPanel').classList.contains('open')) {
+                    toggleColorPanel();
+                }
+            }
+        });
+
+        // ============================================
+        // Global Tooltip System
+        // ============================================
+        (function() {
+            const tooltip = document.getElementById('globalTooltip');
+            document.addEventListener('mouseenter', (e) => {
+                const el = e.target;
+                if (!el || !el.closest) return;
+                const btn = el.closest('[data-tooltip]');
+                if (!btn) return;
+                tooltip.textContent = btn.dataset.tooltip;
+                tooltip.classList.add('visible');
+                const rect = btn.getBoundingClientRect();
+                tooltip.style.left = (rect.left + rect.width / 2) + 'px';
+                tooltip.style.top = (rect.top - 8) + 'px';
+                tooltip.style.transform = 'translate(-50%, -100%)';
+            }, true);
+
+            document.addEventListener('mouseleave', (e) => {
+                const el = e.target;
+                if (!el || !el.closest) return;
+                const btn = el.closest('[data-tooltip]');
+                if (!btn) return;
+                tooltip.classList.remove('visible');
+            }, true);
+        })();
+
+        // ============================================
+        // Paste from Clipboard
+        // ============================================
+        async function pasteFromClipboard() {
+            try {
+                const text = await navigator.clipboard.readText();
+                if (!text) {
+                    showToast('הלוח ריק');
+                    return;
+                }
+                const start = editor.selectionStart;
+                const end = editor.selectionEnd;
+                editor.value = editor.value.substring(0, start) + text + editor.value.substring(end);
+                editor.selectionStart = editor.selectionEnd = start + text.length;
+                editor.focus();
+                renderMarkdown();
+                saveEditorContent();
+                showToast('הטקסט הודבק');
+            } catch (err) {
+                showToast('לא ניתן לגשת ללוח - יש לאשר הרשאה');
+            }
+        }
+
+        // ============================================
+        // PWA Install
+        // ============================================
+        let deferredPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').style.display = '';
+            document.getElementById('installSep').style.display = '';
+        });
+
+        async function installPWA() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            document.getElementById('installBtn').style.display = 'none';
+            document.getElementById('installSep').style.display = 'none';
+            if (outcome === 'accepted') {
+                showToast('האפליקציה הותקנה בהצלחה');
+            }
+        }
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            document.getElementById('installBtn').style.display = 'none';
+            document.getElementById('installSep').style.display = 'none';
+        });
+
+        // ============================================
+        // What's New / Changelog
+        // ============================================
+        function checkWhatsNew() {
+            const lastVersion = localStorage.getItem('mdEditorLastVersion');
+            if (lastVersion === APP_VERSION) return;
+            renderChangelog(lastVersion);
+            document.getElementById('whatsNewModal').classList.add('open');
+        }
+
+        function compareVersions(a, b) {
+            const pa = a.split('.').map(Number);
+            const pb = b.split('.').map(Number);
+            for (let i = 0; i < 3; i++) {
+                if ((pa[i] || 0) > (pb[i] || 0)) return 1;
+                if ((pa[i] || 0) < (pb[i] || 0)) return -1;
+            }
+            return 0;
+        }
+
+        function renderChangelog(lastVersion) {
+            const container = document.getElementById('changelogContent');
+            let html = '';
+            for (const entry of CHANGELOG) {
+                if (lastVersion && compareVersions(entry.version, lastVersion) <= 0) continue;
+                html += `
+                    <div style="margin-bottom: 1rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 700; font-size: 1.05rem; color: var(--foreground);">v${entry.version}</span>
+                            <span style="font-size: 0.7rem; padding: 0.15rem 0.5rem; background: var(--surface); border-radius: 12px; color: var(--text-muted);">${entry.date}</span>
+                        </div>
+                        <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.35rem;">
+                            ${entry.changes.map(c => `
+                                <li style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; color: var(--text-secondary);">
+                                    <span style="width: 6px; height: 6px; border-radius: 50%; background: var(--primary); flex-shrink: 0;"></span>
+                                    ${c}
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                `;
+            }
+            container.innerHTML = html;
+        }
+
+        function dismissWhatsNew() {
+            localStorage.setItem('mdEditorLastVersion', APP_VERSION);
+            closeModal('whatsNewModal');
+        }
+
+        // Show What's New on load (with slight delay for smooth UX)
+        setTimeout(checkWhatsNew, 800);
+
+        // ============================================
+        // Image Color Extraction
+        // ============================================
+        let extractedColors = [];
+        let extractedColorMapping = {};
+        let shuffleIndex = 0;
+
+        function extractColorsFromImage(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const maxSize = 100;
+                    const scale = Math.min(maxSize / img.width, maxSize / img.height, 1);
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                    const pixels = [];
+                    for (let i = 0; i < imageData.length; i += 4) {
+                        const r = imageData[i], g = imageData[i+1], b = imageData[i+2], a = imageData[i+3];
+                        if (a < 128) continue;
+                        pixels.push([r, g, b]);
+                    }
+
+                    extractedColors = quantizeColors(pixels, 6);
+                    extractedColors.sort((a, b) => getLuminance(a) - getLuminance(b));
+                    shuffleIndex = 0;
+                    mapExtractedColors();
+                    updateColorPreviewModal();
+                    document.getElementById('colorPreviewModal').classList.add('open');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+            input.value = '';
+        }
+
+        function getLuminance(rgb) {
+            return 0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2];
+        }
+
+        function getSaturation(rgb) {
+            const max = Math.max(...rgb);
+            const min = Math.min(...rgb);
+            return max === 0 ? 0 : (max - min) / max;
+        }
+
+        function rgbToHex(rgb) {
+            return '#' + rgb.map(c => Math.round(c).toString(16).padStart(2, '0')).join('');
+        }
+
+        function quantizeColors(pixels, k) {
+            if (pixels.length === 0) return [[26,26,26],[61,61,61],[107,107,107],[225,5,20],[240,237,232],[248,246,243]];
+
+            let centers = [];
+            const step = Math.max(1, Math.floor(pixels.length / k));
+            for (let i = 0; i < k; i++) {
+                centers.push([...pixels[Math.min(i * step, pixels.length - 1)]]);
+            }
+
+            for (let iter = 0; iter < 15; iter++) {
+                const clusters = Array.from({length: k}, () => []);
+                for (const px of pixels) {
+                    let minDist = Infinity, minIdx = 0;
+                    for (let i = 0; i < k; i++) {
+                        const d = (px[0]-centers[i][0])**2 + (px[1]-centers[i][1])**2 + (px[2]-centers[i][2])**2;
+                        if (d < minDist) { minDist = d; minIdx = i; }
+                    }
+                    clusters[minIdx].push(px);
+                }
+                let converged = true;
+                for (let i = 0; i < k; i++) {
+                    if (clusters[i].length === 0) continue;
+                    const newCenter = [0, 0, 0];
+                    for (const px of clusters[i]) {
+                        newCenter[0] += px[0]; newCenter[1] += px[1]; newCenter[2] += px[2];
+                    }
+                    newCenter[0] /= clusters[i].length;
+                    newCenter[1] /= clusters[i].length;
+                    newCenter[2] /= clusters[i].length;
+                    const diff = Math.abs(newCenter[0]-centers[i][0]) + Math.abs(newCenter[1]-centers[i][1]) + Math.abs(newCenter[2]-centers[i][2]);
+                    if (diff > 2) converged = false;
+                    centers[i] = newCenter;
+                }
+                if (converged) break;
+            }
+            return centers;
+        }
+
+        function mapExtractedColors() {
+            const colors = [...extractedColors];
+            const sorted = [...colors].sort((a, b) => getLuminance(a) - getLuminance(b));
+
+            // Rotate the sorted order based on shuffleIndex
+            const rotated = [];
+            for (let i = 0; i < sorted.length; i++) {
+                rotated.push(sorted[(i + shuffleIndex) % sorted.length]);
+            }
+
+            const darkest = rgbToHex(rotated[0]);
+            const secondDark = rgbToHex(rotated[1]);
+            const medium = rgbToHex(rotated[2]);
+            const vibrant = rgbToHex(rotated[3]);
+            const secondLight = rgbToHex(rotated[4] || rotated[3]);
+            const lightest = rgbToHex(rotated[5] || rotated[4] || rotated[3]);
+
+            // Find lightest color that can work as background
+            const bgColor = getLuminance(rotated[rotated.length - 1]) > 200
+                ? rgbToHex(rotated[rotated.length - 1])
+                : '#FFFFFF';
+            const bgAlt = rotated.length > 4
+                ? rgbToHex(rotated[rotated.length - 2])
+                : adjustColor(bgColor, -5);
+
+            extractedColorMapping = {
+                primaryText: darkest,
+                secondaryText: secondDark,
+                link: vibrant,
+                code: vibrant,
+                h1: darkest,
+                h1Border: vibrant,
+                h2: secondDark,
+                h2Border: medium,
+                h3: medium,
+                previewBg: bgColor,
+                codeBg: darkest,
+                blockquoteBg: getLuminance(rotated[rotated.length - 1]) > 180 ? lightest : '#F5F5F5',
+                tableHeader: vibrant,
+                tableAlt: getLuminance(rotated[rotated.length - 1]) > 180 ? lightest : '#F5F5F5',
+                blockquoteBorder: vibrant,
+                hr: vibrant,
+                tableBorder: secondLight
+            };
+        }
+
+        function updateColorPreviewModal() {
+            const m = extractedColorMapping;
+            const strip = document.getElementById('extractedColorsStrip');
+            strip.innerHTML = extractedColors
+                .map(c => `<div style="width: 32px; height: 32px; border-radius: 50%; background: ${rgbToHex(c)}; border: 2px solid var(--border); cursor: default;" title="${rgbToHex(c)}"></div>`)
+                .join('');
+
+            document.getElementById('colorPreviewDoc').style.background = m.previewBg;
+            document.getElementById('cpH1').style.background = m.h1;
+            document.getElementById('cpH1Border').style.background = m.h1Border;
+            document.getElementById('cpText1').style.background = m.secondaryText + '40';
+            document.getElementById('cpText2').style.background = m.secondaryText + '30';
+            document.getElementById('cpText3').style.background = m.secondaryText + '35';
+            document.getElementById('cpH2').style.background = m.h2;
+            document.getElementById('cpH2Border').style.background = m.h2Border;
+            document.getElementById('cpBlockquote').style.background = m.blockquoteBg;
+            document.getElementById('cpBqBorder').style.background = m.blockquoteBorder;
+            document.getElementById('cpBqText1').style.background = m.secondaryText + '30';
+            document.getElementById('cpBqText2').style.background = m.secondaryText + '25';
+            document.getElementById('cpTableHeader').style.background = m.tableHeader;
+            document.getElementById('cpTableRow1').style.background = m.previewBg;
+            document.getElementById('cpTableRow1').style.borderColor = m.tableBorder;
+            document.getElementById('cpTableRow2').style.background = m.tableAlt;
+            document.getElementById('cpCodeBlock').style.background = m.codeBg;
+            document.getElementById('cpHr').style.background = m.hr;
+        }
+
+        function shuffleExtractedColors() {
+            shuffleIndex = (shuffleIndex + 1) % extractedColors.length;
+            mapExtractedColors();
+            updateColorPreviewModal();
+        }
+
+        function applyExtractedColors() {
+            currentColors = { ...extractedColorMapping };
+            applyColors();
+            updateColorInputs();
+            closeModal('colorPreviewModal');
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('active'));
+            showToast('הצבעים הוחלו בהצלחה');
+        }
+    </script>
+</body>
+</html>
