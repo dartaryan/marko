@@ -1,6 +1,6 @@
 # Story 1.4: Formatting Toolbar
 
-Status: review
+Status: done
 
 ## Story
 
