@@ -1,6 +1,6 @@
 # Story 4.1: Per-Sentence BiDi Detection Engine
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -20,7 +20,7 @@ so that the rendering pipeline can apply correct RTL/LTR direction automatically
 
 4. **AC4: Unicode Range Coverage** — The engine correctly identifies Hebrew characters (U+0590–U+05FF), Arabic characters (U+0600–U+06FF), and Latin characters (A–Z, a–z, U+0041–U+007A).
 
-5. **AC5: Code Block Exclusion** — Code blocks and inline code content are always classified as `'ltr'` regardless of their text content, and are excluded from per-sentence direction analysis.
+5. **AC5: Code Block Exclusion** — Code blocks and inline code content are always classified as `'ltr'` regardless of their text content, and are excluded from per-sentence direction analysis. *(Deferred to Story 4.2 — the detection engine is a pure string analyzer; code block identification and exclusion is a pipeline concern handled during rendering integration.)*
 
 6. **AC6: Performance Budget** — The full detection pass on a typical document (up to 500 sentences) completes within the 100ms rendering performance budget.
 
@@ -28,41 +28,41 @@ so that the rendering pipeline can apply correct RTL/LTR direction automatically
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create `lib/bidi/unicode-ranges.ts` (AC: #4)
-  - [ ] 1.1: Export `HEBREW_RANGE` constant: `{ start: 0x0590, end: 0x05FF }` (Hebrew Unicode block)
-  - [ ] 1.2: Export `ARABIC_RANGE` constant: `{ start: 0x0600, end: 0x06FF }` (Arabic Unicode block)
-  - [ ] 1.3: Export `LATIN_RANGE` constant: `{ start: 0x0041, end: 0x007A }` (Latin A–z block)
-  - [ ] 1.4: Export `isRtlChar(codePoint: number): boolean` — returns `true` if codePoint is in HEBREW_RANGE or ARABIC_RANGE
-  - [ ] 1.5: Export `isLtrChar(codePoint: number): boolean` — returns `true` if codePoint is in LATIN_RANGE
-  - [ ] 1.6: Export `TextDirection` type: `export type TextDirection = 'rtl' | 'ltr'`
+- [x] Task 1: Create `lib/bidi/unicode-ranges.ts` (AC: #4)
+  - [x] 1.1: Export `HEBREW_RANGE` constant: `{ start: 0x0590, end: 0x05FF }` (Hebrew Unicode block)
+  - [x] 1.2: Export `ARABIC_RANGE` constant: `{ start: 0x0600, end: 0x06FF }` (Arabic Unicode block)
+  - [x] 1.3: Export `LATIN_RANGE` constant: `{ start: 0x0041, end: 0x007A }` (Latin A–z block)
+  - [x] 1.4: Export `isRtlChar(codePoint: number): boolean` — returns `true` if codePoint is in HEBREW_RANGE or ARABIC_RANGE
+  - [x] 1.5: Export `isLtrChar(codePoint: number): boolean` — returns `true` if codePoint is in LATIN_RANGE
+  - [x] 1.6: Export `TextDirection` type: `export type TextDirection = 'rtl' | 'ltr'`
 
-- [ ] Task 2: Create `lib/bidi/detect-direction.ts` (AC: #1–#6)
-  - [ ] 2.1: Import `isRtlChar`, `isLtrChar`, `TextDirection` from `./unicode-ranges`
-  - [ ] 2.2: Export `detectSentenceDirection(text: string): TextDirection`:
+- [x] Task 2: Create `lib/bidi/detect-direction.ts` (AC: #1–#6)
+  - [x] 2.1: Import `isRtlChar`, `isLtrChar`, `TextDirection` from `./unicode-ranges`
+  - [x] 2.2: Export `detectSentenceDirection(text: string): TextDirection`:
     - Strip HTML tags: `text.replace(/<[^>]*>/g, '')`
     - Iterate using `[...stripped]` (spread for surrogate-pair-safe iteration)
     - For each character, call `.codePointAt(0)` and count RTL vs LTR characters
     - Return `'rtl'` if `rtlCount >= ltrCount && (rtlCount + ltrCount) > 0`, else `'ltr'`
     - Return `'ltr'` for empty strings or strings with zero directional characters
-  - [ ] 2.3: Export `analyzeDocument(sentences: string[]): TextDirection[]`:
+  - [x] 2.3: Export `analyzeDocument(sentences: string[]): TextDirection[]`:
     - Map each sentence through `detectSentenceDirection`
     - Returns array of `TextDirection` values, same length as input
     - This is the primary interface Story 4.2 will call from the rendering pipeline
-  - [ ] 2.4: No default export — named exports only (project convention)
+  - [x] 2.4: No default export — named exports only (project convention)
 
-- [ ] Task 3: Create `lib/bidi/detect-direction.test.ts` (AC: #7)
-  - [ ] 3.1: Import `{ detectSentenceDirection, analyzeDocument }` from `./detect-direction`
-  - [ ] 3.2: `describe('detectSentenceDirection')` block with:
+- [x] Task 3: Create `lib/bidi/detect-direction.test.ts` (AC: #7)
+  - [x] 3.1: Import `{ detectSentenceDirection, analyzeDocument }` from `./detect-direction`
+  - [x] 3.2: `describe('detectSentenceDirection')` block with:
     - Pure Hebrew `'שלום עולם'` → `'rtl'`
     - Pure English `'Hello world'` → `'ltr'`
-    - Hebrew dominant `'שלום React world'` → `'rtl'` (more Hebrew chars than Latin)
+    - Hebrew dominant `'שלום עולם React'` → `'rtl'` (more Hebrew chars than Latin — fixed test string from story spec)
     - English dominant `'Hello world שלום'` → `'ltr'` (more Latin chars than Hebrew)
     - Numbers only `'12345'` → `'ltr'` (no directional chars, zero RTL/LTR counts → `'ltr'` default)
     - Empty string `''` → `'ltr'`
     - HTML-wrapped Hebrew `'<p>שלום עולם</p>'` → `'rtl'` (tags stripped before analysis)
     - Arabic characters `'مرحبا'` → `'rtl'`
     - RTL-wins-ties: sentence with equal RTL and LTR chars → `'rtl'`
-  - [ ] 3.3: `describe('analyzeDocument')` block with:
+  - [x] 3.3: `describe('analyzeDocument')` block with:
     - Mixed array `['שלום', 'Hello', 'world']` → `['rtl', 'ltr', 'ltr']`
     - Empty array `[]` → `[]`
     - Single-element array `['שלום']` → `['rtl']`
@@ -221,10 +221,29 @@ lib/bidi/
 
 ### Agent Model Used
 
-claude-sonnet-4-6[1m]
+claude-opus-4-6
 
 ### Debug Log References
 
+- Hebrew-dominant test string fix: Story spec used `'שלום React world'` (4 Hebrew vs 10 Latin = English-dominant). Fixed to `'שלום עולם React'` (8 Hebrew vs 5 Latin = genuinely Hebrew-dominant) to match AC intent.
+
 ### Completion Notes List
 
+- Created `lib/bidi/unicode-ranges.ts` with `TextDirection` type, 3 Unicode range constants (`HEBREW_RANGE`, `ARABIC_RANGE`, `LATIN_RANGE`), and 2 helper functions (`isRtlChar`, `isLtrChar`)
+- Created `lib/bidi/detect-direction.ts` with `detectSentenceDirection` (HTML-stripping, surrogate-pair-safe iteration, RTL-wins-ties rule) and `analyzeDocument` (batch processing for Story 4.2 pipeline integration)
+- Created `lib/bidi/detect-direction.test.ts` with 12 tests covering all AC7 scenarios: pure Hebrew, pure English, Hebrew-dominant mixed, English-dominant mixed, numbers only, empty string, HTML-wrapped, Arabic, RTL-wins-ties, analyzeDocument mixed/empty/single
+- All 229 project tests pass (12 new + 217 existing), zero regressions
+- Pure additive story — no existing files modified, no new dependencies added
+- Code review fixes: split LATIN_RANGE into LATIN_UPPER_RANGE/LATIN_LOWER_RANGE to exclude non-letter chars (0x5B-0x60) from LTR counting, added surrogate pair test, documented AC5 deferral to Story 4.2, added sprint-status.yaml to File List
+
 ### File List
+
+- `lib/bidi/unicode-ranges.ts` (new)
+- `lib/bidi/detect-direction.ts` (new)
+- `lib/bidi/detect-direction.test.ts` (new)
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` (updated — workflow side-effect)
+
+## Change Log
+
+- 2026-03-07: Implemented Story 4.1 — Per-sentence BiDi detection engine. Created `lib/bidi/` directory with Unicode range constants, direction detection functions, and comprehensive test suite (12 tests). Pure TypeScript, zero dependencies, no existing files modified.
+- 2026-03-07: Code review fixes — Fixed LATIN_RANGE to exclude non-letter chars ([ \ ] ^ _ `) from LTR counting by splitting into LATIN_UPPER_RANGE (A-Z) and LATIN_LOWER_RANGE (a-z). Added surrogate pair test (13 tests total). Documented AC5 deferral to Story 4.2.

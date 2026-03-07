@@ -70,13 +70,13 @@ development_status:
 
   # Epic 4: Hebrew Bilingual Intelligence
   epic-4: in-progress
-  4-1-per-sentence-bidi-detection-engine: ready-for-dev
+  4-1-per-sentence-bidi-detection-engine: done
   4-2-bidi-integration-with-rendering-pipeline: ready-for-dev
   epic-4-retrospective: optional
 
   # Epic 5: User Authentication & Account Management
-  epic-5: backlog
-  5-1-clerk-authentication-integration-and-user-sync: backlog
+  epic-5: in-progress
+  5-1-clerk-authentication-integration-and-user-sync: ready-for-dev
   5-2-anonymous-and-authenticated-editor-experience: backlog
   5-3-three-tier-authorization-and-account-deletion: backlog
   epic-5-retrospective: optional
