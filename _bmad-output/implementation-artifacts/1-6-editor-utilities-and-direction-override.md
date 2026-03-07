@@ -1,6 +1,6 @@
 # Story 1.6: Editor Utilities & Direction Override
 
-Status: review
+Status: done
 
 ## Story
 
