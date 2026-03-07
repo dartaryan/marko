@@ -50,6 +50,7 @@ export function ViewModeToggle({ value, onChange }: ViewModeToggleProps) {
           title={mode.ariaLabel}
           tabIndex={value === mode.value ? 0 : -1}
           onClick={() => onChange(mode.value)}
+          suppressHydrationWarning
           className={`rounded px-2.5 py-0.5 text-xs font-medium transition-colors ${
             value === mode.value
               ? 'bg-background text-foreground shadow-sm'
