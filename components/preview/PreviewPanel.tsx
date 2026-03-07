@@ -10,7 +10,7 @@ interface PreviewPanelProps {
 export function PreviewPanel({ content, dir = 'rtl' }: PreviewPanelProps) {
   return (
     <section
-      className="flex flex-col"
+      className="flex flex-col flex-1 min-h-0"
       aria-label="תצוגה מקדימה"
     >
       <div className="flex h-9 items-center border-b border-border px-4">

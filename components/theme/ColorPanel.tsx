@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ColorPicker } from './ColorPicker';
 import { PresetGrid } from './PresetGrid';
+import { ImageColorExtractor } from './ImageColorExtractor';
 import { DEFAULT_CLASSIC_THEME } from '@/lib/colors/defaults';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
 import { useCustomPresets } from '@/lib/hooks/useCustomPresets';
@@ -153,6 +154,17 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
                 </button>
               )}
             </div>
+          </div>
+
+          {/* Image extraction */}
+          <div>
+            <h3 className="mb-2 text-sm font-semibold text-muted-foreground">חילוץ מתמונה</h3>
+            <ImageColorExtractor
+              onApply={(extractedTheme) => {
+                onThemeChange(extractedTheme);
+                setActivePreset(''); // extracted theme is not a named preset
+              }}
+            />
           </div>
 
           {SECTIONS.map((section) => (

@@ -460,3 +460,21 @@ describe('ColorPanel — custom presets', () => {
     expect(myThemesHeading).toBeDefined();
   });
 });
+
+// ─── Image Color Extraction (Story 2.4) ──────────────────────────────────────
+
+describe('ColorPanel — image color extraction (Story 2.4)', () => {
+  it('renders "העלה תמונה" button in the open color panel', () => {
+    renderColorPanel();
+    const buttons = Array.from(document.body.querySelectorAll('button'));
+    const uploadBtn = buttons.find((b) => b.getAttribute('aria-label') === 'העלה תמונה לחילוץ צבעים');
+    expect(uploadBtn).toBeDefined();
+  });
+
+  it('has a hidden file input that accepts image/* files', () => {
+    renderColorPanel();
+    const fileInput = document.body.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(fileInput).toBeTruthy();
+    expect(fileInput.accept).toBe('image/*');
+  });
+});

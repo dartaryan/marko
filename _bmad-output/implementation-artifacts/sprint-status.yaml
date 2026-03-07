@@ -56,14 +56,14 @@ development_status:
   2-1-color-system-and-color-panel: done
   2-2-built-in-theme-presets: done
   2-3-custom-preset-save-and-load: done
-  2-4-image-color-extraction: ready-for-dev
-  2-5-dark-light-mode-toggle: backlog
+  2-4-image-color-extraction: done
+  2-5-dark-light-mode-toggle: ready-for-dev
   epic-2-retrospective: optional
 
   # Epic 3: Document Export & Sharing
-  epic-3: backlog
-  3-1-export-modal-and-filename-selection: backlog
-  3-2-pdf-export-with-colors-and-rtl: backlog
+  epic-3: in-progress
+  3-1-export-modal-and-filename-selection: ready-for-dev
+  3-2-pdf-export-with-colors-and-rtl: ready-for-dev
   3-3-html-and-markdown-export: backlog
   3-4-clipboard-copy-word-and-html-text: backlog
   epic-3-retrospective: optional

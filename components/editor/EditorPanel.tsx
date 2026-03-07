@@ -32,7 +32,7 @@ export function EditorPanel({ content, onChange, dir = 'rtl' }: EditorPanelProps
 
   return (
     <section
-      className="flex flex-col border-e border-border"
+      className="flex flex-col flex-1 min-h-0 border-e border-border"
       aria-label="עורך מארקדאון"
     >
       <div className="flex h-9 items-center border-b border-border px-4">
