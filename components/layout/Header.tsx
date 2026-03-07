@@ -1,5 +1,5 @@
 'use client';
-import { Expand, Trash2, FileText } from 'lucide-react';
+import { Expand, Trash2, FileText, Palette } from 'lucide-react';
 import { ViewModeToggle } from './ViewModeToggle';
 import { DirectionToggle } from './DirectionToggle';
 import type { ViewMode, DocDirection } from '@/types/editor';
@@ -12,6 +12,7 @@ interface HeaderProps {
   onDirectionChange: (dir: DocDirection) => void;
   onClearEditor: () => void;
   onLoadSample: () => void;
+  onOpenColorPanel?: () => void;
 }
 
 export function Header({
@@ -22,6 +23,7 @@ export function Header({
   onDirectionChange,
   onClearEditor,
   onLoadSample,
+  onOpenColorPanel,
 }: HeaderProps) {
   return (
     <header
@@ -38,6 +40,18 @@ export function Header({
 
       {/* Utility buttons — end group */}
       <div className="flex items-center gap-1">
+        <button
+          type="button"
+          onClick={onOpenColorPanel}
+          disabled={!onOpenColorPanel}
+          aria-label="הגדרות צבע"
+          title="הגדרות צבע"
+          className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground
+                     hover:bg-muted hover:text-foreground active:scale-[0.97] transition-colors
+                     disabled:opacity-50 disabled:pointer-events-none"
+        >
+          <Palette className="size-4" aria-hidden="true" />
+        </button>
         <DirectionToggle value={docDirection} onChange={onDirectionChange} />
         <button
           type="button"
