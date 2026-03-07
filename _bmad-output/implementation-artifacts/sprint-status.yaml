@@ -55,7 +55,7 @@ development_status:
   epic-2: in-progress
   2-1-color-system-and-color-panel: done
   2-2-built-in-theme-presets: done
-  2-3-custom-preset-save-and-load: ready-for-dev
+  2-3-custom-preset-save-and-load: done
   2-4-image-color-extraction: ready-for-dev
   2-5-dark-light-mode-toggle: backlog
   epic-2-retrospective: optional

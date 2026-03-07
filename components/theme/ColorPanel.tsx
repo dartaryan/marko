@@ -1,9 +1,11 @@
 'use client';
+import { useState, useRef, useEffect } from 'react';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ColorPicker } from './ColorPicker';
 import { PresetGrid } from './PresetGrid';
 import { DEFAULT_CLASSIC_THEME } from '@/lib/colors/defaults';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
+import { useCustomPresets } from '@/lib/hooks/useCustomPresets';
 import type { ColorTheme } from '@/types/colors';
 
 // Exported so Story 2.3 can use the same key for custom preset persistence
@@ -45,10 +47,28 @@ const SECTIONS: { title: string; keys: (keyof ColorTheme)[] }[] = [
 
 export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: ColorPanelProps) {
   const [activePreset, setActivePreset] = useLocalStorage<string>(ACTIVE_PRESET_KEY, 'classic');
+  const { customPresets, savePreset, deletePreset } = useCustomPresets();
+  const [isSavingPreset, setIsSavingPreset] = useState(false);
+  const [draftPresetName, setDraftPresetName] = useState('');
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isSavingPreset) {
+      nameInputRef.current?.focus();
+    }
+  }, [isSavingPreset]);
 
   function handleColorChange(key: keyof ColorTheme, value: string) {
     onThemeChange({ ...theme, [key]: value });
     setActivePreset(''); // manual edit = custom theme
+  }
+
+  function handleSavePreset() {
+    const trimmed = draftPresetName.trim();
+    if (!trimmed) return;
+    savePreset(trimmed, theme);
+    setDraftPresetName('');
+    setIsSavingPreset(false);
   }
 
   return (
@@ -63,7 +83,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
         </SheetHeader>
 
         <div className="mt-4 space-y-6 pb-6">
-          {/* Preset selection grid */}
+          {/* Preset selection grid + custom presets + save form */}
           <div>
             <h3 className="mb-2 text-sm font-semibold text-muted-foreground">נושא</h3>
             <PresetGrid
@@ -72,7 +92,67 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
                 onThemeChange(presetTheme);
                 setActivePreset(name);
               }}
+              customPresets={customPresets}
+              onCustomPresetSelect={(colors) => {
+                onThemeChange(colors);
+                setActivePreset(''); // clear built-in active indicator
+              }}
+              onDeleteCustomPreset={deletePreset}
             />
+
+            {/* Save current colors as named custom preset */}
+            <div className="mt-2">
+              {isSavingPreset ? (
+                <div className="flex gap-1.5">
+                  <input
+                    type="text"
+                    value={draftPresetName}
+                    onChange={(e) => setDraftPresetName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleSavePreset();
+                      if (e.key === 'Escape') {
+                        setIsSavingPreset(false);
+                        setDraftPresetName('');
+                      }
+                    }}
+                    ref={nameInputRef}
+                    placeholder="שם הנושא..."
+                    dir="rtl"
+                    className="flex-1 rounded border border-border px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label="שם הנושא החדש"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleSavePreset}
+                    disabled={!draftPresetName.trim()}
+                    className="rounded border border-border px-2 py-1 text-sm hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    aria-label="שמור נושא"
+                  >
+                    שמור
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsSavingPreset(false);
+                      setDraftPresetName('');
+                    }}
+                    className="rounded border border-border px-2 py-1 text-sm hover:bg-muted transition-colors"
+                    aria-label="ביטול שמירת נושא"
+                  >
+                    ביטול
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setIsSavingPreset(true)}
+                  className="w-full rounded border border-border px-3 py-1.5 text-start text-sm text-muted-foreground hover:bg-muted transition-colors"
+                  aria-label="שמור צבעים נוכחיים כנושא מותאם אישית"
+                >
+                  שמור נושא נוכחי...
+                </button>
+              )}
+            </div>
           </div>
 
           {SECTIONS.map((section) => (

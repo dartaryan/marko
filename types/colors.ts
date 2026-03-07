@@ -27,3 +27,8 @@ export interface ColorPreset {
   hebrewName: string;
   theme: ColorTheme;
 }
+
+export interface CustomPreset {
+  name: string;
+  colors: ColorTheme; // MUST be 'colors' — matches V2_KEYS.customPresets migration format
+}
