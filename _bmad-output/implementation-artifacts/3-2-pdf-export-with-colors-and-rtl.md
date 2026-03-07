@@ -1,6 +1,6 @@
 # Story 3.2: PDF Export with Colors & RTL
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -32,36 +32,36 @@ so that I can share a polished, print-ready version of my document.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Install `html2pdf.js` dependency (AC: #9)
-  - [ ] 1.1: Run `pnpm add html2pdf.js`
-  - [ ] 1.2: Run `pnpm add -D @types/html2pdf.js` — DefinitelyTyped types exist for this package; install them so TypeScript doesn't need a manual shim
+- [x] Task 1: Install `html2pdf.js` dependency (AC: #9)
+  - [x] 1.1: Run `pnpm add html2pdf.js`
+  - [x] 1.2: Run `pnpm add -D @types/html2pdf.js` — DefinitelyTyped types exist for this package; install them so TypeScript doesn't need a manual shim
 
-- [ ] Task 2: Create `lib/export/pdf-generator.ts` (AC: #1–#4, #8–#10)
-  - [ ] 2.1: Export `async function generatePdf(element: HTMLElement, filename: string): Promise<void>`
-  - [ ] 2.2: Lazy-load via `const html2pdfLib = await import('html2pdf.js'); const html2pdf = html2pdfLib.default;`
-  - [ ] 2.3: Build options object: `margin: [15, 15, 15, 15]`, `filename: \`${filename}.pdf\``, `image: { type: 'jpeg', quality: 0.95 }`, `html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true }`, `jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }`, `pagebreak: { mode: ['css', 'legacy'] }`
-  - [ ] 2.4: Inject page-break styles into the element BEFORE calling html2pdf, then restore: create a `<style>` element with `h1,h2,h3{page-break-after:avoid}pre,table,blockquote{page-break-inside:avoid}`, prepend to `element`, call html2pdf, then remove the style element after
-  - [ ] 2.5: Await `html2pdf().set(opt).from(element).save()` — this triggers download and resolves Promise on completion
-  - [ ] 2.6: The function must NOT clone the element — html2pdf.js needs the live DOM element so that CSS variables (color theme) and rendered Mermaid SVGs are available to html2canvas
+- [x] Task 2: Create `lib/export/pdf-generator.ts` (AC: #1–#4, #8–#10)
+  - [x] 2.1: Export `async function generatePdf(element: HTMLElement, filename: string): Promise<void>`
+  - [x] 2.2: Lazy-load via `const html2pdfLib = await import('html2pdf.js'); const html2pdf = html2pdfLib.default;`
+  - [x] 2.3: Build options object: `margin: [15, 15, 15, 15]`, `filename: \`${filename}.pdf\``, `image: { type: 'jpeg', quality: 0.95 }`, `html2canvas: { scale: 2, useCORS: true, logging: false, letterRendering: true }`, `jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }`, `pagebreak: { mode: ['css', 'legacy'] }`
+  - [x] 2.4: Inject page-break styles into the element BEFORE calling html2pdf, then restore: create a `<style>` element with `h1,h2,h3{page-break-after:avoid}pre,table,blockquote{page-break-inside:avoid}`, prepend to `element`, call html2pdf, then remove the style element after
+  - [x] 2.5: Await `html2pdf().set(opt).from(element).save()` — this triggers download and resolves Promise on completion
+  - [x] 2.6: The function must NOT clone the element — html2pdf.js needs the live DOM element so that CSS variables (color theme) and rendered Mermaid SVGs are available to html2canvas
 
-- [ ] Task 3: Create `lib/export/pdf-generator.test.ts` (AC: #1–#4, #7, #10)
-  - [ ] 3.1: Use `vi.hoisted()` to create shared mock functions (`mockSave`, `mockFrom`, `mockSet`, `mockHtml2pdf`) — this is required because `vi.mock` factory is hoisted and cannot access outer-scope `vi.fn()` declarations directly
-  - [ ] 3.2: `vi.mock('html2pdf.js', () => ({ default: mockHtml2pdf }))`
-  - [ ] 3.3: `beforeEach(() => { vi.clearAllMocks(); /* re-chain: mockSave.mockResolvedValue(undefined); mockFrom.mockReturnValue({save:mockSave}); ... */ })`
-  - [ ] 3.4: Test: calls `html2pdf()` with correct `filename` (`'my-doc.pdf'` not `'my-doc'`)
-  - [ ] 3.5: Test: calls `html2pdf()` with `jsPDF.format === 'a4'`
-  - [ ] 3.6: Test: calls `html2pdf()` with `html2canvas.scale === 2`
-  - [ ] 3.7: Test: calls `.from(element)` with the exact element passed in
-  - [ ] 3.8: Test: calls `.save()` to trigger download
-  - [ ] 3.9: Test: propagates rejection — `mockSave.mockRejectedValueOnce(new Error('fail'))` → `await expect(generatePdf(el, 'f')).rejects.toThrow('fail')`
-  - [ ] 3.10: Test: injects a `<style>` element into `element` before calling html2pdf (check `element.querySelector('style')` is called, or spy on `element.prepend`)
-  - [ ] 3.11: Test: removes the injected `<style>` after generation (element should not have the style tag after `generatePdf` resolves)
+- [x] Task 3: Create `lib/export/pdf-generator.test.ts` (AC: #1–#4, #7, #10)
+  - [x] 3.1: Use `vi.hoisted()` to create shared mock functions (`mockSave`, `mockFrom`, `mockSet`, `mockHtml2pdf`) — this is required because `vi.mock` factory is hoisted and cannot access outer-scope `vi.fn()` declarations directly
+  - [x] 3.2: `vi.mock('html2pdf.js', () => ({ default: mockHtml2pdf }))`
+  - [x] 3.3: `beforeEach(() => { vi.clearAllMocks(); /* re-chain: mockSave.mockResolvedValue(undefined); mockFrom.mockReturnValue({save:mockSave}); ... */ })`
+  - [x] 3.4: Test: calls `html2pdf()` with correct `filename` (`'my-doc.pdf'` not `'my-doc'`)
+  - [x] 3.5: Test: calls `html2pdf()` with `jsPDF.format === 'a4'`
+  - [x] 3.6: Test: calls `html2pdf()` with `html2canvas.scale === 2`
+  - [x] 3.7: Test: calls `.from(element)` with the exact element passed in
+  - [x] 3.8: Test: calls `.save()` to trigger download
+  - [x] 3.9: Test: propagates rejection — `mockSave.mockRejectedValueOnce(new Error('fail'))` → `await expect(generatePdf(el, 'f')).rejects.toThrow('fail')`
+  - [x] 3.10: Test: injects a `<style>` element into `element` before calling html2pdf (check `element.querySelector('style')` is called, or spy on `element.prepend`)
+  - [x] 3.11: Test: removes the injected `<style>` after generation (element should not have the style tag after `generatePdf` resolves)
 
-- [ ] Task 4: Update `components/preview/MarkdownRenderer.tsx` to use `React.forwardRef` (AC: #3)
-  - [ ] 4.1: Add `React` to the import: `import React, { useMemo, useRef, useEffect, useCallback } from 'react'`
-  - [ ] 4.2: Convert to `export const MarkdownRenderer = React.forwardRef<HTMLDivElement, MarkdownRendererProps>(function MarkdownRenderer({ content, dir = 'rtl' }, forwardedRef) { ... })`
-  - [ ] 4.3: Keep the internal `containerRef = useRef<HTMLDivElement>(null)` — it is still used for Mermaid rendering
-  - [ ] 4.4: Replace `ref={containerRef}` on the main `<div>` with a ref callback that assigns to BOTH refs:
+- [x] Task 4: Update `components/preview/MarkdownRenderer.tsx` to use `React.forwardRef` (AC: #3)
+  - [x] 4.1: Add `React` to the import: `import React, { useMemo, useRef, useEffect, useCallback } from 'react'`
+  - [x] 4.2: Convert to `export const MarkdownRenderer = React.forwardRef<HTMLDivElement, MarkdownRendererProps>(function MarkdownRenderer({ content, dir = 'rtl' }, forwardedRef) { ... })`
+  - [x] 4.3: Keep the internal `containerRef = useRef<HTMLDivElement>(null)` — it is still used for Mermaid rendering
+  - [x] 4.4: Replace `ref={containerRef}` on the main `<div>` with a ref callback that assigns to BOTH refs:
     ```tsx
     ref={(node) => {
       (containerRef as React.MutableRefObject<HTMLDivElement | null>).current = node;
@@ -72,26 +72,26 @@ so that I can share a polished, print-ready version of my document.
       }
     }}
     ```
-  - [ ] 4.5: Add `MarkdownRenderer.displayName = 'MarkdownRenderer'` after the forwardRef definition
+  - [x] 4.5: Add `MarkdownRenderer.displayName = 'MarkdownRenderer'` after the forwardRef definition
 
-- [ ] Task 5: Update `components/preview/PreviewPanel.tsx` to accept and forward `contentRef` (AC: #3)
-  - [ ] 5.1: Add `contentRef?: React.Ref<HTMLDivElement>` to `PreviewPanelProps` interface
-  - [ ] 5.2: Destructure `contentRef` in the function params
-  - [ ] 5.3: Pass `ref={contentRef}` to `<MarkdownRenderer>` — `ref` is a special prop handled by forwardRef, not passed as a prop explicitly; use `<MarkdownRenderer ref={contentRef} content={content} dir={dir} />`
-  - [ ] 5.4: Add `import React from 'react'` if not already present (needed to type `React.Ref`)
+- [x] Task 5: Update `components/preview/PreviewPanel.tsx` to accept and forward `contentRef` (AC: #3)
+  - [x] 5.1: Add `contentRef?: React.Ref<HTMLDivElement>` to `PreviewPanelProps` interface
+  - [x] 5.2: Destructure `contentRef` in the function params
+  - [x] 5.3: Pass `ref={contentRef}` to `<MarkdownRenderer>` — `ref` is a special prop handled by forwardRef, not passed as a prop explicitly; use `<MarkdownRenderer ref={contentRef} content={content} dir={dir} />`
+  - [x] 5.4: Add `import React from 'react'` if not already present (needed to type `React.Ref`)
 
-- [ ] Task 6: Create `components/export/PdfProgress.tsx` (AC: #5, #6, #7)
-  - [ ] 6.1: Props interface: `state: 'generating' | 'success' | 'error'`, `onRetry: () => void`, `onClose: () => void`
-  - [ ] 6.2: Render as a fixed overlay positioned bottom-right (like a toast): `className="fixed bottom-4 end-4 z-50 flex items-center gap-3 rounded-lg border border-border bg-popover px-4 py-3 shadow-lg"`
-  - [ ] 6.3: **generating state**: spinner icon (use `className="animate-spin"` on a circle SVG or `Loader2` from lucide-react) + `"...מייצר PDF"` text
-  - [ ] 6.4: **success state**: checkmark icon (`CheckCircle2` from lucide-react, green) + `"!PDF נוצר בהצלחה"` text
-  - [ ] 6.5: **error state**: alert icon (`AlertCircle` from lucide-react, destructive color) + `"שגיאה ביצירת PDF. נסה שוב."` text + retry button (`aria-label="נסה שוב"`) + close button (`aria-label="סגור"`, calls `onClose`)
-  - [ ] 6.6: Retry button `onClick={onRetry}` with label "נסה שוב"
-  - [ ] 6.7: All user-facing text is Hebrew per project convention
-  - [ ] 6.8: Import only `Loader2`, `CheckCircle2`, `AlertCircle` from `lucide-react` — do NOT add any new npm packages for this component
+- [x] Task 6: Create `components/export/PdfProgress.tsx` (AC: #5, #6, #7)
+  - [x] 6.1: Props interface: `state: 'generating' | 'success' | 'error'`, `onRetry: () => void`, `onClose: () => void`
+  - [x] 6.2: Render as a fixed overlay positioned bottom-right (like a toast): `className="fixed bottom-4 end-4 z-50 flex items-center gap-3 rounded-lg border border-border bg-popover px-4 py-3 shadow-lg"`
+  - [x] 6.3: **generating state**: spinner icon (use `className="animate-spin"` on a circle SVG or `Loader2` from lucide-react) + `"...מייצר PDF"` text
+  - [x] 6.4: **success state**: checkmark icon (`CheckCircle2` from lucide-react, green) + `"!PDF נוצר בהצלחה"` text
+  - [x] 6.5: **error state**: alert icon (`AlertCircle` from lucide-react, destructive color) + `"שגיאה ביצירת PDF. נסה שוב."` text + retry button (`aria-label="נסה שוב"`) + close button (`aria-label="סגור"`, calls `onClose`)
+  - [x] 6.6: Retry button `onClick={onRetry}` with label "נסה שוב"
+  - [x] 6.7: All user-facing text is Hebrew per project convention
+  - [x] 6.8: Import only `Loader2`, `CheckCircle2`, `AlertCircle` from `lucide-react` — do NOT add any new npm packages for this component
 
-- [ ] Task 7: Update `app/editor/page.tsx` (AC: all)
-  - [ ] 7.1: Add imports:
+- [x] Task 7: Update `app/editor/page.tsx` (AC: all)
+  - [x] 7.1: Add imports:
     ```typescript
     import { useRef } from 'react';
     import { generatePdf } from '@/lib/export/pdf-generator';
@@ -100,7 +100,7 @@ so that I can share a polished, print-ready version of my document.
     import { ExportModal } from '@/components/export/ExportModal';
     ```
     Note: `useState` is already imported. `useRef` needs to be added to the existing React import (currently only `useState` is imported from `'react'`).
-  - [ ] 7.2: Add state and ref inside `EditorPage`:
+  - [x] 7.2: Add state and ref inside `EditorPage`:
     ```typescript
     const previewContentRef = useRef<HTMLDivElement>(null);
     const [isExportModalOpen, setIsExportModalOpen] = useState(false);
@@ -110,8 +110,8 @@ so that I can share a polished, print-ready version of my document.
     const [pdfState, setPdfState] = useState<PdfState>('idle');
     ```
     Note: Story 3.1 adds `isExportModalOpen`, `pendingExportType`, and `handleExportRequest`. Only add what isn't already there after Story 3.1 is implemented.
-  - [ ] 7.3: Add `function handleExportRequest(type: ExportType) { setPendingExportType(type); setIsExportModalOpen(true); }` (already added by Story 3.1)
-  - [ ] 7.4: Replace stub `handleExportConfirm` with real implementation:
+  - [x] 7.3: Add `function handleExportRequest(type: ExportType) { setPendingExportType(type); setIsExportModalOpen(true); }` (already added by Story 3.1)
+  - [x] 7.4: Replace stub `handleExportConfirm` with real implementation:
     ```typescript
     function handleExportConfirm(filename: string, type: ExportType) {
       if (type === 'pdf') {
@@ -120,7 +120,7 @@ so that I can share a polished, print-ready version of my document.
       // 'html' and 'markdown' — implemented in Story 3.3
     }
     ```
-  - [ ] 7.5: Add `handlePdfExport` async function:
+  - [x] 7.5: Add `handlePdfExport` async function:
     ```typescript
     async function handlePdfExport(filename: string) {
       const element = previewContentRef.current;
@@ -140,10 +140,10 @@ so that I can share a polished, print-ready version of my document.
       }
     }
     ```
-  - [ ] 7.6: Pass `contentRef={previewContentRef}` to `<PreviewPanel>` in JSX
-  - [ ] 7.7: Pass `onExportRequest={handleExportRequest}` to `<Header>` (already done by Story 3.1)
-  - [ ] 7.8: Add `{pendingExportType && <ExportModal isOpen={isExportModalOpen} onOpenChange={setIsExportModalOpen} exportType={pendingExportType} content={content} onExport={handleExportConfirm} />}` after `<ColorPanel>` (already done by Story 3.1)
-  - [ ] 7.9: Add `PdfProgress` after `ExportModal`:
+  - [x] 7.6: Pass `contentRef={previewContentRef}` to `<PreviewPanel>` in JSX
+  - [x] 7.7: Pass `onExportRequest={handleExportRequest}` to `<Header>` (already done by Story 3.1)
+  - [x] 7.8: Add `{pendingExportType && <ExportModal isOpen={isExportModalOpen} onOpenChange={setIsExportModalOpen} exportType={pendingExportType} content={content} onExport={handleExportConfirm} />}` after `<ColorPanel>` (already done by Story 3.1)
+  - [x] 7.9: Add `PdfProgress` after `ExportModal`:
     ```tsx
     {pdfState !== 'idle' && (
       <PdfProgress
@@ -670,4 +670,44 @@ claude-sonnet-4-6[1m]
 
 ### Completion Notes List
 
+- Installed html2pdf.js 0.14.0 and @types/html2pdf.js 0.10.0 via pnpm
+- Created `lib/export/pdf-generator.ts`: async wrapper with lazy import, page-break style injection/cleanup in finally block, A4 format, 2x scale, CORS enabled
+- Created `lib/export/pdf-generator.test.ts`: 9 tests covering filename, format, scale, element ref, save call, rejection propagation, style injection before/after/on-failure — all pass
+- Converted `MarkdownRenderer` to `React.forwardRef` with dual-ref callback (containerRef for Mermaid + forwardedRef for PDF export); displayName set; all 19 existing tests pass
+- Updated `PreviewPanel` to accept `contentRef?: React.Ref<HTMLDivElement>` and pass it as `ref` to `MarkdownRenderer`
+- Created `components/export/PdfProgress.tsx`: fixed bottom-right overlay with generating/success/error states, Hebrew text, lucide-react icons, ARIA attributes, logical `end-4` positioning
+- Updated `app/editor/page.tsx`: added `useRef`, `previewContentRef`, `PdfProgress` import, `generatePdf` import, `pdfState` state, `handleExportConfirm` replaced stub with real PDF dispatch, `handlePdfExport` async function, `PdfProgress` rendered after ExportModal
+- Full test suite: 189 tests pass, 0 regressions
+
 ### File List
+
+- lib/export/pdf-generator.ts (new)
+- lib/export/pdf-generator.test.ts (new)
+- components/export/PdfProgress.tsx (new)
+- components/preview/MarkdownRenderer.tsx (modified — forwardRef conversion)
+- components/preview/PreviewPanel.tsx (modified — contentRef prop)
+- app/editor/page.tsx (modified — useRef, PdfProgress, generatePdf, handlePdfExport)
+- package.json (modified — html2pdf.js added)
+- pnpm-lock.yaml (modified — lockfile updated)
+
+## Senior Developer Review (AI)
+
+**Reviewer:** BenAkiva on 2026-03-07
+**Outcome:** Changes Requested → Fixed
+
+**Findings resolved:**
+- 🔴 H1 [FIXED]: AC7 browser-print fallback missing — added `onPrint` prop to `PdfProgress`, wired `window.print()` in `page.tsx`
+- 🟡 M1 [FIXED]: No pagebreak/margin test coverage — added 2 tests (`pagebreak.mode`, `margin`)
+- 🟡 M2 [FIXED]: No concurrent export guard — added `if (pdfState === 'generating') return` in `handlePdfExport`
+- 🟡 M3 [FIXED]: `PdfState` type defined inside component — moved to module scope
+- 🟡 M4 [FIXED]: `lib/export/filename-utils.ts` never committed (Story 3.1 residue) — included in commit
+- 🟢 L1 [FIXED]: `removeChild` in finally could shadow errors — replaced with `style.remove()`
+- 🟢 L2 [FIXED]: No margin test — added as part of M1
+- 🟢 L3 [ACCEPTED]: Success state has no manual dismiss — auto-dismiss per AC6 is sufficient
+
+**Final test count:** 191 tests, 0 failures.
+
+## Change Log
+
+- Implemented Story 3.2: PDF export with colors and RTL (Date: 2026-03-07)
+- Code review fixes: AC7 print fallback, pagebreak/margin tests, concurrent guard, PdfState scope, style.remove() (Date: 2026-03-07)

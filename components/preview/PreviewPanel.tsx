@@ -1,13 +1,15 @@
 'use client';
+import React from 'react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import type { DocDirection } from '@/types/editor';
 
 interface PreviewPanelProps {
   content: string;
   dir?: DocDirection;
+  contentRef?: React.Ref<HTMLDivElement>;
 }
 
-export function PreviewPanel({ content, dir = 'rtl' }: PreviewPanelProps) {
+export function PreviewPanel({ content, dir = 'rtl', contentRef }: PreviewPanelProps) {
   return (
     <section
       className="flex flex-col flex-1 min-h-0"
@@ -20,7 +22,7 @@ export function PreviewPanel({ content, dir = 'rtl' }: PreviewPanelProps) {
         className="flex-1 overflow-hidden"
         style={{ backgroundColor: 'var(--color-preview-bg)' }}
       >
-        <MarkdownRenderer content={content} dir={dir} />
+        <MarkdownRenderer ref={contentRef} content={content} dir={dir} />
       </div>
     </section>
   );

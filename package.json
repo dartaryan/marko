@@ -22,6 +22,7 @@
     "clsx": "^2.1.1",
     "convex": "^1.32.0",
     "highlight.js": "^11.11.1",
+    "html2pdf.js": "^0.14.0",
     "isomorphic-dompurify": "^3.0.0",
     "lucide-react": "^0.577.0",
     "marked": "^17.0.4",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/html2pdf.js": "^0.10.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

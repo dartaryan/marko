@@ -63,8 +63,8 @@ development_status:
   # Epic 3: Document Export & Sharing
   epic-3: in-progress
   3-1-export-modal-and-filename-selection: done
-  3-2-pdf-export-with-colors-and-rtl: ready-for-dev
-  3-3-html-and-markdown-export: backlog
+  3-2-pdf-export-with-colors-and-rtl: done
+  3-3-html-and-markdown-export: ready-for-dev
   3-4-clipboard-copy-word-and-html-text: backlog
   epic-3-retrospective: optional
 
