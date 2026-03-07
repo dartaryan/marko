@@ -4,9 +4,11 @@ import DOMPurify from 'isomorphic-dompurify';
 import { renderMarkdown } from '@/lib/markdown/render-pipeline';
 import { initializeMermaid, runMermaid } from '@/lib/markdown/mermaid-setup';
 import 'highlight.js/styles/github-dark.css';
+import type { DocDirection } from '@/types/editor';
 
 interface MarkdownRendererProps {
   content: string;
+  dir?: DocDirection;
 }
 
 /** Detect presence of mermaid blocks in rendered HTML without full DOM parse */
@@ -21,7 +23,7 @@ const EMPTY_PLACEHOLDER =
   '<p class="text-sm">...הדבק מארקדאון בעורך כדי לראות תצוגה מקדימה</p>' +
   '</div>';
 
-export function MarkdownRenderer({ content }: MarkdownRendererProps) {
+export function MarkdownRenderer({ content, dir = 'rtl' }: MarkdownRendererProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const html = useMemo(
@@ -77,6 +79,7 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
   return (
     <div
       ref={containerRef}
+      dir={dir}
       suppressHydrationWarning
       className={html ? 'preview-content h-full overflow-y-auto p-6' : 'h-full'}
       dangerouslySetInnerHTML={{ __html: html || EMPTY_PLACEHOLDER }}
