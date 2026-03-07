@@ -3,7 +3,14 @@ import { Expand, Trash2, FileText, Palette } from 'lucide-react';
 import { ViewModeToggle } from './ViewModeToggle';
 import { DirectionToggle } from './DirectionToggle';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
-import type { ViewMode, DocDirection } from '@/types/editor';
+import { ToolbarDropdown } from '@/components/editor/ToolbarDropdown';
+import type { ViewMode, DocDirection, ExportType } from '@/types/editor';
+
+const exportItems = [
+  { label: 'PDF', value: 'pdf' },
+  { label: 'HTML', value: 'html' },
+  { label: 'Markdown', labelEn: '.md', value: 'markdown' },
+];
 
 interface HeaderProps {
   viewMode: ViewMode;
@@ -14,6 +21,7 @@ interface HeaderProps {
   onClearEditor: () => void;
   onLoadSample: () => void;
   onOpenColorPanel?: () => void;
+  onExportRequest: (type: ExportType) => void;
 }
 
 export function Header({
@@ -25,6 +33,7 @@ export function Header({
   onClearEditor,
   onLoadSample,
   onOpenColorPanel,
+  onExportRequest,
 }: HeaderProps) {
   return (
     <header
@@ -41,6 +50,12 @@ export function Header({
 
       {/* Utility buttons — end group */}
       <div className="flex items-center gap-1">
+        <ToolbarDropdown
+          triggerLabel="ייצא"
+          triggerAriaLabel="ייצא מסמך"
+          items={exportItems}
+          onSelect={(val) => onExportRequest(val as ExportType)}
+        />
         <button
           type="button"
           onClick={onOpenColorPanel}

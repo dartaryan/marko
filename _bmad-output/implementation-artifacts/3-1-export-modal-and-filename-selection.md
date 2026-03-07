@@ -1,6 +1,6 @@
 # Story 3.1: Export Modal & Filename Selection
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -30,73 +30,73 @@ so that I can organize my exported files with meaningful names.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create `lib/export/filename-utils.ts` (AC: #3)
-  - [ ] 1.1: Implement and export `function getFirstHeading(content: string): string`
-  - [ ] 1.2: Regex: `content.match(/^#{1,2}\s+(.+)$/m)` — H1/H2 only; `m` (multiline) flag is REQUIRED so `^` matches each line start, not just the string start
-  - [ ] 1.3: Slugify captured group: `.trim().replace(/[<>:"/\\|?*]/g, '').replace(/\s+/g, '-').substring(0, 50)`
-  - [ ] 1.4: Return `'markdown-document'` when no match OR when slugified result is empty string (heading was all invalid chars)
+- [x] Task 1: Create `lib/export/filename-utils.ts` (AC: #3)
+  - [x] 1.1: Implement and export `function getFirstHeading(content: string): string`
+  - [x] 1.2: Regex: `content.match(/^#{1,2}\s+(.+)$/m)` — H1/H2 only; `m` (multiline) flag is REQUIRED so `^` matches each line start, not just the string start
+  - [x] 1.3: Slugify captured group: `.trim().replace(/[<>:"/\\|?*]/g, '').replace(/\s+/g, '-').substring(0, 50)`
+  - [x] 1.4: Return `'markdown-document'` when no match OR when slugified result is empty string (heading was all invalid chars)
 
-- [ ] Task 2: Create `lib/export/filename-utils.test.ts` (AC: #3)
-  - [ ] 2.1: H1 heading with spaces → hyphenated slug (`'# My Document'` → `'My-Document'`)
-  - [ ] 2.2: H2 heading → slug (pattern `^#{1,2}` matches H2)
-  - [ ] 2.3: H3+ heading → `'markdown-document'` (not matched by `#{1,2}`)
-  - [ ] 2.4: Heading with invalid chars (`<>:"/\|?*`) → chars stripped
-  - [ ] 2.5: Heading longer than 50 chars → truncated at 50 characters
-  - [ ] 2.6: Empty string content → `'markdown-document'`
-  - [ ] 2.7: Content with no heading lines → `'markdown-document'`
-  - [ ] 2.8: Heading with leading/trailing spaces in text → trimmed before slugification
+- [x] Task 2: Create `lib/export/filename-utils.test.ts` (AC: #3)
+  - [x] 2.1: H1 heading with spaces → hyphenated slug (`'# My Document'` → `'My-Document'`)
+  - [x] 2.2: H2 heading → slug (pattern `^#{1,2}` matches H2)
+  - [x] 2.3: H3+ heading → `'markdown-document'` (not matched by `#{1,2}`)
+  - [x] 2.4: Heading with invalid chars (`<>:"/\|?*`) → chars stripped
+  - [x] 2.5: Heading longer than 50 chars → truncated at 50 characters
+  - [x] 2.6: Empty string content → `'markdown-document'`
+  - [x] 2.7: Content with no heading lines → `'markdown-document'`
+  - [x] 2.8: Heading with leading/trailing spaces in text → trimmed before slugification
 
-- [ ] Task 3: Create `components/export/ExportModal.tsx` (AC: #2–#9)
-  - [ ] 3.1: Create file in new `components/export/` directory (per architecture)
-  - [ ] 3.2: Imports: `Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle`, `DialogDescription`, `DialogFooter` from `@/components/ui/dialog`
-  - [ ] 3.3: Imports: `getFirstHeading` from `@/lib/export/filename-utils`; `ExportType` from `@/types/editor`; `useState`, `useRef`, `useEffect` from `'react'`
-  - [ ] 3.4: Define module-level constants: `EXT_MAP: Record<ExportType, string>` = `{ pdf: '.pdf', html: '.html', markdown: '.md' }` and `TITLE_MAP: Record<ExportType, string>` = `{ pdf: 'ייצא PDF', html: 'ייצא HTML', markdown: 'ייצא Markdown' }`
-  - [ ] 3.5: Props interface: `isOpen: boolean`, `onOpenChange: (open: boolean) => void`, `exportType: ExportType`, `content: string`, `onExport: (filename: string, type: ExportType) => void`
-  - [ ] 3.6: State: `const [filename, setFilename] = useState('')`; Ref: `const inputRef = useRef<HTMLInputElement>(null)`
-  - [ ] 3.7: `useEffect([isOpen, content])` — when `isOpen` is true → `setFilename(getFirstHeading(content))`
-  - [ ] 3.8: `useEffect([isOpen])` — when `isOpen` is true → `setTimeout(() => { inputRef.current?.focus(); inputRef.current?.select(); }, 0)` to wait for Dialog open animation before focusing; return cleanup `() => clearTimeout(timer)`
-  - [ ] 3.9: `handleExport()` — guard `if (!filename.trim()) return`; call `onExport(filename.trim(), exportType)`; call `onOpenChange(false)`
-  - [ ] 3.10: `handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>)` — if `e.key === 'Enter'` → `handleExport()` (Escape handled natively by Radix Dialog)
-  - [ ] 3.11: Filename input: `ref={inputRef}`, `dir="auto"`, `type="text"`, NO `autoFocus` (use ref/effect — see anti-patterns), `aria-label="שם הקובץ לייצוא"`, `placeholder="שם הקובץ"`
-  - [ ] 3.12: Extension label: `<span aria-label={\`סיומת הקובץ: ${ext}\`}>{ext}</span>` — read-only, `flex-shrink-0`
-  - [ ] 3.13: Cancel button: `onClick={() => onOpenChange(false)}`, `aria-label="ביטול ייצוא"`, label text "ביטול"
-  - [ ] 3.14: Export button: `disabled={!filename.trim()}`, `onClick={handleExport}`, `aria-label="אשר ייצוא"`, label text "ייצא", classes include `disabled:opacity-50 disabled:cursor-not-allowed`
+- [x] Task 3: Create `components/export/ExportModal.tsx` (AC: #2–#9)
+  - [x] 3.1: Create file in new `components/export/` directory (per architecture)
+  - [x] 3.2: Imports: `Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle`, `DialogDescription`, `DialogFooter` from `@/components/ui/dialog`
+  - [x] 3.3: Imports: `getFirstHeading` from `@/lib/export/filename-utils`; `ExportType` from `@/types/editor`; `useState`, `useRef`, `useEffect` from `'react'`
+  - [x] 3.4: Define module-level constants: `EXT_MAP: Record<ExportType, string>` = `{ pdf: '.pdf', html: '.html', markdown: '.md' }` and `TITLE_MAP: Record<ExportType, string>` = `{ pdf: 'ייצא PDF', html: 'ייצא HTML', markdown: 'ייצא Markdown' }`
+  - [x] 3.5: Props interface: `isOpen: boolean`, `onOpenChange: (open: boolean) => void`, `exportType: ExportType`, `content: string`, `onExport: (filename: string, type: ExportType) => void`
+  - [x] 3.6: State: `const [filename, setFilename] = useState('')`; Ref: `const inputRef = useRef<HTMLInputElement>(null)`
+  - [x] 3.7: `useEffect([isOpen, content])` — when `isOpen` is true → `setFilename(getFirstHeading(content))`
+  - [x] 3.8: `useEffect([isOpen])` — when `isOpen` is true → `setTimeout(() => { inputRef.current?.focus(); inputRef.current?.select(); }, 0)` to wait for Dialog open animation before focusing; return cleanup `() => clearTimeout(timer)`
+  - [x] 3.9: `handleExport()` — guard `if (!filename.trim()) return`; call `onExport(filename.trim(), exportType)`; call `onOpenChange(false)`
+  - [x] 3.10: `handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>)` — if `e.key === 'Enter'` → `handleExport()` (Escape handled natively by Radix Dialog)
+  - [x] 3.11: Filename input: `ref={inputRef}`, `dir="auto"`, `type="text"`, NO `autoFocus` (use ref/effect — see anti-patterns), `aria-label="שם הקובץ לייצוא"`, `placeholder="שם הקובץ"`
+  - [x] 3.12: Extension label: `<span aria-label={\`סיומת הקובץ: ${ext}\`}>{ext}</span>` — read-only, `flex-shrink-0`
+  - [x] 3.13: Cancel button: `onClick={() => onOpenChange(false)}`, `aria-label="ביטול ייצוא"`, label text "ביטול"
+  - [x] 3.14: Export button: `disabled={!filename.trim()}`, `onClick={handleExport}`, `aria-label="אשר ייצוא"`, label text "ייצא", classes include `disabled:opacity-50 disabled:cursor-not-allowed`
 
-- [ ] Task 4: Create `components/export/ExportModal.test.tsx` (AC: all)
-  - [ ] 4.1: filename pre-filled from H1 heading in content (e.g., `'# My Document'` → input value `'My-Document'`)
-  - [ ] 4.2: shows ".pdf" extension label for pdf type
-  - [ ] 4.3: shows ".html" extension label for html type
-  - [ ] 4.4: shows ".md" extension label for markdown type
-  - [ ] 4.5: filename input is editable (fireEvent.change updates value)
-  - [ ] 4.6: export button calls `onExport('My-Document', 'pdf')` when clicked with valid filename
-  - [ ] 4.7: export button is disabled when filename input is cleared to empty string
-  - [ ] 4.8: export button is disabled when filename is whitespace-only (`'   '`)
-  - [ ] 4.9: cancel button calls `onOpenChange(false)` and does NOT call `onExport`
-  - [ ] 4.10: pressing Enter in input calls `onExport` with current filename
-  - [ ] 4.11: dialog title "ייצא PDF" renders for pdf type
-  - [ ] 4.12: `onOpenChange(false)` is called after a successful export confirm (modal self-closes)
+- [x] Task 4: Create `components/export/ExportModal.test.tsx` (AC: all)
+  - [x] 4.1: filename pre-filled from H1 heading in content (e.g., `'# My Document'` → input value `'My-Document'`)
+  - [x] 4.2: shows ".pdf" extension label for pdf type
+  - [x] 4.3: shows ".html" extension label for html type
+  - [x] 4.4: shows ".md" extension label for markdown type
+  - [x] 4.5: filename input is editable (fireEvent.change updates value)
+  - [x] 4.6: export button calls `onExport('My-Document', 'pdf')` when clicked with valid filename
+  - [x] 4.7: export button is disabled when filename input is cleared to empty string
+  - [x] 4.8: export button is disabled when filename is whitespace-only (`'   '`)
+  - [x] 4.9: cancel button calls `onOpenChange(false)` and does NOT call `onExport`
+  - [x] 4.10: pressing Enter in input calls `onExport` with current filename
+  - [x] 4.11: dialog title "ייצא PDF" renders for pdf type
+  - [x] 4.12: `onOpenChange(false)` is called after a successful export confirm (modal self-closes)
 
-- [ ] Task 5: Update `components/layout/Header.tsx` (AC: #1)
-  - [ ] 5.1: Add `ToolbarDropdown` to existing import: `import { ToolbarDropdown } from '@/components/editor/ToolbarDropdown'`
-  - [ ] 5.2: Add `ExportType` to the existing `from '@/types/editor'` import — it already imports `ViewMode` and `DocDirection` from there; add `ExportType` to the SAME import statement (do NOT create a second import from the same module)
-  - [ ] 5.3: Add `onExportRequest: (type: ExportType) => void` to `HeaderProps` interface
-  - [ ] 5.4: Destructure `onExportRequest` in the function signature
-  - [ ] 5.5: Add `exportItems` array before the JSX return: `[{ label: 'PDF', value: 'pdf' }, { label: 'HTML', value: 'html' }, { label: 'Markdown', labelEn: '.md', value: 'markdown' }]`
-  - [ ] 5.6: Add `<ToolbarDropdown>` in the utility buttons `<div>` (before the Palette button), with: `triggerLabel="ייצא"`, `triggerAriaLabel="ייצא מסמך"`, `items={exportItems}`, `onSelect={(val) => onExportRequest(val as ExportType)}`
+- [x] Task 5: Update `components/layout/Header.tsx` (AC: #1)
+  - [x] 5.1: Add `ToolbarDropdown` to existing import: `import { ToolbarDropdown } from '@/components/editor/ToolbarDropdown'`
+  - [x] 5.2: Add `ExportType` to the existing `from '@/types/editor'` import — it already imports `ViewMode` and `DocDirection` from there; add `ExportType` to the SAME import statement (do NOT create a second import from the same module)
+  - [x] 5.3: Add `onExportRequest: (type: ExportType) => void` to `HeaderProps` interface
+  - [x] 5.4: Destructure `onExportRequest` in the function signature
+  - [x] 5.5: Add `exportItems` array before the JSX return: `[{ label: 'PDF', value: 'pdf' }, { label: 'HTML', value: 'html' }, { label: 'Markdown', labelEn: '.md', value: 'markdown' }]`
+  - [x] 5.6: Add `<ToolbarDropdown>` in the utility buttons `<div>` (before the Palette button), with: `triggerLabel="ייצא"`, `triggerAriaLabel="ייצא מסמך"`, `items={exportItems}`, `onSelect={(val) => onExportRequest(val as ExportType)}`
 
-- [ ] Task 6: Update `app/editor/page.tsx` (AC: all)
-  - [ ] 6.1: Add `import { ExportModal } from '@/components/export/ExportModal'`
-  - [ ] 6.2: Add `ExportType` to imports from `@/types/editor` if not already present (check — currently not imported in page.tsx)
-  - [ ] 6.3: Add state: `const [isExportModalOpen, setIsExportModalOpen] = useState(false)`
-  - [ ] 6.4: Add state: `const [pendingExportType, setPendingExportType] = useState<ExportType | null>(null)`
-  - [ ] 6.5: Add `function handleExportRequest(type: ExportType) { setPendingExportType(type); setIsExportModalOpen(true); }`
-  - [ ] 6.6: Add stub: `function handleExportConfirm(_filename: string, _type: ExportType) { /* Implemented in Stories 3.2 (PDF) and 3.3 (HTML, Markdown) */ }` — leading underscore on params suppresses lint warnings for intentionally unused params
-  - [ ] 6.7: Pass `onExportRequest={handleExportRequest}` to `<Header>`
-  - [ ] 6.8: After `<ColorPanel>`, add: `{pendingExportType && <ExportModal isOpen={isExportModalOpen} onOpenChange={setIsExportModalOpen} exportType={pendingExportType} content={content} onExport={handleExportConfirm} />}`
+- [x] Task 6: Update `app/editor/page.tsx` (AC: all)
+  - [x] 6.1: Add `import { ExportModal } from '@/components/export/ExportModal'`
+  - [x] 6.2: Add `ExportType` to imports from `@/types/editor` if not already present (check — currently not imported in page.tsx)
+  - [x] 6.3: Add state: `const [isExportModalOpen, setIsExportModalOpen] = useState(false)`
+  - [x] 6.4: Add state: `const [pendingExportType, setPendingExportType] = useState<ExportType | null>(null)`
+  - [x] 6.5: Add `function handleExportRequest(type: ExportType) { setPendingExportType(type); setIsExportModalOpen(true); }`
+  - [x] 6.6: Add stub: `function handleExportConfirm(_filename: string, _type: ExportType) { /* Implemented in Stories 3.2 (PDF) and 3.3 (HTML, Markdown) */ }` — leading underscore on params suppresses lint warnings for intentionally unused params
+  - [x] 6.7: Pass `onExportRequest={handleExportRequest}` to `<Header>`
+  - [x] 6.8: After `<ColorPanel>`, add: `{pendingExportType && <ExportModal isOpen={isExportModalOpen} onOpenChange={setIsExportModalOpen} exportType={pendingExportType} content={content} onExport={handleExportConfirm} />}`
 
-- [ ] Task 7: Update sprint status
-  - [ ] 7.1: `_bmad-output/implementation-artifacts/sprint-status.yaml` — update `epic-3` from `backlog` to `in-progress`
-  - [ ] 7.2: Update `3-1-export-modal-and-filename-selection` from `backlog` to `done` (set by dev after implementation + code review)
+- [x] Task 7: Update sprint status
+  - [x] 7.1: `_bmad-output/implementation-artifacts/sprint-status.yaml` — update `epic-3` from `backlog` to `in-progress`
+  - [x] 7.2: Update `3-1-export-modal-and-filename-selection` from `backlog` to `done` (set by dev after implementation + code review)
 
 ## Dev Notes
 
@@ -564,4 +564,19 @@ claude-sonnet-4-6[1m]
 
 ### Completion Notes List
 
+- Implemented `getFirstHeading` in `lib/export/filename-utils.ts` with multiline regex `^#{1,2}\s+(.+)$` (m flag required). Slugification strips invalid chars, replaces spaces with hyphens, truncates to 50 chars.
+- Created `ExportModal` component using Radix UI Dialog with controlled filename state. Uses `useRef` + `useEffect` + `setTimeout(..., 0)` for focus (per Story 2.3 project rule — no `autoFocus`).
+- `handleExportConfirm` in page.tsx is intentionally a no-op stub; implementation deferred to Stories 3.2/3.3.
+- Tests rewritten using project pattern (`react-dom/client` + `createRoot` + `act`) — `@testing-library/react` is NOT installed in this project.
+- All 178 tests pass (20 new: 8 filename-utils + 12 ExportModal, 158 existing regressions).
+
 ### File List
+
+- lib/export/filename-utils.ts (new)
+- lib/export/filename-utils.test.ts (new)
+- components/export/ExportModal.tsx (new)
+- components/export/ExportModal.test.tsx (new)
+- components/layout/Header.tsx (modified)
+- app/editor/page.tsx (modified)
+- _bmad-output/implementation-artifacts/sprint-status.yaml (modified)
+- _bmad-output/implementation-artifacts/3-1-export-modal-and-filename-selection.md (modified)
