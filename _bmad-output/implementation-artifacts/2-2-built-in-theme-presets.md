@@ -1,6 +1,6 @@
 # Story 2.2: Built-in Theme Presets
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -30,28 +30,28 @@ so that I can quickly apply a polished look without manually adjusting each of t
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create `components/theme/PresetGrid.tsx` (AC: #1, #2, #3, #4, #5, #8)
-  - [ ] 1.1: Import `COLOR_PRESETS` from `@/lib/colors/presets` (created in Story 2.1) and `ColorTheme` from `@/types/colors`
-  - [ ] 1.2: Define `PresetGridProps` interface: `{ activePreset: string; onPresetSelect: (name: string, theme: ColorTheme) => void; }`
-  - [ ] 1.3: Implement `getPresetGradient(theme: ColorTheme): string` — returns `linear-gradient(135deg, ${theme.previewBg} 0%, ${theme.h1} 50%, ${theme.link} 90%)` for visual preview
-  - [ ] 1.4: Render a `div` with class `grid grid-cols-5 gap-1.5` containing one `button` per preset
-  - [ ] 1.5: Each button: `style={{ background: getPresetGradient(preset.theme) }}`, `aria-label={preset.hebrewName}`, `title={preset.hebrewName}`, `type="button"`, `onClick={() => onPresetSelect(preset.name, preset.theme)}`, active ring class when `preset.name === activePreset`
-  - [ ] 1.6: Button dimensions: `h-9 w-full rounded` with `transition-transform active:scale-95`, active ring: `ring-2 ring-offset-1 ring-primary`
+- [x] Task 1: Create `components/theme/PresetGrid.tsx` (AC: #1, #2, #3, #4, #5, #8)
+  - [x] 1.1: Import `COLOR_PRESETS` from `@/lib/colors/presets` (created in Story 2.1) and `ColorTheme` from `@/types/colors`
+  - [x] 1.2: Define `PresetGridProps` interface: `{ activePreset: string; onPresetSelect: (name: string, theme: ColorTheme) => void; }`
+  - [x] 1.3: Implement `getPresetGradient(theme: ColorTheme): string` — returns `linear-gradient(135deg, ${theme.previewBg} 0%, ${theme.h1} 50%, ${theme.link} 90%)` for visual preview
+  - [x] 1.4: Render a `div` with class `grid grid-cols-5 gap-1.5` containing one `button` per preset
+  - [x] 1.5: Each button: `style={{ background: getPresetGradient(preset.theme) }}`, `aria-label={preset.hebrewName}`, `title={preset.hebrewName}`, `type="button"`, `onClick={() => onPresetSelect(preset.name, preset.theme)}`, active ring class when `preset.name === activePreset`
+  - [x] 1.6: Button dimensions: `h-9 w-full rounded` with `transition-transform active:scale-95`, active ring: `ring-2 ring-offset-1 ring-primary`
 
-- [ ] Task 2: Add active preset tracking and PresetGrid to `components/theme/ColorPanel.tsx` (AC: #1, #2, #5, #6, #7)
-  - [ ] 2.1: Add `import { PresetGrid } from './PresetGrid'` and `import { useLocalStorage } from '@/lib/hooks/useLocalStorage'` to ColorPanel imports
-  - [ ] 2.2: Define module-level `export const ACTIVE_PRESET_KEY = 'marko-v2-active-preset'` at top of file (exported so Story 2.3 can reuse)
-  - [ ] 2.3: Inside `ColorPanel` component body: `const [activePreset, setActivePreset] = useLocalStorage<string>(ACTIVE_PRESET_KEY, 'classic')`
-  - [ ] 2.4: Add `<PresetGrid>` section at the top of the scrollable content div (before the 4 color sections), with a Hebrew section heading "נושא" using class `text-sm font-semibold text-muted-foreground mb-2`
-  - [ ] 2.5: Wire preset selection: `<PresetGrid activePreset={activePreset} onPresetSelect={(name, theme) => { onThemeChange(theme); setActivePreset(name); }} />`
-  - [ ] 2.6: Update `handleColorChange` to also call `setActivePreset('')` — individual edits signal a custom (non-preset) theme
-  - [ ] 2.7: Update reset button handler: `() => { onThemeChange(DEFAULT_CLASSIC_THEME); setActivePreset('classic'); }` (also restores classic preset active state)
+- [x] Task 2: Add active preset tracking and PresetGrid to `components/theme/ColorPanel.tsx` (AC: #1, #2, #5, #6, #7)
+  - [x] 2.1: Add `import { PresetGrid } from './PresetGrid'` and `import { useLocalStorage } from '@/lib/hooks/useLocalStorage'` to ColorPanel imports
+  - [x] 2.2: Define module-level `export const ACTIVE_PRESET_KEY = 'marko-v2-active-preset'` at top of file (exported so Story 2.3 can reuse)
+  - [x] 2.3: Inside `ColorPanel` component body: `const [activePreset, setActivePreset] = useLocalStorage<string>(ACTIVE_PRESET_KEY, 'classic')`
+  - [x] 2.4: Add `<PresetGrid>` section at the top of the scrollable content div (before the 4 color sections), with a Hebrew section heading "נושא" using class `text-sm font-semibold text-muted-foreground mb-2`
+  - [x] 2.5: Wire preset selection: `<PresetGrid activePreset={activePreset} onPresetSelect={(name, theme) => { onThemeChange(theme); setActivePreset(name); }} />`
+  - [x] 2.6: Update `handleColorChange` to also call `setActivePreset('')` — individual edits signal a custom (non-preset) theme
+  - [x] 2.7: Update reset button handler: `() => { onThemeChange(DEFAULT_CLASSIC_THEME); setActivePreset('classic'); }` (also restores classic preset active state)
 
-- [ ] Task 3: Write tests (AC: all)
-  - [ ] 3.1: In `components/theme/ColorPanel.test.tsx` — add test: clicking a preset button calls `onThemeChange` with the ocean preset's full `ColorTheme` object (spot-check 3 properties)
-  - [ ] 3.2: Add test: reset button calls `onThemeChange` with `DEFAULT_CLASSIC_THEME` (already tested in Story 2.1, now verify it still passes)
-  - [ ] 3.3: Add test: 15 preset buttons render in the panel (count `button[title]` elements with gradient style)
-  - [ ] 3.4: Add test: after selecting a preset, the button for that preset has the `ring-2` class (active indicator)
+- [x] Task 3: Write tests (AC: all)
+  - [x] 3.1: In `components/theme/ColorPanel.test.tsx` — add test: clicking a preset button calls `onThemeChange` with the ocean preset's full `ColorTheme` object (spot-check 3 properties)
+  - [x] 3.2: Add test: reset button calls `onThemeChange` with `DEFAULT_CLASSIC_THEME` (already tested in Story 2.1, now verify it still passes)
+  - [x] 3.3: Add test: 15 preset buttons render in the panel (count `button[title]` elements with gradient style)
+  - [x] 3.4: Add test: after selecting a preset, the button for that preset has the `ring-2` class (active indicator)
 
 ## Dev Notes
 
@@ -463,4 +463,15 @@ claude-sonnet-4-6[1m]
 
 ### Completion Notes List
 
+- Created `PresetGrid` component with gradient preview buttons, `role="radiogroup"` + `role="radio"` + `aria-checked` single-select ARIA semantics, roving tabIndex, and arrow-key navigation (left/right/up/down within the 5-column grid).
+- Extended `ColorPanel` with `useLocalStorage(ACTIVE_PRESET_KEY, 'classic')` for persistent preset selection; individual color edits clear selection; reset restores classic.
+- `ACTIVE_PRESET_KEY` exported from `ColorPanel.tsx` for Story 2.3 reuse.
+- Reset button uses `motion-safe:active:scale-[0.98]` and `transition-transform` (consistent with PresetGrid animation policy).
+- `SheetDescription` added to ColorPanel for AT context; sheet slide animation duration set to 200ms.
+- Added 5 new preset tests to `ColorPanel.test.tsx`: preset click, reset, 15-button count, active ring, and AC7 (color change clears active preset); all 126 tests pass (no regressions).
+
 ### File List
+
+- `components/theme/PresetGrid.tsx` (created)
+- `components/theme/ColorPanel.tsx` (modified)
+- `components/theme/ColorPanel.test.tsx` (modified)

@@ -2,8 +2,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { act } from 'react';
-import { ColorPanel } from './ColorPanel';
+import { ColorPanel, ACTIVE_PRESET_KEY } from './ColorPanel';
 import { DEFAULT_CLASSIC_THEME } from '@/lib/colors/defaults';
+import { COLOR_PRESETS } from '@/lib/colors/presets';
 import type { ColorTheme } from '@/types/colors';
 
 const SAMPLE_THEME: ColorTheme = { ...DEFAULT_CLASSIC_THEME };
@@ -14,6 +15,7 @@ let root: ReturnType<typeof createRoot>;
 beforeEach(() => {
   container = document.createElement('div');
   document.body.appendChild(container);
+  localStorage.clear();
 });
 
 afterEach(() => {
@@ -141,5 +143,88 @@ describe('ColorPanel — reset button', () => {
     });
 
     expect(onThemeChange).toHaveBeenCalledWith(DEFAULT_CLASSIC_THEME);
+  });
+});
+
+// ─── Preset Grid ─────────────────────────────────────────────────────────────
+
+describe('ColorPanel — preset grid', () => {
+  it('renders 15 preset buttons', () => {
+    renderColorPanel();
+    const presetButtons = document.body.querySelectorAll('[role="radiogroup"] [role="radio"]');
+    expect(presetButtons).toHaveLength(15);
+  });
+
+  it('calls onThemeChange with ocean preset theme when ocean button clicked', () => {
+    const onThemeChange = vi.fn();
+    renderColorPanel({ onThemeChange });
+
+    const oceanPreset = COLOR_PRESETS.find((p) => p.name === 'ocean')!;
+    const oceanButton = document.body.querySelector(
+      `button[title="${oceanPreset.hebrewName}"]`
+    ) as HTMLButtonElement;
+    expect(oceanButton).not.toBeNull();
+
+    act(() => {
+      oceanButton.click();
+    });
+
+    expect(onThemeChange).toHaveBeenCalledWith(oceanPreset.theme);
+    // Spot-check 3 properties
+    const calledTheme = onThemeChange.mock.calls[0][0] as ColorTheme;
+    expect(calledTheme.primaryText).toBe(oceanPreset.theme.primaryText);
+    expect(calledTheme.link).toBe(oceanPreset.theme.link);
+    expect(calledTheme.previewBg).toBe(oceanPreset.theme.previewBg);
+  });
+
+  it('shows active state (aria-checked=true) on the stored active preset button', () => {
+    localStorage.setItem(ACTIVE_PRESET_KEY, JSON.stringify('ocean'));
+    const oceanPreset = COLOR_PRESETS.find((p) => p.name === 'ocean')!;
+    const classicPreset = COLOR_PRESETS.find((p) => p.name === 'classic')!;
+
+    renderColorPanel();
+
+    const oceanButton = document.body.querySelector(
+      `button[title="${oceanPreset.hebrewName}"]`
+    ) as HTMLButtonElement;
+    const classicButton = document.body.querySelector(
+      `button[title="${classicPreset.hebrewName}"]`
+    ) as HTMLButtonElement;
+
+    expect(oceanButton.getAttribute('aria-checked')).toBe('true');
+    expect(classicButton.getAttribute('aria-checked')).toBe('false');
+  });
+
+  it('active preset button has ring-2 class', () => {
+    localStorage.setItem(ACTIVE_PRESET_KEY, JSON.stringify('ocean'));
+    const oceanPreset = COLOR_PRESETS.find((p) => p.name === 'ocean')!;
+
+    renderColorPanel();
+
+    const oceanButton = document.body.querySelector(
+      `button[title="${oceanPreset.hebrewName}"]`
+    ) as HTMLButtonElement;
+
+    expect(oceanButton.className).toContain('ring-2');
+  });
+
+  it('clears active preset indicator when an individual color picker is changed (AC7)', () => {
+    localStorage.setItem(ACTIVE_PRESET_KEY, JSON.stringify('ocean'));
+    const oceanPreset = COLOR_PRESETS.find((p) => p.name === 'ocean')!;
+    renderColorPanel();
+
+    const oceanButton = document.body.querySelector(
+      `button[title="${oceanPreset.hebrewName}"]`
+    ) as HTMLButtonElement;
+    expect(oceanButton.getAttribute('aria-checked')).toBe('true');
+
+    const firstColorInput = document.body.querySelector('input[type="color"]') as HTMLInputElement;
+    act(() => {
+      Object.defineProperty(firstColorInput, 'value', { writable: true, value: '#FF0000' });
+      firstColorInput.dispatchEvent(new Event('input', { bubbles: true }));
+      firstColorInput.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    expect(oceanButton.getAttribute('aria-checked')).toBe('false');
   });
 });

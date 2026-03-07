@@ -1,8 +1,13 @@
 'use client';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { ColorPicker } from './ColorPicker';
+import { PresetGrid } from './PresetGrid';
 import { DEFAULT_CLASSIC_THEME } from '@/lib/colors/defaults';
+import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
 import type { ColorTheme } from '@/types/colors';
+
+// Exported so Story 2.3 can use the same key for custom preset persistence
+export const ACTIVE_PRESET_KEY = 'marko-v2-active-preset';
 
 interface ColorPanelProps {
   isOpen: boolean;
@@ -39,8 +44,11 @@ const SECTIONS: { title: string; keys: (keyof ColorTheme)[] }[] = [
 ];
 
 export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: ColorPanelProps) {
+  const [activePreset, setActivePreset] = useLocalStorage<string>(ACTIVE_PRESET_KEY, 'classic');
+
   function handleColorChange(key: keyof ColorTheme, value: string) {
     onThemeChange({ ...theme, [key]: value });
+    setActivePreset(''); // manual edit = custom theme
   }
 
   return (
@@ -55,6 +63,18 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
         </SheetHeader>
 
         <div className="mt-4 space-y-6 pb-6">
+          {/* Preset selection grid */}
+          <div>
+            <h3 className="mb-2 text-sm font-semibold text-muted-foreground">נושא</h3>
+            <PresetGrid
+              activePreset={activePreset}
+              onPresetSelect={(name, presetTheme) => {
+                onThemeChange(presetTheme);
+                setActivePreset(name);
+              }}
+            />
+          </div>
+
           {SECTIONS.map((section) => (
             <div key={section.title}>
               <h3 className="mb-2 text-sm font-semibold text-muted-foreground">
@@ -75,9 +95,12 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
 
           <button
             type="button"
-            onClick={() => onThemeChange(DEFAULT_CLASSIC_THEME)}
+            onClick={() => {
+              onThemeChange(DEFAULT_CLASSIC_THEME);
+              setActivePreset('classic');
+            }}
             className="w-full rounded border border-border px-3 py-2 text-sm
-                       text-muted-foreground hover:bg-muted active:scale-[0.98] transition-colors"
+                       text-muted-foreground hover:bg-muted motion-safe:active:scale-[0.98] transition-colors transition-transform"
           >
             איפוס לברירת מחדל
           </button>
