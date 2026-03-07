@@ -382,3 +382,17 @@
   white-space: pre;
   direction: ltr; /* Source code is always LTR */
 }
+
+/* ============================================
+   Presentation Mode Styles (Story 1.5)
+   ============================================ */
+
+.presentation-content {
+  max-width: 800px;
+  margin-inline: auto;
+  padding: 4rem 1.5rem;
+}
+
+/* Font sizes in preview-content use rem units and won't cascade from font-size: 1.1em.
+   A future story can introduce a --presentation-scale CSS variable to scale them uniformly.
+   For now, the distraction-free full-screen view provides the "large format" experience. */
