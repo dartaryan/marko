@@ -13,7 +13,9 @@ import { PdfProgress } from '@/components/export/PdfProgress';
 import { generatePdf } from '@/lib/export/pdf-generator';
 import { exportHtml } from '@/lib/export/html-generator';
 import { exportMarkdown } from '@/lib/export/md-generator';
-import type { ExportType } from '@/types/editor';
+import { toast } from 'sonner';
+import { copyForWord, copyHtml, copyText } from '@/lib/export/word-copy';
+import type { ExportType, CopyType } from '@/types/editor';
 import { PanelLayout } from '@/components/layout/PanelLayout';
 import { EditorPanel } from '@/components/editor/EditorPanel';
 import { PreviewPanel } from '@/components/preview/PreviewPanel';
@@ -65,6 +67,22 @@ export default function EditorPage() {
     }
   }
 
+  async function handleCopyRequest(type: CopyType) {
+    try {
+      if (type === 'word') {
+        await copyForWord(content, colorTheme, docDirection);
+      } else if (type === 'html') {
+        await copyHtml(content, colorTheme, docDirection);
+      } else if (type === 'text') {
+        await copyText(content);
+      }
+      toast.success('!הועתק ללוח');
+    } catch (e) {
+      console.error('Copy to clipboard failed:', e);
+      toast.error('שגיאה בהעתקה. נסה שוב.');
+    }
+  }
+
   async function handlePdfExport(filename: string) {
     if (pdfState === 'generating') return;
     const element = previewContentRef.current;
@@ -95,6 +113,7 @@ export default function EditorPage() {
         onLoadSample={handleLoadSample}
         onOpenColorPanel={() => setIsColorPanelOpen(true)}
         onExportRequest={handleExportRequest}
+        onCopyRequest={handleCopyRequest}
       />
       <PanelLayout
         viewMode={viewMode}

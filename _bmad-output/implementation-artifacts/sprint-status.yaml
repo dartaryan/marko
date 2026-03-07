@@ -64,14 +64,14 @@ development_status:
   epic-3: in-progress
   3-1-export-modal-and-filename-selection: done
   3-2-pdf-export-with-colors-and-rtl: done
-  3-3-html-and-markdown-export: review
-  3-4-clipboard-copy-word-and-html-text: ready-for-dev
+  3-3-html-and-markdown-export: done
+  3-4-clipboard-copy-word-and-html-text: done
   epic-3-retrospective: optional
 
   # Epic 4: Hebrew Bilingual Intelligence
-  epic-4: backlog
-  4-1-per-sentence-bidi-detection-engine: backlog
-  4-2-bidi-integration-with-rendering-pipeline: backlog
+  epic-4: in-progress
+  4-1-per-sentence-bidi-detection-engine: ready-for-dev
+  4-2-bidi-integration-with-rendering-pipeline: ready-for-dev
   epic-4-retrospective: optional
 
   # Epic 5: User Authentication & Account Management

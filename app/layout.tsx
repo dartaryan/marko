@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Noto_Sans_Hebrew, JetBrains_Mono } from "next/font/google";
 import { ConvexClientProvider } from "./ConvexClientProvider";
+import { Toaster } from '@/components/ui/sonner';
 import "./globals.css";
 
 const notoSansHebrew = Noto_Sans_Hebrew({
@@ -34,6 +35,7 @@ export default function RootLayout({
       </head>
       <body className={`${notoSansHebrew.variable} ${jetBrainsMono.variable} font-sans antialiased`}>
         <ConvexClientProvider>{children}</ConvexClientProvider>
+        <Toaster dir="rtl" position="bottom-center" duration={3000} />
       </body>
     </html>
   );

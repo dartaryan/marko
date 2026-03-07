@@ -4,7 +4,13 @@ import { ViewModeToggle } from './ViewModeToggle';
 import { DirectionToggle } from './DirectionToggle';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { ToolbarDropdown } from '@/components/editor/ToolbarDropdown';
-import type { ViewMode, DocDirection, ExportType } from '@/types/editor';
+import type { ViewMode, DocDirection, ExportType, CopyType } from '@/types/editor';
+
+const copyItems = [
+  { label: 'Word', value: 'word' },
+  { label: 'HTML', value: 'html' },
+  { label: 'טקסט', value: 'text' },
+];
 
 const exportItems = [
   { label: 'PDF', value: 'pdf' },
@@ -22,6 +28,7 @@ interface HeaderProps {
   onLoadSample: () => void;
   onOpenColorPanel?: () => void;
   onExportRequest: (type: ExportType) => void;
+  onCopyRequest: (type: CopyType) => void;
 }
 
 export function Header({
@@ -34,6 +41,7 @@ export function Header({
   onLoadSample,
   onOpenColorPanel,
   onExportRequest,
+  onCopyRequest,
 }: HeaderProps) {
   return (
     <header
@@ -50,6 +58,12 @@ export function Header({
 
       {/* Utility buttons — end group */}
       <div className="flex items-center gap-1">
+        <ToolbarDropdown
+          triggerLabel="העתק"
+          triggerAriaLabel="העתק תוכן ללוח"
+          items={copyItems}
+          onSelect={(val) => onCopyRequest(val as CopyType)}
+        />
         <ToolbarDropdown
           triggerLabel="ייצא"
           triggerAriaLabel="ייצא מסמך"
