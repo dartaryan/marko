@@ -2,6 +2,7 @@
 import { Expand, Trash2, FileText, Palette } from 'lucide-react';
 import { ViewModeToggle } from './ViewModeToggle';
 import { DirectionToggle } from './DirectionToggle';
+import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import type { ViewMode, DocDirection } from '@/types/editor';
 
 interface HeaderProps {
@@ -52,6 +53,7 @@ export function Header({
         >
           <Palette className="size-4" aria-hidden="true" />
         </button>
+        <ThemeToggle />
         <DirectionToggle value={docDirection} onChange={onDirectionChange} />
         <button
           type="button"
