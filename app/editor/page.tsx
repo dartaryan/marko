@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import { migrateV1Data } from '@/lib/migration/v1-migration';
 import { useEditorContent } from '@/lib/hooks/useEditorContent';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { useViewMode } from '@/lib/hooks/useViewMode';
@@ -10,6 +11,9 @@ import { EditorPanel } from '@/components/editor/EditorPanel';
 import { PreviewPanel } from '@/components/preview/PreviewPanel';
 import { PresentationView } from '@/components/preview/PresentationView';
 import { SAMPLE_DOCUMENT } from '@/lib/editor/sample-document';
+
+// Runs once when module loads — before any useState/useLocalStorage initialization
+migrateV1Data();
 
 export default function EditorPage() {
   const [content, setContent] = useEditorContent();
