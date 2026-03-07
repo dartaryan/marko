@@ -2,13 +2,15 @@
 import { useRef } from 'react';
 import { EditorTextarea } from './EditorTextarea';
 import { EditorToolbar } from './EditorToolbar';
+import type { DocDirection } from '@/types/editor';
 
 interface EditorPanelProps {
   content: string;
   onChange: (content: string) => void;
+  dir?: DocDirection;
 }
 
-export function EditorPanel({ content, onChange }: EditorPanelProps) {
+export function EditorPanel({ content, onChange, dir = 'rtl' }: EditorPanelProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   function insertTextAtCursor(text: string) {
@@ -38,7 +40,7 @@ export function EditorPanel({ content, onChange }: EditorPanelProps) {
       </div>
       <EditorToolbar textareaRef={textareaRef} onInsert={insertTextAtCursor} />
       <div className="flex-1 overflow-hidden">
-        <EditorTextarea ref={textareaRef} value={content} onChange={onChange} />
+        <EditorTextarea ref={textareaRef} value={content} onChange={onChange} dir={dir} />
       </div>
     </section>
   );

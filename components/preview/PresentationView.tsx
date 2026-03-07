@@ -3,14 +3,17 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { X } from 'lucide-react';
 import { MarkdownRenderer } from '@/components/preview/MarkdownRenderer';
 
+import type { DocDirection } from '@/types/editor';
+
 interface PresentationViewProps {
   content: string;
   onExit: () => void;
+  dir?: DocDirection;
 }
 
 const IDLE_TIMEOUT_MS = 3000;
 
-export function PresentationView({ content, onExit }: PresentationViewProps) {
+export function PresentationView({ content, onExit, dir = 'rtl' }: PresentationViewProps) {
   const [mounted, setMounted] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -115,7 +118,7 @@ export function PresentationView({ content, onExit }: PresentationViewProps) {
 
       {/* Presentation content — centred, max-width for readability */}
       <div className="presentation-content">
-        <MarkdownRenderer content={content} />
+        <MarkdownRenderer content={content} dir={dir} />
       </div>
     </div>
   );
