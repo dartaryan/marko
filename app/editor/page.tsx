@@ -11,6 +11,8 @@ import { ColorPanel } from '@/components/theme/ColorPanel';
 import { ExportModal } from '@/components/export/ExportModal';
 import { PdfProgress } from '@/components/export/PdfProgress';
 import { generatePdf } from '@/lib/export/pdf-generator';
+import { exportHtml } from '@/lib/export/html-generator';
+import { exportMarkdown } from '@/lib/export/md-generator';
 import type { ExportType } from '@/types/editor';
 import { PanelLayout } from '@/components/layout/PanelLayout';
 import { EditorPanel } from '@/components/editor/EditorPanel';
@@ -56,8 +58,11 @@ export default function EditorPage() {
   function handleExportConfirm(filename: string, type: ExportType) {
     if (type === 'pdf') {
       void handlePdfExport(filename);
+    } else if (type === 'html') {
+      exportHtml(content, colorTheme, docDirection, filename);
+    } else if (type === 'markdown') {
+      exportMarkdown(content, filename);
     }
-    // 'html' and 'markdown' — implemented in Story 3.3
   }
 
   async function handlePdfExport(filename: string) {
