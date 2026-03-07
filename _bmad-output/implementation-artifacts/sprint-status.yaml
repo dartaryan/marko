@@ -57,7 +57,7 @@ development_status:
   2-2-built-in-theme-presets: done
   2-3-custom-preset-save-and-load: done
   2-4-image-color-extraction: done
-  2-5-dark-light-mode-toggle: ready-for-dev
+  2-5-dark-light-mode-toggle: done
   epic-2-retrospective: optional
 
   # Epic 3: Document Export & Sharing
