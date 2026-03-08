@@ -64,18 +64,41 @@ http.route({
           .join(" ");
         const name = nameParts || undefined;
 
-        await ctx.runMutation(internal.users.upsertFromClerk, {
+        const userId = await ctx.runMutation(internal.users.upsertFromClerk, {
           clerkId: event.data.id,
           email,
           name,
         });
+
+        // Analytics: log signup (only for user.created, not user.updated)
+        if (event.type === "user.created") {
+          await ctx.runMutation(internal.analytics.logEvent, {
+            userId,
+            event: "auth.signup",
+            metadata: { clerkId: event.data.id },
+          });
+        }
         break;
       }
       case "user.deleted": {
         if (event.data.id) {
+          // Look up user BEFORE deletion to get userId for analytics
+          const deletedUser = await ctx.runQuery(internal.users.getUserByClerkId, {
+            clerkId: event.data.id,
+          });
+
           await ctx.runMutation(internal.users.deleteFromClerk, {
             clerkId: event.data.id,
           });
+
+          // Log deletion event (if user existed)
+          if (deletedUser) {
+            await ctx.runMutation(internal.analytics.logEvent, {
+              userId: deletedUser._id,
+              event: "auth.delete",
+              metadata: { clerkId: event.data.id },
+            });
+          }
         }
         break;
       }

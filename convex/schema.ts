@@ -22,4 +22,14 @@ export default defineSchema({
     .index("by_userId", ["userId"])
     .index("by_userId_createdAt", ["userId", "createdAt"])
     .index("by_createdAt", ["createdAt"]),
+
+  analyticsEvents: defineTable({
+    userId: v.id("users"),
+    event: v.string(),
+    metadata: v.optional(v.any()),
+    createdAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_event", ["event"])
+    .index("by_createdAt", ["createdAt"]),
 });

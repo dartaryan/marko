@@ -264,6 +264,62 @@ describe("callAnthropicApi", () => {
     );
   });
 
+  it("logs analytics event after successful AI call", async () => {
+    const { callAnthropicApi } = await import("../ai");
+    const ctx = createMockActionCtx({ identity: mockIdentity, user: mockUser });
+
+    let callCount = 0;
+    ctx.runQuery.mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) return mockUser;
+      return 0;
+    });
+
+    const handler = getHandler(callAnthropicApi);
+    await handler(ctx, defaultArgs);
+
+    // Should have called runMutation twice: logAiUsage and logEvent
+    expect(ctx.runMutation).toHaveBeenCalledTimes(2);
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        userId: "user_123",
+        event: "ai.call",
+        metadata: expect.objectContaining({
+          model: "claude-sonnet-4-5-20250929",
+          actionType: "summarize",
+        }),
+      })
+    );
+  });
+
+  it("logs analytics event when free user exceeds AI limit", async () => {
+    const { callAnthropicApi } = await import("../ai");
+    const ctx = createMockActionCtx({ identity: mockIdentity, user: mockUser });
+
+    let callCount = 0;
+    ctx.runQuery.mockImplementation(async () => {
+      callCount++;
+      if (callCount === 1) return mockUser;
+      return 999; // over limit
+    });
+
+    const handler = getHandler(callAnthropicApi);
+
+    await expect(handler(ctx, defaultArgs)).rejects.toMatchObject({
+      data: { code: "AI_LIMIT_REACHED" },
+    });
+
+    // logEvent should have been called with ai.limit_reached before throwing
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        userId: "user_123",
+        event: "ai.limit_reached",
+      })
+    );
+  });
+
   it("truncates long content instead of rejecting", async () => {
     const { callAnthropicApi } = await import("../ai");
     const ctx = createMockActionCtx({ identity: mockIdentity, user: mockUser });

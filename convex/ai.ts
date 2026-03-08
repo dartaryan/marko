@@ -60,6 +60,11 @@ export const callAnthropicApi = action({
       );
 
       if (monthlyCount >= FREE_MONTHLY_AI_LIMIT) {
+        await ctx.runMutation(internal.analytics.logEvent, {
+          userId: user._id,
+          event: "ai.limit_reached",
+          metadata: { monthlyCount, limit: FREE_MONTHLY_AI_LIMIT },
+        });
         throw new ConvexError({
           code: "AI_LIMIT_REACHED",
           message: "הגעת למגבלת השימוש החודשית ב-AI",
@@ -132,6 +137,12 @@ export const callAnthropicApi = action({
       outputTokens,
       cost,
       actionType: args.actionType,
+    });
+
+    await ctx.runMutation(internal.analytics.logEvent, {
+      userId: user._id,
+      event: "ai.call",
+      metadata: { model: modelId, actionType: args.actionType },
     });
 
     // 10. Return result

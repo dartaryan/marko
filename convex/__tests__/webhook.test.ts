@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 
 // Controllable verify mock - shared across all tests
 const mockVerify = vi.fn();
-const mockRunMutation = vi.fn().mockResolvedValue(undefined);
+const mockRunMutation = vi.fn().mockResolvedValue("mock_user_id");
 
 vi.mock("svix", () => ({
   Webhook: function MockWebhook() {
@@ -15,6 +15,10 @@ vi.mock("../_generated/api", () => ({
     users: {
       upsertFromClerk: "internal:users:upsertFromClerk",
       deleteFromClerk: "internal:users:deleteFromClerk",
+      getUserByClerkId: "internal:users:getUserByClerkId",
+    },
+    analytics: {
+      logEvent: "internal:analytics:logEvent",
     },
   },
 }));
@@ -39,7 +43,7 @@ vi.mock("convex/server", () => ({
 await import("../http");
 
 describe("Clerk webhook handler", () => {
-  let mockCtx: { runMutation: ReturnType<typeof vi.fn> };
+  let mockCtx: { runMutation: ReturnType<typeof vi.fn>; runQuery: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
     mockVerify.mockReset();
@@ -47,6 +51,7 @@ describe("Clerk webhook handler", () => {
     process.env.CLERK_WEBHOOK_SECRET = "whsec_test_secret";
     mockCtx = {
       runMutation: mockRunMutation,
+      runQuery: vi.fn().mockResolvedValue({ _id: "user_mock", clerkId: "user_deleted" }),
     };
   });
 
@@ -128,6 +133,15 @@ describe("Clerk webhook handler", () => {
       "internal:users:upsertFromClerk",
       { clerkId: "user_new", email: "primary@example.com", name: "Test User" }
     );
+    // Analytics: log signup event
+    expect(mockCtx.runMutation).toHaveBeenCalledWith(
+      "internal:analytics:logEvent",
+      expect.objectContaining({
+        userId: "mock_user_id",
+        event: "auth.signup",
+        metadata: { clerkId: "user_new" },
+      })
+    );
   });
 
   it("processes user.updated event and calls upsertFromClerk", async () => {
@@ -152,6 +166,8 @@ describe("Clerk webhook handler", () => {
       "internal:users:upsertFromClerk",
       { clerkId: "user_existing", email: "updated@example.com", name: "Updated" }
     );
+    // Analytics should NOT be logged for user.updated (only user.created)
+    expect(mockCtx.runMutation).toHaveBeenCalledTimes(1);
   });
 
   it("processes user.deleted event and calls deleteFromClerk", async () => {
@@ -166,9 +182,20 @@ describe("Clerk webhook handler", () => {
     const response = await handler(mockCtx, request);
 
     expect(response.status).toBe(200);
+    expect(mockCtx.runQuery).toHaveBeenCalledWith(
+      "internal:users:getUserByClerkId",
+      { clerkId: "user_deleted" }
+    );
     expect(mockCtx.runMutation).toHaveBeenCalledWith(
       "internal:users:deleteFromClerk",
       { clerkId: "user_deleted" }
+    );
+    expect(mockCtx.runMutation).toHaveBeenCalledWith(
+      "internal:analytics:logEvent",
+      expect.objectContaining({
+        event: "auth.delete",
+        metadata: { clerkId: "user_deleted" },
+      })
     );
   });
 

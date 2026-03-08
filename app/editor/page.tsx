@@ -8,6 +8,7 @@ import { useDocDirection } from '@/lib/hooks/useDocDirection';
 import { useColorTheme } from '@/lib/hooks/useColorTheme';
 import { useAiAction } from '@/lib/hooks/useAiAction';
 import { useAiDisclosure } from '@/lib/hooks/useAiDisclosure';
+import { useAnalytics } from '@/lib/hooks/useAnalytics';
 import { Header } from '@/components/layout/Header';
 import { ColorPanel } from '@/components/theme/ColorPanel';
 import { ExportModal } from '@/components/export/ExportModal';
@@ -49,8 +50,18 @@ export default function EditorPage() {
   const [isAiPaletteOpen, setIsAiPaletteOpen] = useState(false);
   const { executeAction, isLoading: isAiLoading, result: aiResult, errorCode: aiErrorCode, clearResult: clearAiResult } = useAiAction();
   const { needsDisclosure, acceptDisclosure } = useAiDisclosure();
+  const { track } = useAnalytics();
   const [pendingAiAction, setPendingAiAction] = useState<AiActionType | null>(null);
   const isAiUnavailable = aiErrorCode === 'AI_UNAVAILABLE';
+
+  // Track login once per browser session (fire-and-forget; skips if unauthenticated)
+  useEffect(() => {
+    const key = 'marko_session_login_tracked';
+    if (!sessionStorage.getItem(key)) {
+      track("auth.login");
+      sessionStorage.setItem(key, '1');
+    }
+  }, [track]);
 
   // Reopen palette when AI limit is reached (AC #4: display exhausted state)
   useEffect(() => {
@@ -64,8 +75,9 @@ export default function EditorPage() {
     async (actionType: AiActionType) => {
       const targetLanguage = actionType === 'translate' ? 'en' : undefined;
       await executeAction(actionType, content, targetLanguage);
+      track("ai.action_completed", { actionType });
     },
-    [executeAction, content]
+    [executeAction, content, track]
   );
 
   const handleAiAction = useCallback(
@@ -99,6 +111,21 @@ export default function EditorPage() {
     [content, setContent, clearAiResult]
   );
 
+  const handleViewModeChange = useCallback((mode: typeof viewMode) => {
+    setViewMode(mode);
+    track("view.mode_change", { mode });
+  }, [setViewMode, track]);
+
+  const handleEnterPresentation = useCallback(() => {
+    setIsPresentationMode(true);
+    track("view.presentation_enter");
+  }, [track]);
+
+  const handleThemeChange = useCallback((theme: typeof colorTheme) => {
+    setColorTheme(theme);
+    track("theme.preset_applied");
+  }, [setColorTheme, track]);
+
   // Ctrl+K / Cmd+K keyboard shortcut — skip when another modal is active
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
@@ -115,12 +142,14 @@ export default function EditorPage() {
   function handleClearEditor() {
     if (window.confirm('האם אתה בטוח שברצונך למחוק את כל התוכן?')) {
       setContent('');
+      track("editor.clear");
     }
   }
 
   function handleLoadSample() {
     if (content && !window.confirm('האם אתה בטוח? הטעינה תחליף את התוכן הנוכחי.')) return;
     setContent(SAMPLE_DOCUMENT);
+    track("editor.load_sample");
   }
 
   function handleExportRequest(type: ExportType) {
@@ -129,6 +158,7 @@ export default function EditorPage() {
   }
 
   function handleExportConfirm(filename: string, type: ExportType) {
+    track(`export.${type}`);
     if (type === 'pdf') {
       void handlePdfExport(filename);
     } else if (type === 'html') {
@@ -139,6 +169,7 @@ export default function EditorPage() {
   }
 
   async function handleCopyRequest(type: CopyType) {
+    track(`copy.${type}`);
     try {
       if (type === 'word') {
         await copyForWord(content, colorTheme, docDirection);
@@ -194,8 +225,8 @@ export default function EditorPage() {
       )}
       <Header
         viewMode={viewMode}
-        onViewModeChange={setViewMode}
-        onEnterPresentation={() => setIsPresentationMode(true)}
+        onViewModeChange={handleViewModeChange}
+        onEnterPresentation={handleEnterPresentation}
         docDirection={docDirection}
         onDirectionChange={setDocDirection}
         onClearEditor={handleClearEditor}
@@ -232,7 +263,7 @@ export default function EditorPage() {
         isOpen={isColorPanelOpen}
         onOpenChange={setIsColorPanelOpen}
         theme={colorTheme}
-        onThemeChange={setColorTheme}
+        onThemeChange={handleThemeChange}
       />
       {pendingExportType && (
         <ExportModal

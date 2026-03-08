@@ -6,6 +6,10 @@ vi.mock("../_generated/api", () => ({
   internal: {
     users: {
       deleteFromClerk: "internal:users:deleteFromClerk",
+      getUserByClerkId: "internal:users:getUserByClerkId",
+    },
+    analytics: {
+      deleteByUserId: "internal:analytics:deleteByUserId",
     },
   },
 }));
@@ -77,6 +81,7 @@ describe("deleteMyAccount", () => {
         getUserIdentity: vi.fn().mockResolvedValue({ subject: "clerk_123" }),
       },
       runMutation: vi.fn().mockResolvedValue(undefined),
+      runQuery: vi.fn().mockResolvedValue({ _id: "user_123", clerkId: "clerk_123" }),
     };
 
     await handler(ctx);
@@ -106,6 +111,7 @@ describe("deleteMyAccount", () => {
         getUserIdentity: vi.fn().mockResolvedValue({ subject: "clerk_123" }),
       },
       runMutation: vi.fn().mockResolvedValue(undefined),
+      runQuery: vi.fn().mockResolvedValue({ _id: "user_123", clerkId: "clerk_123" }),
     };
 
     // Should not throw
@@ -124,6 +130,10 @@ describe("deleteMyAccount", () => {
       internal: {
         users: {
           deleteFromClerk: "internal:users:deleteFromClerk",
+          getUserByClerkId: "internal:users:getUserByClerkId",
+        },
+        analytics: {
+          deleteByUserId: "internal:analytics:deleteByUserId",
         },
       },
     }));
@@ -209,10 +219,17 @@ describe("deleteMyAccount", () => {
       runMutation: vi.fn().mockImplementation(async () => {
         callOrder.push("convex-mutation");
       }),
+      runQuery: vi.fn().mockImplementation(async () => {
+        callOrder.push("convex-query");
+        return { _id: "user_123", clerkId: "clerk_123" };
+      }),
     };
 
     await handler(ctx);
 
-    expect(callOrder).toEqual(["clerk-api", "convex-mutation"]);
+    // Clerk API first, then query user, cascade delete analytics, then delete user
+    expect(callOrder[0]).toBe("clerk-api");
+    expect(callOrder).toContain("convex-query");
+    expect(callOrder.filter(c => c === "convex-mutation").length).toBeGreaterThanOrEqual(2);
   });
 });

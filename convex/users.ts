@@ -141,11 +141,16 @@ export const deleteMyAccount = action({
       });
     }
 
+    // Cascade delete analytics events before deleting the user
+    const user = await ctx.runQuery(internal.users.getUserByClerkId, { clerkId });
+    if (user) {
+      await ctx.runMutation(internal.analytics.deleteByUserId, { userId: user._id });
+    }
+
     // Delete from Convex (via internal mutation — idempotent, handles user-not-found)
     await ctx.runMutation(internal.users.deleteFromClerk, { clerkId });
 
     // TODO: cascade delete from aiUsage when Epic 6 is implemented
-    // TODO: cascade delete from analyticsEvents when Epic 8 is implemented
     // TODO: cancel active subscriptions and cascade delete from subscriptions when Epic 9 is implemented
   },
 });
