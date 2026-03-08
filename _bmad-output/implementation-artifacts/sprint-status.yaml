@@ -77,7 +77,7 @@ development_status:
   # Epic 5: User Authentication & Account Management
   epic-5: in-progress
   5-1-clerk-authentication-integration-and-user-sync: done
-  5-2-anonymous-and-authenticated-editor-experience: ready-for-dev
+  5-2-anonymous-and-authenticated-editor-experience: done
   5-3-three-tier-authorization-and-account-deletion: backlog
   epic-5-retrospective: optional
 

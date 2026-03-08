@@ -4,6 +4,7 @@ import { ViewModeToggle } from './ViewModeToggle';
 import { DirectionToggle } from './DirectionToggle';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { ToolbarDropdown } from '@/components/editor/ToolbarDropdown';
+import { AuthGate } from '@/components/auth/AuthGate';
 import type { ViewMode, DocDirection, ExportType, CopyType } from '@/types/editor';
 
 const copyItems = [
@@ -114,6 +115,10 @@ export function Header({
         >
           <Expand className="size-4" aria-hidden="true" />
         </button>
+
+        {/* Auth section — after separator */}
+        <div className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
+        <AuthGate />
       </div>
     </header>
   );
