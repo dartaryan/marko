@@ -15,6 +15,19 @@ vi.mock("@clerk/nextjs", () => ({
     <div data-testid="sign-in-button-wrapper">{children}</div>
   ),
   UserButton: () => <div data-testid="clerk-user-button" />,
+  useClerk: () => ({ signOut: vi.fn() }),
+}));
+
+vi.mock("convex/react", () => ({
+  useAction: () => vi.fn(),
+}));
+
+vi.mock("@/convex/_generated/api", () => ({
+  api: { users: { deleteMyAccount: "users:deleteMyAccount" } },
+}));
+
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
 }));
 
 let container: HTMLDivElement;

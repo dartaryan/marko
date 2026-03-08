@@ -4,8 +4,22 @@ import { createRoot } from "react-dom/client";
 import { act } from "react";
 import { UserMenu } from "./UserMenu";
 
-vi.mock("@clerk/nextjs", () => ({
-  UserButton: () => <div data-testid="clerk-user-button" />,
+vi.mock("@clerk/nextjs", () => {
+  const UserButton = ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="clerk-user-button">{children}</div>
+  );
+  UserButton.MenuItems = ({ children }: { children?: React.ReactNode }) => (
+    <div data-testid="clerk-menu-items">{children}</div>
+  );
+  UserButton.Action = ({ label, onClick }: { label: string; onClick?: () => void }) => (
+    <button data-testid="clerk-menu-action" onClick={onClick}>{label}</button>
+  );
+  return { UserButton };
+});
+
+vi.mock("./DeleteAccountDialog", () => ({
+  DeleteAccountDialog: ({ open }: { open: boolean }) =>
+    open ? <div data-testid="delete-account-dialog" /> : null,
 }));
 
 let container: HTMLDivElement;
@@ -70,5 +84,40 @@ describe("UserMenu", () => {
     });
     const menu = container.querySelector('[data-testid="user-menu"]')!;
     expect(menu).toBeTruthy();
+  });
+
+  it("renders delete account menu action", () => {
+    act(() => {
+      root = createRoot(container);
+      root.render(<UserMenu tier="free" />);
+    });
+    const menuAction = container.querySelector(
+      '[data-testid="clerk-menu-action"]'
+    )!;
+    expect(menuAction).toBeTruthy();
+    expect(menuAction.textContent).toBe("מחיקת חשבון");
+  });
+
+  it("opens delete account dialog when delete action is clicked", () => {
+    act(() => {
+      root = createRoot(container);
+      root.render(<UserMenu tier="free" />);
+    });
+
+    // Dialog should not be visible initially
+    let dialog = container.querySelector('[data-testid="delete-account-dialog"]');
+    expect(dialog).toBeNull();
+
+    // Click the delete action
+    const menuAction = container.querySelector(
+      '[data-testid="clerk-menu-action"]'
+    ) as HTMLButtonElement;
+    act(() => {
+      menuAction.click();
+    });
+
+    // Dialog should now be visible
+    dialog = container.querySelector('[data-testid="delete-account-dialog"]');
+    expect(dialog).toBeTruthy();
   });
 });

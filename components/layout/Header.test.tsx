@@ -10,12 +10,14 @@ const mockUseQuery = vi.fn();
 vi.mock("convex/react", () => ({
   useConvexAuth: () => mockUseConvexAuth(),
   useQuery: (...args: unknown[]) => mockUseQuery(...args),
+  useAction: () => vi.fn(),
 }));
 
 vi.mock("@/convex/_generated/api", () => ({
   api: {
     users: {
       getCurrentUser: "users:getCurrentUser",
+      deleteMyAccount: "users:deleteMyAccount",
     },
   },
 }));
@@ -25,6 +27,11 @@ vi.mock("@clerk/nextjs", () => ({
     <div data-testid="sign-in-button-wrapper">{children}</div>
   ),
   UserButton: () => <div data-testid="clerk-user-button" />,
+  useClerk: () => ({ signOut: vi.fn() }),
+}));
+
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn(), error: vi.fn() },
 }));
 
 // Stub matchMedia for ThemeToggle

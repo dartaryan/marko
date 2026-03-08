@@ -1,5 +1,7 @@
 import { v, ConvexError } from "convex/values";
-import { query, internalMutation } from "./_generated/server";
+import { query, internalMutation, internalQuery, action } from "./_generated/server";
+import { internal } from "./_generated/api";
+import { requireAuth } from "./lib/authorization";
 
 export const upsertFromClerk = internalMutation({
   args: {
@@ -47,6 +49,16 @@ export const deleteFromClerk = internalMutation({
   },
 });
 
+export const getUserByClerkId = internalQuery({
+  args: { clerkId: v.string() },
+  handler: async (ctx, args) => {
+    return ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", args.clerkId))
+      .unique();
+  },
+});
+
 export const getCurrentUser = query({
   args: {},
   handler: async (ctx) => {
@@ -90,5 +102,50 @@ export const getCurrentUserOrThrow = query({
     }
 
     return user;
+  },
+});
+
+export const deleteMyAccount = action({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await requireAuth(ctx);
+    const clerkId = identity.subject;
+
+    // Delete from Clerk FIRST via Backend API.
+    // If this fails, nothing has been deleted — user can safely retry.
+    // If this succeeds but Convex delete fails, the Clerk webhook (user.deleted)
+    // will fire and deleteFromClerk handles cleanup idempotently.
+    const clerkSecretKey = process.env.CLERK_SECRET_KEY;
+    if (!clerkSecretKey) {
+      throw new ConvexError({
+        code: "CONFIG_ERROR",
+        message: "שגיאת הגדרות שרת",
+        messageEn: "Server configuration error: missing CLERK_SECRET_KEY",
+      });
+    }
+
+    const response = await fetch(
+      `https://api.clerk.com/v1/users/${clerkId}`,
+      {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${clerkSecretKey}` },
+      }
+    );
+
+    // 404 is acceptable — means Clerk already deleted the user
+    if (!response.ok && response.status !== 404) {
+      throw new ConvexError({
+        code: "CLERK_DELETE_FAILED",
+        message: "שגיאה במחיקת החשבון. נסה שוב.",
+        messageEn: "Failed to delete Clerk account",
+      });
+    }
+
+    // Delete from Convex (via internal mutation — idempotent, handles user-not-found)
+    await ctx.runMutation(internal.users.deleteFromClerk, { clerkId });
+
+    // TODO: cascade delete from aiUsage when Epic 6 is implemented
+    // TODO: cascade delete from analyticsEvents when Epic 8 is implemented
+    // TODO: cancel active subscriptions and cascade delete from subscriptions when Epic 9 is implemented
   },
 });
