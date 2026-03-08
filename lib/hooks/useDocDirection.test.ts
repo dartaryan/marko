@@ -30,6 +30,13 @@ describe('useDocDirection default behavior via localStorage', () => {
     expect(JSON.parse(stored!)).toBe('ltr');
   });
 
+  it('persists and reads auto direction correctly', () => {
+    localStorage.setItem(DOC_DIRECTION_KEY, JSON.stringify('auto'));
+    const stored = localStorage.getItem(DOC_DIRECTION_KEY);
+    const resolved = stored !== null ? JSON.parse(stored) : 'rtl';
+    expect(resolved).toBe('auto');
+  });
+
   it('reads a previously set rtl direction correctly', () => {
     localStorage.setItem(DOC_DIRECTION_KEY, JSON.stringify('rtl'));
     const stored = localStorage.getItem(DOC_DIRECTION_KEY);

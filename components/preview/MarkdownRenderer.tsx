@@ -28,8 +28,8 @@ export const MarkdownRenderer = React.forwardRef<HTMLDivElement, MarkdownRendere
     const containerRef = useRef<HTMLDivElement>(null);
 
     const html = useMemo(
-      () => DOMPurify.sanitize(renderMarkdown(content)),
-      [content]
+      () => DOMPurify.sanitize(renderMarkdown(content, dir === 'auto')),
+      [content, dir]
     );
 
     const renderMermaidDiagrams = useCallback(async () => {
@@ -87,7 +87,7 @@ export const MarkdownRenderer = React.forwardRef<HTMLDivElement, MarkdownRendere
             (forwardedRef as { current: HTMLDivElement | null }).current = node;
           }
         }}
-        dir={dir}
+        dir={dir === 'auto' ? 'rtl' : dir}
         suppressHydrationWarning
         className={html ? 'preview-content h-full overflow-y-auto p-6' : 'h-full'}
         dangerouslySetInnerHTML={{ __html: html || EMPTY_PLACEHOLDER }}

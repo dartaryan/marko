@@ -39,4 +39,19 @@ describe('renderMarkdown', () => {
     const result = renderMarkdown('# Test');
     expect(typeof result).toBe('string');
   });
+
+  it('does not add dir attributes when autoBidi is false', () => {
+    const result = renderMarkdown('שלום עולם');
+    expect(result).not.toContain('dir=');
+  });
+
+  it('adds dir="rtl" to Hebrew paragraph when autoBidi is true', () => {
+    const result = renderMarkdown('שלום עולם', true);
+    expect(result).toContain('<p dir="rtl">');
+  });
+
+  it('adds dir="ltr" to English paragraph when autoBidi is true', () => {
+    const result = renderMarkdown('Hello world', true);
+    expect(result).toContain('<p dir="ltr">');
+  });
 });

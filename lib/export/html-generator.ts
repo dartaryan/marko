@@ -10,9 +10,11 @@ export function exportHtml(
   dir: DocDirection,
   filename: string
 ): void {
-  const rawHtml = renderMarkdown(content);
+  const autoBidi = dir === 'auto';
+  const effectiveDir = dir === 'auto' ? 'rtl' : dir;
+  const rawHtml = renderMarkdown(content, autoBidi);
   const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-  const html = buildHtmlDocument(sanitizedHtml, theme, dir, filename);
+  const html = buildHtmlDocument(sanitizedHtml, theme, effectiveDir, filename);
   triggerDownload(html, `${filename}.html`, 'text/html;charset=utf-8');
 }
 

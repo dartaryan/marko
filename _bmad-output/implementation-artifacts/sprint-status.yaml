@@ -71,7 +71,7 @@ development_status:
   # Epic 4: Hebrew Bilingual Intelligence
   epic-4: in-progress
   4-1-per-sentence-bidi-detection-engine: done
-  4-2-bidi-integration-with-rendering-pipeline: ready-for-dev
+  4-2-bidi-integration-with-rendering-pipeline: done
   epic-4-retrospective: optional
 
   # Epic 5: User Authentication & Account Management

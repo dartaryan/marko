@@ -7,6 +7,7 @@ interface DirectionToggleProps {
 }
 
 const DIRECTIONS: { value: DocDirection; label: string; ariaLabel: string }[] = [
+  { value: 'auto', label: 'BiDi', ariaLabel: 'זיהוי כיוון אוטומטי' },
   { value: 'rtl', label: 'RTL', ariaLabel: 'כיוון מימין לשמאל' },
   { value: 'ltr', label: 'LTR', ariaLabel: 'כיוון משמאל לימין' },
 ];

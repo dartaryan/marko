@@ -88,6 +88,24 @@ describe('exportHtml', () => {
     expect(html).toContain('<h1>');
   });
 
+  it('uses dir="rtl" on html element when dir is auto (never "auto")', async () => {
+    exportHtml('# שלום', DEFAULT_CLASSIC_THEME, 'auto', 'test');
+    const html = await getCapturedHtml();
+    expect(html).toContain('<html lang="he" dir="rtl">');
+    expect(html).not.toContain('dir="auto"');
+  });
+
+  it('applies per-element dir attributes when dir is auto', async () => {
+    exportHtml('שלום עולם', DEFAULT_CLASSIC_THEME, 'auto', 'test');
+    const html = await getCapturedHtml();
+    expect(html).toContain('dir="rtl"');
+  });
+
+  it('sets --doc-direction to rtl when dir is auto', async () => {
+    exportHtml('', DEFAULT_CLASSIC_THEME, 'auto', 'test');
+    expect(await getCapturedHtml()).toContain('--doc-direction: rtl');
+  });
+
   it('calls URL.revokeObjectURL for cleanup', () => {
     exportHtml('', DEFAULT_CLASSIC_THEME, 'rtl', 'test');
     expect(revokeObjectURLSpy).toHaveBeenCalledWith('blob:mock-url');

@@ -1,6 +1,6 @@
 # Story 4.2: BiDi Integration with Rendering Pipeline
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -30,60 +30,60 @@ so that I never have to manually toggle RTL/LTR within a document.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create `lib/bidi/apply-bidi.ts` (AC: #1, #2, #3, #4, #5)
-  - [ ] 1.1: Import `{ detectSentenceDirection }` from `'./detect-direction'`
-  - [ ] 1.2: Export `applyBidiToHtml(html: string): string` — applies `dir` attributes via 4 regex passes (see Dev Notes for exact regexes)
-  - [ ] 1.3: Pass 1 — `<p>` elements: `/<p>([\s\S]*?)<\/p>/g` → add `dir` attribute
-  - [ ] 1.4: Pass 2 — `<h1>`–`<h6>` elements: `/<(h[1-6])>([\s\S]*?)<\/\1>/g` → add `dir` attribute
-  - [ ] 1.5: Pass 3 — Tight `<li>` elements (no block children): regex that matches `<li>` content with only inline elements (no `<p>`, `<ul>`, `<ol>`, `<li>`, `<div>`) — add `dir` attribute; skip loose list items (they have inner `<p>` with dir already)
-  - [ ] 1.6: Pass 4 — `<td>` and `<th>` elements (with optional attributes): `/<(td|th)((?:\s[^>]*)?)>([\s\S]*?)<\/\1>/g` → add `dir` attribute after existing attrs
-  - [ ] 1.7: No default export — named export only (project convention in lib/)
+- [x] Task 1: Create `lib/bidi/apply-bidi.ts` (AC: #1, #2, #3, #4, #5)
+  - [x] 1.1: Import `{ detectSentenceDirection }` from `'./detect-direction'`
+  - [x] 1.2: Export `applyBidiToHtml(html: string): string` — applies `dir` attributes via 4 regex passes (see Dev Notes for exact regexes)
+  - [x] 1.3: Pass 1 — `<p>` elements: `/<p>([\s\S]*?)<\/p>/g` → add `dir` attribute
+  - [x] 1.4: Pass 2 — `<h1>`–`<h6>` elements: `/<(h[1-6])>([\s\S]*?)<\/\1>/g` → add `dir` attribute
+  - [x] 1.5: Pass 3 — Tight `<li>` elements (no block children): regex that matches `<li>` content with only inline elements (no `<p>`, `<ul>`, `<ol>`, `<li>`, `<div>`) — add `dir` attribute; skip loose list items (they have inner `<p>` with dir already)
+  - [x] 1.6: Pass 4 — `<td>` and `<th>` elements (with optional attributes): `/<(td|th)((?:\s[^>]*)?)>([\s\S]*?)<\/\1>/g` → add `dir` attribute after existing attrs
+  - [x] 1.7: No default export — named export only (project convention in lib/)
 
-- [ ] Task 2: Create `lib/bidi/apply-bidi.test.ts` (AC: #8)
-  - [ ] 2.1: Import `{ applyBidiToHtml }` from `'./apply-bidi'`
-  - [ ] 2.2: Test `<p>` with Hebrew text → `<p dir="rtl">...</p>`
-  - [ ] 2.3: Test `<p>` with English text → `<p dir="ltr">...</p>`
-  - [ ] 2.4: Test `<p>` with mixed content (Hebrew dominant) → `dir="rtl"`
-  - [ ] 2.5: Test `<h1>` with Hebrew text → `<h1 dir="rtl">...</h1>`
-  - [ ] 2.6: Test `<h2>` with English text → `<h2 dir="ltr">...</h2>`
-  - [ ] 2.7: Test tight `<li>` with Hebrew → `<li dir="rtl">...</li>`
-  - [ ] 2.8: Test loose `<li>` (contains `<p>`) → `<li>` unchanged; inner `<p>` gets dir
-  - [ ] 2.9: Test `<td>` with Hebrew → `<td dir="rtl">...</td>`
-  - [ ] 2.10: Test `<th align="center">` — existing attrs preserved, `dir` appended: `<th align="center" dir="ltr">...</th>`
-  - [ ] 2.11: Test code block `<pre><code>...</code></pre>` — NOT modified (no `<p>`, `<h>`, `<li>`, `<td>`, `<th>`)
-  - [ ] 2.12: Test Mermaid: `<div class="mermaid-wrapper"><div class="mermaid">...</div></div>` — NOT modified
-  - [ ] 2.13: Test mixed document with multiple elements of different directions
+- [x] Task 2: Create `lib/bidi/apply-bidi.test.ts` (AC: #8)
+  - [x] 2.1: Import `{ applyBidiToHtml }` from `'./apply-bidi'`
+  - [x] 2.2: Test `<p>` with Hebrew text → `<p dir="rtl">...</p>`
+  - [x] 2.3: Test `<p>` with English text → `<p dir="ltr">...</p>`
+  - [x] 2.4: Test `<p>` with mixed content (Hebrew dominant) → `dir="rtl"`
+  - [x] 2.5: Test `<h1>` with Hebrew text → `<h1 dir="rtl">...</h1>`
+  - [x] 2.6: Test `<h2>` with English text → `<h2 dir="ltr">...</h2>`
+  - [x] 2.7: Test tight `<li>` with Hebrew → `<li dir="rtl">...</li>`
+  - [x] 2.8: Test loose `<li>` (contains `<p>`) → `<li>` unchanged; inner `<p>` gets dir
+  - [x] 2.9: Test `<td>` with Hebrew → `<td dir="rtl">...</td>`
+  - [x] 2.10: Test `<th align="center">` — existing attrs preserved, `dir` appended: `<th align="center" dir="ltr">...</th>`
+  - [x] 2.11: Test code block `<pre><code>...</code></pre>` — NOT modified (no `<p>`, `<h>`, `<li>`, `<td>`, `<th>`)
+  - [x] 2.12: Test Mermaid: `<div class="mermaid-wrapper"><div class="mermaid">...</div></div>` — NOT modified
+  - [x] 2.13: Test mixed document with multiple elements of different directions
 
-- [ ] Task 3: Modify `types/editor.ts` (AC: #6)
-  - [ ] 3.1: Change `DocDirection` from `'rtl' | 'ltr'` to `'rtl' | 'ltr' | 'auto'`
+- [x] Task 3: Modify `types/editor.ts` (AC: #6)
+  - [x] 3.1: Change `DocDirection` from `'rtl' | 'ltr'` to `'rtl' | 'ltr' | 'auto'`
 
-- [ ] Task 4: Modify `components/layout/DirectionToggle.tsx` (AC: #6)
-  - [ ] 4.1: Add `{ value: 'auto', label: 'BiDi', ariaLabel: 'זיהוי כיוון אוטומטי' }` as FIRST item in `DIRECTIONS` array (before 'rtl', before 'ltr')
-  - [ ] 4.2: No other changes needed — `DIRECTIONS.length` in `handleKeyDown` arithmetic automatically handles 3 items
+- [x] Task 4: Modify `components/layout/DirectionToggle.tsx` (AC: #6)
+  - [x] 4.1: Add `{ value: 'auto', label: 'BiDi', ariaLabel: 'זיהוי כיוון אוטומטי' }` as FIRST item in `DIRECTIONS` array (before 'rtl', before 'ltr')
+  - [x] 4.2: No other changes needed — `DIRECTIONS.length` in `handleKeyDown` arithmetic automatically handles 3 items
 
-- [ ] Task 5: Modify `lib/markdown/render-pipeline.ts` (AC: #5)
-  - [ ] 5.1: Add import: `import { applyBidiToHtml } from '@/lib/bidi/apply-bidi'`
-  - [ ] 5.2: Change signature to `renderMarkdown(content: string, autoBidi = false): string`
-  - [ ] 5.3: After `marked.parse`, if `autoBidi` is true, pass html through `applyBidiToHtml(html)` before returning
+- [x] Task 5: Modify `lib/markdown/render-pipeline.ts` (AC: #5)
+  - [x] 5.1: Add import: `import { applyBidiToHtml } from '@/lib/bidi/apply-bidi'`
+  - [x] 5.2: Change signature to `renderMarkdown(content: string, autoBidi = false): string`
+  - [x] 5.3: After `marked.parse`, if `autoBidi` is true, pass html through `applyBidiToHtml(html)` before returning
 
-- [ ] Task 6: Modify `lib/markdown/render-pipeline.test.ts` (AC: #8)
-  - [ ] 6.1: Add test: `renderMarkdown('שלום עולם')` (no autoBidi) → output does NOT contain `dir=`
-  - [ ] 6.2: Add test: `renderMarkdown('שלום עולם', true)` (autoBidi=true) → output contains `<p dir="rtl">`
-  - [ ] 6.3: Add test: `renderMarkdown('Hello world', true)` → output contains `<p dir="ltr">`
+- [x] Task 6: Modify `lib/markdown/render-pipeline.test.ts` (AC: #8)
+  - [x] 6.1: Add test: `renderMarkdown('שלום עולם')` (no autoBidi) → output does NOT contain `dir=`
+  - [x] 6.2: Add test: `renderMarkdown('שלום עולם', true)` (autoBidi=true) → output contains `<p dir="rtl">`
+  - [x] 6.3: Add test: `renderMarkdown('Hello world', true)` → output contains `<p dir="ltr">`
 
-- [ ] Task 7: Modify `components/preview/MarkdownRenderer.tsx` (AC: #1, #6)
-  - [ ] 7.1: Update `useMemo`: call `renderMarkdown(content, dir === 'auto')` instead of `renderMarkdown(content)`
-  - [ ] 7.2: Add `dir` to `useMemo` dependency array: `[content, dir]`
-  - [ ] 7.3: Update container `dir` attribute: use `dir === 'auto' ? 'rtl' : dir` — when BiDi active, RTL is the Hebrew-first base direction; individual elements already have their specific `dir`
+- [x] Task 7: Modify `components/preview/MarkdownRenderer.tsx` (AC: #1, #6)
+  - [x] 7.1: Update `useMemo`: call `renderMarkdown(content, dir === 'auto')` instead of `renderMarkdown(content)`
+  - [x] 7.2: Add `dir` to `useMemo` dependency array: `[content, dir]`
+  - [x] 7.3: Update container `dir` attribute: use `dir === 'auto' ? 'rtl' : dir` — when BiDi active, RTL is the Hebrew-first base direction; individual elements already have their specific `dir`
 
-- [ ] Task 8: Modify `lib/export/html-generator.ts` (AC: #7)
-  - [ ] 8.1: Define `const autoBidi = dir === 'auto'` and `const effectiveDir = autoBidi ? 'rtl' : dir`
-  - [ ] 8.2: Change `renderMarkdown(content)` call to `renderMarkdown(content, autoBidi)`
-  - [ ] 8.3: Pass `effectiveDir` (not `dir`) to `buildHtmlDocument()` so `<html dir="...">` and CSS get 'rtl' or 'ltr' (never 'auto', which would conflict with per-element dirs)
+- [x] Task 8: Modify `lib/export/html-generator.ts` (AC: #7)
+  - [x] 8.1: Define `const autoBidi = dir === 'auto'` and `const effectiveDir = autoBidi ? 'rtl' : dir`
+  - [x] 8.2: Change `renderMarkdown(content)` call to `renderMarkdown(content, autoBidi)`
+  - [x] 8.3: Pass `effectiveDir` (not `dir`) to `buildHtmlDocument()` so `<html dir="...">` and CSS get 'rtl' or 'ltr' (never 'auto', which would conflict with per-element dirs)
 
-- [ ] Task 9: Modify `lib/export/word-copy.ts` (AC: #7)
-  - [ ] 9.1: In `copyForWord`: define `const autoBidi = dir === 'auto'` and `const effectiveDir = autoBidi ? 'rtl' : dir`; change `renderMarkdown(content)` to `renderMarkdown(content, autoBidi)`; pass `effectiveDir` to `buildWordHtml()`
-  - [ ] 9.2: In `copyHtml`: same pattern — `autoBidi`, `effectiveDir`, updated `renderMarkdown` call, updated `buildCssVarHtml()` call
+- [x] Task 9: Modify `lib/export/word-copy.ts` (AC: #7)
+  - [x] 9.1: In `copyForWord`: define `const autoBidi = dir === 'auto'` and `const effectiveDir = autoBidi ? 'rtl' : dir`; change `renderMarkdown(content)` to `renderMarkdown(content, autoBidi)`; pass `effectiveDir` to `buildWordHtml()`
+  - [x] 9.2: In `copyHtml`: same pattern — `autoBidi`, `effectiveDir`, updated `renderMarkdown` call, updated `buildCssVarHtml()` call
 
 ## Dev Notes
 
@@ -403,10 +403,43 @@ Files NOT to touch:
 
 ### Agent Model Used
 
-claude-sonnet-4-6[1m]
+claude-opus-4-6
 
 ### Debug Log References
 
 ### Completion Notes List
 
+- All 9 tasks implemented following exact specifications from Dev Notes
+- `applyBidiToHtml` function created with 4-pass regex approach: `<p>`, `<h1>`-`<h6>`, tight `<li>`, `<td>`/`<th>`
+- Code blocks and Mermaid wrappers are inherently safe (no matching regex targets `<div>`, `<pre>`, `<code>`)
+- `DocDirection` extended with `'auto'` value; DirectionToggle gains 3rd "BiDi" button
+- `renderMarkdown` gains `autoBidi` param with backward-compatible default (`false`)
+- MarkdownRenderer passes `dir === 'auto'` to renderMarkdown and uses `'rtl'` as container fallback
+- HTML export and Word/HTML clipboard copy both use `autoBidi`/`effectiveDir` pattern
+- PDF export requires no changes (DOM-based capture inherits BiDi attrs automatically)
+- 12 new unit tests in `apply-bidi.test.ts`, 3 new integration tests in `render-pipeline.test.ts`
+- All 245 tests pass across 19 test files with zero regressions
+
+### Implementation Plan
+
+Followed the story's exact implementation specifications from Dev Notes. All regex patterns, function signatures, and integration points matched the spec precisely.
+
 ### File List
+
+**New files:**
+- `lib/bidi/apply-bidi.ts`
+- `lib/bidi/apply-bidi.test.ts`
+
+**Modified files:**
+- `types/editor.ts`
+- `components/layout/DirectionToggle.tsx`
+- `lib/markdown/render-pipeline.ts`
+- `lib/markdown/render-pipeline.test.ts`
+- `components/preview/MarkdownRenderer.tsx`
+- `lib/export/html-generator.ts`
+- `lib/export/word-copy.ts`
+
+## Change Log
+
+- 2026-03-07: Implemented Story 4.2 — BiDi integration with rendering pipeline. Added `applyBidiToHtml` post-processing, extended `DocDirection` with 'auto', integrated BiDi into preview rendering and all export paths (HTML, Word copy, HTML copy). PDF export inherits automatically. 15 new tests added.
+- 2026-03-08: Code review fixes — Fixed TypeScript type narrowing for `effectiveDir` in html-generator.ts and word-copy.ts (use direct ternary for `'rtl' | 'ltr'` narrowing). Added 5 new tests: export with `dir='auto'` (3 tests in html-generator.test.ts), `'auto'` localStorage persistence (useDocDirection.test.ts), inline HTML tag handling (apply-bidi.test.ts). Added nested-table limitation comment in apply-bidi.ts Pass 4.

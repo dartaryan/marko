@@ -9,9 +9,11 @@ export async function copyForWord(
   theme: ColorTheme,
   dir: DocDirection
 ): Promise<void> {
-  const rawHtml = renderMarkdown(content);
+  const autoBidi = dir === 'auto';
+  const effectiveDir = dir === 'auto' ? 'rtl' : dir;
+  const rawHtml = renderMarkdown(content, autoBidi);
   const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-  const html = buildWordHtml(sanitizedHtml, theme, dir);
+  const html = buildWordHtml(sanitizedHtml, theme, effectiveDir);
   await writeHtmlToClipboard(html);
 }
 
@@ -20,9 +22,11 @@ export async function copyHtml(
   theme: ColorTheme,
   dir: DocDirection
 ): Promise<void> {
-  const rawHtml = renderMarkdown(content);
+  const autoBidi = dir === 'auto';
+  const effectiveDir = dir === 'auto' ? 'rtl' : dir;
+  const rawHtml = renderMarkdown(content, autoBidi);
   const sanitizedHtml = DOMPurify.sanitize(rawHtml);
-  const html = buildCssVarHtml(sanitizedHtml, theme, dir);
+  const html = buildCssVarHtml(sanitizedHtml, theme, effectiveDir);
   await writeHtmlToClipboard(html);
 }
 

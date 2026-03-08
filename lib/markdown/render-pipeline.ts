@@ -1,7 +1,9 @@
 import { marked } from './config';
+import { applyBidiToHtml } from '@/lib/bidi/apply-bidi';
 
-export function renderMarkdown(content: string): string {
+export function renderMarkdown(content: string, autoBidi = false): string {
   if (!content.trim()) return '';
   const result = marked.parse(content);
-  return typeof result === 'string' ? result : '';
+  const html = typeof result === 'string' ? result : '';
+  return autoBidi ? applyBidiToHtml(html) : html;
 }
