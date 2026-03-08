@@ -8,9 +8,10 @@ interface EditorPanelProps {
   content: string;
   onChange: (content: string) => void;
   dir?: DocDirection;
+  onAiClick?: () => void;
 }
 
-export function EditorPanel({ content, onChange, dir = 'rtl' }: EditorPanelProps) {
+export function EditorPanel({ content, onChange, dir = 'rtl', onAiClick }: EditorPanelProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   function insertTextAtCursor(text: string) {
@@ -38,7 +39,7 @@ export function EditorPanel({ content, onChange, dir = 'rtl' }: EditorPanelProps
       <div className="flex h-9 items-center border-b border-border px-4">
         <span className="text-sm font-medium text-muted-foreground">עורך</span>
       </div>
-      <EditorToolbar textareaRef={textareaRef} onInsert={insertTextAtCursor} />
+      <EditorToolbar textareaRef={textareaRef} onInsert={insertTextAtCursor} onAiClick={onAiClick} />
       <div className="flex-1 overflow-hidden">
         <EditorTextarea ref={textareaRef} value={content} onChange={onChange} dir={dir} />
       </div>

@@ -1,21 +1,25 @@
 'use client';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { migrateV1Data } from '@/lib/migration/v1-migration';
 import { useEditorContent } from '@/lib/hooks/useEditorContent';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { useViewMode } from '@/lib/hooks/useViewMode';
 import { useDocDirection } from '@/lib/hooks/useDocDirection';
 import { useColorTheme } from '@/lib/hooks/useColorTheme';
+import { useAiAction } from '@/lib/hooks/useAiAction';
 import { Header } from '@/components/layout/Header';
 import { ColorPanel } from '@/components/theme/ColorPanel';
 import { ExportModal } from '@/components/export/ExportModal';
 import { PdfProgress } from '@/components/export/PdfProgress';
+import { AiCommandPalette } from '@/components/ai/AiCommandPalette';
+import { AiResultPanel } from '@/components/ai/AiResultPanel';
 import { generatePdf } from '@/lib/export/pdf-generator';
 import { exportHtml } from '@/lib/export/html-generator';
 import { exportMarkdown } from '@/lib/export/md-generator';
 import { toast } from 'sonner';
 import { copyForWord, copyHtml, copyText } from '@/lib/export/word-copy';
 import type { ExportType, CopyType } from '@/types/editor';
+import type { AiActionType } from '@/types/ai';
 import { PanelLayout } from '@/components/layout/PanelLayout';
 import { EditorPanel } from '@/components/editor/EditorPanel';
 import { PreviewPanel } from '@/components/preview/PreviewPanel';
@@ -40,6 +44,38 @@ export default function EditorPage() {
   const previewContentRef = useRef<HTMLDivElement>(null);
   const [pendingPdfFilename, setPendingPdfFilename] = useState('');
   const [pdfState, setPdfState] = useState<PdfState>('idle');
+  const [isAiPaletteOpen, setIsAiPaletteOpen] = useState(false);
+  const { executeAction, isLoading: isAiLoading, result: aiResult, errorCode: aiErrorCode, clearResult: clearAiResult } = useAiAction();
+  const isAiUnavailable = aiErrorCode === 'AI_UNAVAILABLE';
+
+  const handleAiAction = useCallback(
+    async (actionType: AiActionType) => {
+      const targetLanguage = actionType === 'translate' ? 'en' : undefined;
+      await executeAction(actionType, content, targetLanguage);
+    },
+    [executeAction, content]
+  );
+
+  const handleAiAccept = useCallback(
+    (text: string) => {
+      setContent(content + '\n\n' + text);
+      clearAiResult();
+    },
+    [content, setContent, clearAiResult]
+  );
+
+  // Ctrl+K / Cmd+K keyboard shortcut — skip when another modal is active
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        if (isExportModalOpen || isColorPanelOpen || isPresentationMode) return;
+        e.preventDefault();
+        setIsAiPaletteOpen((prev) => !prev);
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isExportModalOpen, isColorPanelOpen, isPresentationMode]);
 
   function handleClearEditor() {
     if (window.confirm('האם אתה בטוח שברצונך למחוק את כל התוכן?')) {
@@ -103,6 +139,24 @@ export default function EditorPage() {
 
   return (
     <main className="flex h-screen flex-col">
+      {isAiUnavailable && (
+        <div
+          role="alert"
+          dir="rtl"
+          className="flex items-center justify-between bg-destructive/10 px-4 py-2 text-sm text-destructive"
+          data-testid="ai-unavailable-banner"
+        >
+          <span>AI לא זמין כרגע</span>
+          <button
+            type="button"
+            onClick={clearAiResult}
+            className="text-destructive hover:text-destructive/80 text-xs underline"
+            aria-label="סגור התראה"
+          >
+            סגור
+          </button>
+        </div>
+      )}
       <Header
         viewMode={viewMode}
         onViewModeChange={setViewMode}
@@ -117,8 +171,20 @@ export default function EditorPage() {
       />
       <PanelLayout
         viewMode={viewMode}
-        editorPanel={<EditorPanel content={content} onChange={setContent} dir={docDirection} />}
-        previewPanel={<PreviewPanel content={debouncedContent} dir={docDirection} contentRef={previewContentRef} />}
+        editorPanel={<EditorPanel content={content} onChange={setContent} dir={docDirection} onAiClick={() => setIsAiPaletteOpen(true)} />}
+        previewPanel={
+          <div className="flex flex-col flex-1 min-h-0">
+            <div className="flex-1 min-h-0">
+              <PreviewPanel content={debouncedContent} dir={docDirection} contentRef={previewContentRef} />
+            </div>
+            <AiResultPanel
+              isLoading={isAiLoading}
+              result={aiResult}
+              onAccept={handleAiAccept}
+              onDismiss={clearAiResult}
+            />
+          </div>
+        }
       />
       {isPresentationMode && (
         <PresentationView
@@ -150,6 +216,11 @@ export default function EditorPage() {
           onPrint={() => window.print()}
         />
       )}
+      <AiCommandPalette
+        open={isAiPaletteOpen}
+        onOpenChange={setIsAiPaletteOpen}
+        onAction={handleAiAction}
+      />
     </main>
   );
 }

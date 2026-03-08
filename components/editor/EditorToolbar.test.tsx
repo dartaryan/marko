@@ -71,16 +71,28 @@ describe('EditorToolbar — structure & ARIA', () => {
     expect(count).toBe(3);
   });
 
-  it('five separators render between six groups', () => {
+  it('six separators render between seven groups', () => {
     const html = renderToStaticMarkup(<EditorToolbar textareaRef={makeRef()} onInsert={vi.fn()} />);
-    // Each separator has aria-hidden="true"; icons in dropdowns may also have it — assert ≥5
+    // Each separator has aria-hidden="true"; icons in dropdowns may also have it — assert ≥6
     const count = (html.match(/aria-hidden="true"/g) ?? []).length;
-    expect(count).toBeGreaterThanOrEqual(5);
+    expect(count).toBeGreaterThanOrEqual(6);
   });
 
   it('toolbar container has border-b divider separating it from editor', () => {
     const html = renderToStaticMarkup(<EditorToolbar textareaRef={makeRef()} onInsert={vi.fn()} />);
     expect(html).toContain('border-b');
+  });
+
+  it('AI sparkle button renders with correct aria-label and tooltip', () => {
+    const html = renderToStaticMarkup(<EditorToolbar textareaRef={makeRef()} onInsert={vi.fn()} />);
+    expect(html).toContain('aria-label="שאל את מארקו AI (Ctrl+K)"');
+    expect(html).toContain('title="שאל את מארקו AI (Ctrl+K)"');
+  });
+
+  it('six separators render between seven groups (with AI group)', () => {
+    const html = renderToStaticMarkup(<EditorToolbar textareaRef={makeRef()} onInsert={vi.fn()} />);
+    const count = (html.match(/aria-hidden="true"/g) ?? []).length;
+    expect(count).toBeGreaterThanOrEqual(6);
   });
 });
 

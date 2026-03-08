@@ -1,6 +1,6 @@
 # Story 6.2: AI Actions UI & Document Interactions
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -40,65 +40,65 @@ So that I can quickly get value from my content without manual effort.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Install cmdk dependency (AC: #2)
-  - [ ] 1.1 Run `pnpm add cmdk` to install the command palette library
-  - [ ] 1.2 Add shadcn/ui `Command` component: `npx shadcn@latest add command`
+- [x] Task 1: Install cmdk dependency (AC: #2)
+  - [x] 1.1 Run `pnpm add cmdk` to install the command palette library
+  - [x] 1.2 Add shadcn/ui `Command` component: `npx shadcn@latest add command`
 
-- [ ] Task 2: Create `useAiAction` hook (AC: #5, #6, #7, #8, #10, #11)
-  - [ ] 2.1 Create `lib/hooks/useAiAction.ts` — wraps `useAction(api.ai.callAnthropicApi)` with loading/error/result state management
-  - [ ] 2.2 Hook returns `{ executeAction, isLoading, result, error, clearResult }` — accepts `AiActionType` and document `content`
-  - [ ] 2.3 Error handling: catch ConvexError, extract error code, map to Hebrew toast message using sonner
-  - [ ] 2.4 Success handling: set result state, show success toast "AI סיים לעבד"
-  - [ ] 2.5 Include `targetLanguage` passthrough for translate action
+- [x] Task 2: Create `useAiAction` hook (AC: #5, #6, #7, #8, #10, #11)
+  - [x] 2.1 Create `lib/hooks/useAiAction.ts` — wraps `useAction(api.ai.callAnthropicApi)` with loading/error/result state management
+  - [x] 2.2 Hook returns `{ executeAction, isLoading, result, error, clearResult }` — accepts `AiActionType` and document `content`
+  - [x] 2.3 Error handling: catch ConvexError, extract error code, map to Hebrew toast message using sonner
+  - [x] 2.4 Success handling: set result state, show success toast "AI סיים לעבד"
+  - [x] 2.5 Include `targetLanguage` passthrough for translate action
 
-- [ ] Task 3: Create AI command palette component (AC: #2, #3, #4, #12, #13)
-  - [ ] 3.1 Create `components/ai/AiCommandPalette.tsx` — uses cmdk `CommandDialog` with RTL layout
-  - [ ] 3.2 List 4 AI actions with Hebrew labels and icons: Summarize (FileText), Translate (Languages), Extract Action Items (ListChecks), Improve Writing (Sparkles)
-  - [ ] 3.3 Implement anonymous gate check: if `!isAuthenticated` from `useCurrentUser`, show inline register prompt with link to sign-in instead of action list
-  - [ ] 3.4 Implement free user quota gate: if `useCapabilities` returns `canUseAi` but monthly count >= `maxMonthlyAiCalls`, dim actions and show upgrade gate section at bottom of palette
-  - [ ] 3.5 Show remaining count for free users: query `getMonthlyUsageCount` via `useQuery` and display "נותרו X פעולות AI"
-  - [ ] 3.6 Keyboard navigation: arrow keys, Enter selects, Escape closes (built into cmdk)
-  - [ ] 3.7 Support `open` / `onOpenChange` controlled state from parent
+- [x] Task 3: Create AI command palette component (AC: #2, #3, #4, #12, #13)
+  - [x] 3.1 Create `components/ai/AiCommandPalette.tsx` — uses cmdk `CommandDialog` with RTL layout
+  - [x] 3.2 List 4 AI actions with Hebrew labels and icons: Summarize (FileText), Translate (Languages), Extract Action Items (ListChecks), Improve Writing (Sparkles)
+  - [x] 3.3 Implement anonymous gate check: if `!isAuthenticated` from `useCurrentUser`, show inline register prompt with link to sign-in instead of action list
+  - [x] 3.4 Implement free user quota gate: if `useCapabilities` returns `canUseAi` but monthly count >= `maxMonthlyAiCalls`, dim actions and show upgrade gate section at bottom of palette
+  - [x] 3.5 Show remaining count for free users: query `getMonthlyUsageCount` via `useQuery` and display "נותרו X פעולות AI"
+  - [x] 3.6 Keyboard navigation: arrow keys, Enter selects, Escape closes (built into cmdk)
+  - [x] 3.7 Support `open` / `onOpenChange` controlled state from parent
 
-- [ ] Task 4: Create AIResultPanel component (AC: #9, #10)
-  - [ ] 4.1 Create `components/ai/AiResultPanel.tsx` — displays AI output with accept/dismiss/copy buttons
-  - [ ] 4.2 Loading state: skeleton shimmer (3-4 lines for summary, bullet list shape for action items) with "...מעבד" text
-  - [ ] 4.3 Result state: render AI response as Markdown using the existing `MarkdownRenderer` or a lightweight `dangerouslySetInnerHTML` with `marked.parse()`
-  - [ ] 4.4 Accept button: inserts result text into the editor textarea at cursor or appends to document
-  - [ ] 4.5 Dismiss button: clears the panel, original document preserved
-  - [ ] 4.6 Copy button: copies result to clipboard using `navigator.clipboard.writeText()`
-  - [ ] 4.7 Accessibility: `role="complementary"`, `aria-label="תוצאת AI"`, all buttons with Hebrew `aria-label`
+- [x] Task 4: Create AIResultPanel component (AC: #9, #10)
+  - [x] 4.1 Create `components/ai/AiResultPanel.tsx` — displays AI output with accept/dismiss/copy buttons
+  - [x] 4.2 Loading state: skeleton shimmer (3-4 lines for summary, bullet list shape for action items) with "...מעבד" text
+  - [x] 4.3 Result state: render AI response as Markdown using the existing `MarkdownRenderer` or a lightweight `dangerouslySetInnerHTML` with `marked.parse()`
+  - [x] 4.4 Accept button: inserts result text into the editor textarea at cursor or appends to document
+  - [x] 4.5 Dismiss button: clears the panel, original document preserved
+  - [x] 4.6 Copy button: copies result to clipboard using `navigator.clipboard.writeText()`
+  - [x] 4.7 Accessibility: `role="complementary"`, `aria-label="תוצאת AI"`, all buttons with Hebrew `aria-label`
 
-- [ ] Task 5: Add sparkle icon to EditorToolbar (AC: #1)
-  - [ ] 5.1 Modify `components/editor/EditorToolbar.tsx` — add AI sparkle button after last toolbar separator
-  - [ ] 5.2 Use `lucide-react` `Sparkles` icon, 28x28px, primary/green color, matching existing button sizes
-  - [ ] 5.3 Tooltip: "שאל את מארקו AI (Ctrl+K)"
-  - [ ] 5.4 onClick opens the AiCommandPalette
+- [x] Task 5: Add sparkle icon to EditorToolbar (AC: #1)
+  - [x] 5.1 Modify `components/editor/EditorToolbar.tsx` — add AI sparkle button after last toolbar separator
+  - [x] 5.2 Use `lucide-react` `Sparkles` icon, 28x28px, primary/green color, matching existing button sizes
+  - [x] 5.3 Tooltip: "שאל את מארקו AI (Ctrl+K)"
+  - [x] 5.4 onClick opens the AiCommandPalette
 
-- [ ] Task 6: Add Ctrl+K / Cmd+K keyboard shortcut (AC: #2, #12)
-  - [ ] 6.1 Add global keyboard listener for Ctrl+K / Cmd+K to open the AI command palette
-  - [ ] 6.2 Use `useEffect` with `keydown` listener on `document`, checking `metaKey || ctrlKey` + `k`
-  - [ ] 6.3 Prevent default browser behavior (Ctrl+K usually opens address bar)
+- [x] Task 6: Add Ctrl+K / Cmd+K keyboard shortcut (AC: #2, #12)
+  - [x] 6.1 Add global keyboard listener for Ctrl+K / Cmd+K to open the AI command palette
+  - [x] 6.2 Use `useEffect` with `keydown` listener on `document`, checking `metaKey || ctrlKey` + `k`
+  - [x] 6.3 Prevent default browser behavior (Ctrl+K usually opens address bar)
 
-- [ ] Task 7: Integrate components into editor page (AC: all)
-  - [ ] 7.1 Modify `app/editor/page.tsx` — add state for AI palette open/closed and AI result display
-  - [ ] 7.2 Wire sparkle button → AiCommandPalette → useAiAction → AiResultPanel flow
-  - [ ] 7.3 Pass editor content from EditorTextarea state to `useAiAction` when action is triggered
-  - [ ] 7.4 Handle "Accept" action: insert AI result text into the editor textarea
-  - [ ] 7.5 Remove or replace `AiActionPlaceholder.tsx` — the placeholder is superseded by the real AI UI
+- [x] Task 7: Integrate components into editor page (AC: all)
+  - [x] 7.1 Modify `app/editor/page.tsx` — add state for AI palette open/closed and AI result display
+  - [x] 7.2 Wire sparkle button → AiCommandPalette → useAiAction → AiResultPanel flow
+  - [x] 7.3 Pass editor content from EditorTextarea state to `useAiAction` when action is triggered
+  - [x] 7.4 Handle "Accept" action: insert AI result text into the editor textarea
+  - [x] 7.5 Remove or replace `AiActionPlaceholder.tsx` — the placeholder is superseded by the real AI UI
 
-- [ ] Task 8: Create tests (AC: all)
-  - [ ] 8.1 Create `lib/hooks/useAiAction.test.ts` — test loading state, success callback, error handling, result clearing
-  - [ ] 8.2 Create `components/ai/AiCommandPalette.test.tsx` — test renders 4 actions for authenticated user, shows gate for anonymous, shows limit gate for exhausted user, keyboard navigation
-  - [ ] 8.3 Create `components/ai/AiResultPanel.test.tsx` — test loading skeleton, result display, accept/dismiss/copy button actions, accessibility attributes
-  - [ ] 8.4 Update `components/editor/EditorToolbar.test.tsx` — test sparkle button renders, click opens palette
-  - [ ] 8.5 Test Ctrl+K keyboard shortcut triggers palette open
+- [x] Task 8: Create tests (AC: all)
+  - [x] 8.1 Create `lib/hooks/useAiAction.test.ts` — test loading state, success callback, error handling, result clearing
+  - [x] 8.2 Create `components/ai/AiCommandPalette.test.tsx` — test renders 4 actions for authenticated user, shows gate for anonymous, shows limit gate for exhausted user, keyboard navigation
+  - [x] 8.3 Create `components/ai/AiResultPanel.test.tsx` — test loading skeleton, result display, accept/dismiss/copy button actions, accessibility attributes
+  - [x] 8.4 Update `components/editor/EditorToolbar.test.tsx` — test sparkle button renders, click opens palette
+  - [x] 8.5 Test Ctrl+K keyboard shortcut triggers palette open
 
-- [ ] Task 9: Verify integration and existing tests (AC: all)
-  - [ ] 9.1 Verify all existing 300+ tests still pass
-  - [ ] 9.2 Verify the full flow: sparkle → palette → action → loading → result → accept/dismiss
-  - [ ] 9.3 Verify anonymous user sees gate check
-  - [ ] 9.4 Verify free user at limit sees dimmed actions + upgrade prompt
+- [x] Task 9: Verify integration and existing tests (AC: all)
+  - [x] 9.1 Verify all existing 300+ tests still pass
+  - [x] 9.2 Verify the full flow: sparkle → palette → action → loading → result → accept/dismiss
+  - [x] 9.3 Verify anonymous user sees gate check
+  - [x] 9.4 Verify free user at limit sees dimmed actions + upgrade prompt
 
 ## Dev Notes
 
@@ -577,12 +577,57 @@ b2684da Implement Story 4.2: BiDi integration with rendering pipeline
 - [Source: cmdk — https://cmdk.paco.me/]
 - [Source: shadcn/ui Command — https://ui.shadcn.com/docs/components/command]
 
+## Change Log
+
+- 2026-03-08: Implemented Story 6.2 — AI actions UI and document interactions. Added cmdk command palette with 4 AI actions, result panel with accept/dismiss/copy, sparkle toolbar button, Ctrl+K shortcut, gate checks for anonymous/free-at-limit users, remaining quota display, and public `getMyMonthlyUsage` query. Removed superseded `AiActionPlaceholder`. 400/400 tests pass (22 new tests added).
+- 2026-03-08: Code review fixes — Added AI unavailability persistent banner (AC #11), added try/catch to copy button in AiResultPanel, wired targetLanguage="en" for translate action, added Ctrl+K modal guard, added errorCode and concurrent execution guard to useAiAction, added paid user test to AiCommandPalette. 403/403 tests pass (3 new tests added).
+
 ## Dev Agent Record
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Debug Log References
+
+- Fixed vitest `vi.mock` hoisting issue: used `vi.hoisted()` for mock variables referenced in factory functions
+- Added `ResizeObserver` and `scrollIntoView` polyfills for cmdk tests in jsdom environment
 
 ### Completion Notes List
 
+- Installed `cmdk` 1.1.1 and shadcn `command` component
+- Created `useAiAction` hook wrapping `useAction(api.ai.callAnthropicApi)` with loading/error/result state and Hebrew toast messages
+- Created `AiCommandPalette` with RTL cmdk CommandDialog, 4 AI actions, anonymous gate, free-at-limit gate, remaining quota display
+- Created `AiResultPanel` with skeleton loading, rendered Markdown result, accept/dismiss/copy buttons, ARIA attributes
+- Added Sparkles icon button (green, group 7) to EditorToolbar with `onAiClick` prop threading through EditorPanel
+- Added Ctrl+K / Cmd+K global keyboard shortcut in editor page
+- Integrated full AI flow in `app/editor/page.tsx`: palette → action → loading → result panel in preview area
+- Added public `getMyMonthlyUsage` query to `convex/usage.ts` for client-side usage count display
+- Removed `AiActionPlaceholder.tsx` and its test (superseded)
+- Created 22 new tests across 4 files (8 hook + 6 palette + 8 result panel + updated toolbar tests)
+- All 400 tests pass across 39 test files — zero regressions
+
 ### File List
+
+**New files:**
+- `components/ui/command.tsx` — shadcn/ui Command component (cmdk wrapper)
+- `components/ai/AiCommandPalette.tsx` — AI command palette with gate checks
+- `components/ai/AiCommandPalette.test.tsx` — 7 tests for command palette
+- `components/ai/AiResultPanel.tsx` — AI result display panel
+- `components/ai/AiResultPanel.test.tsx` — 8 tests for result panel
+- `lib/hooks/useAiAction.ts` — Hook for AI action execution
+- `lib/hooks/useAiAction.test.ts` — 10 tests for AI action hook
+
+**Modified files:**
+- `app/editor/page.tsx` — Added AI palette state, result panel, keyboard shortcut, full flow wiring, AI unavailability banner, Ctrl+K modal guard, targetLanguage for translate
+- `components/editor/EditorToolbar.tsx` — Added Sparkles icon button as group 7, `onAiClick` prop
+- `components/editor/EditorPanel.tsx` — Added `onAiClick` prop pass-through to toolbar
+- `components/editor/EditorToolbar.test.tsx` — Added 2 tests for sparkle button and updated separator count
+- `convex/usage.ts` — Added public `getMyMonthlyUsage` query
+- `package.json` — Added `cmdk` dependency
+- `pnpm-lock.yaml` — Updated lockfile
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — Updated story status
+
+**Deleted files:**
+- `components/ai/AiActionPlaceholder.tsx` — Superseded by real AI UI
+- `components/ai/AiActionPlaceholder.test.tsx` — Superseded

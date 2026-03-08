@@ -1,5 +1,6 @@
 import { v } from "convex/values";
-import { internalMutation, internalQuery } from "./_generated/server";
+import { internalMutation, internalQuery, query } from "./_generated/server";
+import { FREE_MONTHLY_AI_LIMIT } from "./lib/tierLimits";
 
 function getStartOfMonth(): number {
   const now = new Date();
@@ -38,6 +39,31 @@ export const getMonthlyUsageCount = internalQuery({
       .collect();
 
     return records.length;
+  },
+});
+
+export const getMyMonthlyUsage = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return { count: 0, limit: FREE_MONTHLY_AI_LIMIT };
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (!user) return { count: 0, limit: FREE_MONTHLY_AI_LIMIT };
+
+    const startOfMonth = getStartOfMonth();
+    const records = await ctx.db
+      .query("aiUsage")
+      .withIndex("by_userId_createdAt", (q) =>
+        q.eq("userId", user._id).gte("createdAt", startOfMonth)
+      )
+      .collect();
+
+    return { count: records.length, limit: FREE_MONTHLY_AI_LIMIT };
   },
 });
 
