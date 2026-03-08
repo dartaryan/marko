@@ -7,6 +7,10 @@ function getStartOfMonth(): number {
   return new Date(now.getFullYear(), now.getMonth(), 1).getTime();
 }
 
+function roundCost(value: number): number {
+  return Math.round(value * 1e6) / 1e6;
+}
+
 export const logAiUsage = internalMutation({
   args: {
     userId: v.id("users"),
@@ -68,6 +72,172 @@ export const getMyMonthlyUsage = query({
       count: records.length,
       limit: isPaid ? null : FREE_MONTHLY_AI_LIMIT,
     };
+  },
+});
+
+export const getCostSummary = internalQuery({
+  args: {
+    since: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const records = await ctx.db
+      .query("aiUsage")
+      .withIndex("by_createdAt", (q) => q.gte("createdAt", args.since))
+      .collect();
+
+    let totalCost = 0;
+    let totalInputTokens = 0;
+    let totalOutputTokens = 0;
+    const byModel: Record<
+      string,
+      { calls: number; cost: number; inputTokens: number; outputTokens: number }
+    > = {};
+    const byActionType: Record<string, { calls: number; cost: number }> = {};
+
+    for (const record of records) {
+      totalCost += record.cost;
+      totalInputTokens += record.inputTokens;
+      totalOutputTokens += record.outputTokens;
+
+      if (!byModel[record.model]) {
+        byModel[record.model] = {
+          calls: 0,
+          cost: 0,
+          inputTokens: 0,
+          outputTokens: 0,
+        };
+      }
+      byModel[record.model].calls++;
+      byModel[record.model].cost += record.cost;
+      byModel[record.model].inputTokens += record.inputTokens;
+      byModel[record.model].outputTokens += record.outputTokens;
+
+      if (!byActionType[record.actionType]) {
+        byActionType[record.actionType] = { calls: 0, cost: 0 };
+      }
+      byActionType[record.actionType].calls++;
+      byActionType[record.actionType].cost += record.cost;
+    }
+
+    for (const key of Object.keys(byModel)) {
+      byModel[key].cost = roundCost(byModel[key].cost);
+    }
+    for (const key of Object.keys(byActionType)) {
+      byActionType[key].cost = roundCost(byActionType[key].cost);
+    }
+
+    return {
+      totalCalls: records.length,
+      totalCost: roundCost(totalCost),
+      totalInputTokens,
+      totalOutputTokens,
+      byModel,
+      byActionType,
+    };
+  },
+});
+
+// Note: Time boundaries use server timezone (UTC on Convex). Operators in other
+// timezones will see UTC-based "today"/"thisWeek" boundaries.
+export const getTimePeriodCosts = internalQuery({
+  args: {},
+  handler: async (ctx) => {
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    const todayTs = startOfToday.getTime();
+
+    const startOfWeek = new Date(startOfToday);
+    startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+    const weekTs = startOfWeek.getTime();
+
+    const monthTs = getStartOfMonth();
+
+    const records = await ctx.db
+      .query("aiUsage")
+      .withIndex("by_createdAt", (q) => q.gte("createdAt", monthTs))
+      .collect();
+
+    function summarize(recs: typeof records) {
+      let totalCost = 0;
+      for (const r of recs) {
+        totalCost += r.cost;
+      }
+      return { totalCost: roundCost(totalCost), totalCalls: recs.length };
+    }
+
+    return {
+      today: summarize(records.filter((r) => r.createdAt >= todayTs)),
+      thisWeek: summarize(records.filter((r) => r.createdAt >= weekTs)),
+      thisMonth: summarize(records),
+    };
+  },
+});
+
+export const getCostByUser = internalQuery({
+  args: {
+    since: v.number(),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const records = await ctx.db
+      .query("aiUsage")
+      .withIndex("by_createdAt", (q) => q.gte("createdAt", args.since))
+      .collect();
+
+    const userMap: Record<
+      string,
+      {
+        totalCost: number;
+        totalCalls: number;
+        byModel: Record<string, { calls: number; cost: number }>;
+        byActionType: Record<string, { calls: number; cost: number }>;
+      }
+    > = {};
+
+    for (const record of records) {
+      const uid = String(record.userId);
+      if (!userMap[uid]) {
+        userMap[uid] = {
+          totalCost: 0,
+          totalCalls: 0,
+          byModel: {},
+          byActionType: {},
+        };
+      }
+      userMap[uid].totalCost += record.cost;
+      userMap[uid].totalCalls++;
+
+      if (!userMap[uid].byModel[record.model]) {
+        userMap[uid].byModel[record.model] = { calls: 0, cost: 0 };
+      }
+      userMap[uid].byModel[record.model].calls++;
+      userMap[uid].byModel[record.model].cost += record.cost;
+
+      if (!userMap[uid].byActionType[record.actionType]) {
+        userMap[uid].byActionType[record.actionType] = { calls: 0, cost: 0 };
+      }
+      userMap[uid].byActionType[record.actionType].calls++;
+      userMap[uid].byActionType[record.actionType].cost += record.cost;
+    }
+
+    for (const uid of Object.keys(userMap)) {
+      userMap[uid].totalCost = roundCost(userMap[uid].totalCost);
+      for (const key of Object.keys(userMap[uid].byModel)) {
+        userMap[uid].byModel[key].cost = roundCost(userMap[uid].byModel[key].cost);
+      }
+      for (const key of Object.keys(userMap[uid].byActionType)) {
+        userMap[uid].byActionType[key].cost = roundCost(
+          userMap[uid].byActionType[key].cost
+        );
+      }
+    }
+
+    const users = Object.entries(userMap)
+      .map(([userId, data]) => ({ userId, ...data }))
+      .sort((a, b) => b.totalCost - a.totalCost);
+
+    const resultLimit = args.limit ?? 50;
+    return users.slice(0, resultLimit);
   },
 });
 

@@ -98,7 +98,7 @@ development_status:
   # Epic 8: Analytics & Operator Tools
   epic-8: in-progress
   8-1-analytics-event-pipeline: done
-  8-2-ai-cost-tracking-and-monitoring: ready-for-dev
+  8-2-ai-cost-tracking-and-monitoring: done
   8-3-abuse-detection-and-account-flagging: ready-for-dev
   epic-8-retrospective: optional
 
