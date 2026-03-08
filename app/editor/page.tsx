@@ -7,11 +7,13 @@ import { useViewMode } from '@/lib/hooks/useViewMode';
 import { useDocDirection } from '@/lib/hooks/useDocDirection';
 import { useColorTheme } from '@/lib/hooks/useColorTheme';
 import { useAiAction } from '@/lib/hooks/useAiAction';
+import { useAiDisclosure } from '@/lib/hooks/useAiDisclosure';
 import { Header } from '@/components/layout/Header';
 import { ColorPanel } from '@/components/theme/ColorPanel';
 import { ExportModal } from '@/components/export/ExportModal';
 import { PdfProgress } from '@/components/export/PdfProgress';
 import { AiCommandPalette } from '@/components/ai/AiCommandPalette';
+import { AiDisclosure } from '@/components/ai/AiDisclosure';
 import { AiResultPanel } from '@/components/ai/AiResultPanel';
 import { generatePdf } from '@/lib/export/pdf-generator';
 import { exportHtml } from '@/lib/export/html-generator';
@@ -46,15 +48,40 @@ export default function EditorPage() {
   const [pdfState, setPdfState] = useState<PdfState>('idle');
   const [isAiPaletteOpen, setIsAiPaletteOpen] = useState(false);
   const { executeAction, isLoading: isAiLoading, result: aiResult, errorCode: aiErrorCode, clearResult: clearAiResult } = useAiAction();
+  const { needsDisclosure, acceptDisclosure } = useAiDisclosure();
+  const [pendingAiAction, setPendingAiAction] = useState<AiActionType | null>(null);
   const isAiUnavailable = aiErrorCode === 'AI_UNAVAILABLE';
 
-  const handleAiAction = useCallback(
+  const runAiAction = useCallback(
     async (actionType: AiActionType) => {
       const targetLanguage = actionType === 'translate' ? 'en' : undefined;
       await executeAction(actionType, content, targetLanguage);
     },
     [executeAction, content]
   );
+
+  const handleAiAction = useCallback(
+    (actionType: AiActionType) => {
+      if (needsDisclosure) {
+        setPendingAiAction(actionType);
+        return;
+      }
+      void runAiAction(actionType);
+    },
+    [needsDisclosure, runAiAction]
+  );
+
+  const handleDisclosureAccept = useCallback(() => {
+    acceptDisclosure();
+    if (pendingAiAction) {
+      void runAiAction(pendingAiAction);
+      setPendingAiAction(null);
+    }
+  }, [acceptDisclosure, pendingAiAction, runAiAction]);
+
+  const handleDisclosureCancel = useCallback(() => {
+    setPendingAiAction(null);
+  }, []);
 
   const handleAiAccept = useCallback(
     (text: string) => {
@@ -220,6 +247,11 @@ export default function EditorPage() {
         open={isAiPaletteOpen}
         onOpenChange={setIsAiPaletteOpen}
         onAction={handleAiAction}
+      />
+      <AiDisclosure
+        open={pendingAiAction !== null}
+        onAccept={handleDisclosureAccept}
+        onCancel={handleDisclosureCancel}
       />
     </main>
   );

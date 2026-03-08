@@ -85,14 +85,14 @@ development_status:
   epic-6: in-progress
   6-1-ai-proxy-backend-and-model-routing: done
   6-2-ai-actions-ui-and-document-interactions: done
-  6-3-ai-privacy-disclosure: ready-for-dev
+  6-3-ai-privacy-disclosure: done
   6-4-ai-usage-limits-and-upgrade-prompts: ready-for-dev
   epic-6-retrospective: optional
 
   # Epic 7: SEO Landing Page & Discovery
   epic-7: in-progress
   7-1-ssr-landing-page-with-hebrew-content: ready-for-dev
-  7-2-structured-data-meta-tags-and-seo-assets: backlog
+  7-2-structured-data-meta-tags-and-seo-assets: ready-for-dev
   epic-7-retrospective: optional
 
   # Epic 8: Analytics & Operator Tools

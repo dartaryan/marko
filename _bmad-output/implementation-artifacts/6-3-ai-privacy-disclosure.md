@@ -1,6 +1,6 @@
 # Story 6.3: AI Privacy Disclosure
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -28,37 +28,37 @@ So that I can make an informed decision about using AI features.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create `useAiDisclosure` hook (AC: #1, #3, #4, #5)
-  - [ ] 1.1 Create `lib/hooks/useAiDisclosure.ts` — manages session-scoped disclosure state using `sessionStorage`
-  - [ ] 1.2 Hook returns `{ needsDisclosure: boolean, acceptDisclosure: () => void }` — `needsDisclosure` is `true` if the user has not yet accepted in this session
-  - [ ] 1.3 `acceptDisclosure()` sets `sessionStorage.setItem("marko-ai-disclosure-accepted", "true")` and updates local state
-  - [ ] 1.4 Initialize state by reading `sessionStorage` on mount (SSR-safe: default to `true` for `needsDisclosure` on server, read sessionStorage in `useEffect`)
+- [x] Task 1: Create `useAiDisclosure` hook (AC: #1, #3, #4, #5)
+  - [x] 1.1 Create `lib/hooks/useAiDisclosure.ts` — manages session-scoped disclosure state using `sessionStorage`
+  - [x] 1.2 Hook returns `{ needsDisclosure: boolean, acceptDisclosure: () => void }` — `needsDisclosure` is `true` if the user has not yet accepted in this session
+  - [x] 1.3 `acceptDisclosure()` sets `sessionStorage.setItem("marko-ai-disclosure-accepted", "true")` and updates local state
+  - [x] 1.4 Initialize state by reading `sessionStorage` on mount (SSR-safe: default to `true` for `needsDisclosure` on server via `useSyncExternalStore` with `getServerSnapshot`)
 
-- [ ] Task 2: Create `AiDisclosure` dialog component (AC: #2, #3, #4, #6, #7)
-  - [ ] 2.1 Create `components/ai/AiDisclosure.tsx` — uses shadcn `AlertDialog` component for modal disclosure
-  - [ ] 2.2 Props: `open: boolean`, `onAccept: () => void`, `onCancel: () => void`
-  - [ ] 2.3 Title: "גילוי נאות — שימוש ב-AI" (Disclosure — AI Usage)
-  - [ ] 2.4 Body text in Hebrew: explain content is sent to Anthropic, Anthropic doesn't train on API data, no server storage
-  - [ ] 2.5 Two buttons: "הבנתי, המשך" (primary action — calls `onAccept`) and "ביטול" (cancel — calls `onCancel`)
-  - [ ] 2.6 Add `dir="rtl"` on the dialog content wrapper
-  - [ ] 2.7 Ensure AlertDialog provides `role="alertdialog"` and focus trap (built into Radix AlertDialog)
+- [x] Task 2: Create `AiDisclosure` dialog component (AC: #2, #3, #4, #6, #7)
+  - [x] 2.1 Create `components/ai/AiDisclosure.tsx` — uses shadcn `AlertDialog` component for modal disclosure
+  - [x] 2.2 Props: `open: boolean`, `onAccept: () => void`, `onCancel: () => void`
+  - [x] 2.3 Title: "גילוי נאות — שימוש ב-AI" (Disclosure — AI Usage)
+  - [x] 2.4 Body text in Hebrew: explain content is sent to Anthropic, Anthropic doesn't train on API data, no server storage
+  - [x] 2.5 Two buttons: "הבנתי, המשך" (primary action — calls `onAccept`) and "ביטול" (cancel — calls `onCancel`)
+  - [x] 2.6 Add `dir="rtl"` on the dialog content wrapper
+  - [x] 2.7 Ensure AlertDialog provides `role="alertdialog"` and focus trap (built into Radix AlertDialog)
 
-- [ ] Task 3: Integrate disclosure into AI action flow (AC: #1, #3, #4, #5)
-  - [ ] 3.1 Modify `components/ai/AiCommandPalette.tsx` (or `app/editor/page.tsx` — wherever the AI action is dispatched): intercept action selection, check `needsDisclosure`, show `AiDisclosure` if needed
-  - [ ] 3.2 If disclosure needed: store the pending action type, show `AiDisclosure`, on accept → call `acceptDisclosure()` + execute pending action, on cancel → clear pending action
-  - [ ] 3.3 If disclosure already accepted: execute action immediately (no interruption)
-  - [ ] 3.4 Wire `useAiDisclosure` hook into the component managing the AI flow
+- [x] Task 3: Integrate disclosure into AI action flow (AC: #1, #3, #4, #5)
+  - [x] 3.1 Modify `app/editor/page.tsx` (where the AI action is dispatched): intercept action selection, check `needsDisclosure`, show `AiDisclosure` if needed
+  - [x] 3.2 If disclosure needed: store the pending action type, show `AiDisclosure`, on accept → call `acceptDisclosure()` + execute pending action, on cancel → clear pending action
+  - [x] 3.3 If disclosure already accepted: execute action immediately (no interruption)
+  - [x] 3.4 Wire `useAiDisclosure` hook into the component managing the AI flow
 
-- [ ] Task 4: Create tests (AC: all)
-  - [ ] 4.1 Create `lib/hooks/useAiDisclosure.test.ts` — test returns `needsDisclosure: true` initially, test `acceptDisclosure()` sets `needsDisclosure: false`, test reads sessionStorage on mount, test does NOT persist across mock session resets
-  - [ ] 4.2 Create `components/ai/AiDisclosure.test.tsx` — test renders Hebrew disclosure text, test "הבנתי, המשך" calls `onAccept`, test "ביטול" calls `onCancel`, test has `role="alertdialog"`, test RTL layout (`dir="rtl"`)
-  - [ ] 4.3 Integration test in AiCommandPalette tests (or editor page tests): test first action shows disclosure, test accepting disclosure executes action, test canceling disclosure does not execute action, test subsequent actions skip disclosure
+- [x] Task 4: Create tests (AC: all)
+  - [x] 4.1 Create `lib/hooks/useAiDisclosure.test.ts` — test returns `needsDisclosure: true` initially, test `acceptDisclosure()` sets `needsDisclosure: false`, test reads sessionStorage on mount, test does NOT persist across mock session resets
+  - [x] 4.2 Create `components/ai/AiDisclosure.test.tsx` — test renders Hebrew disclosure text, test "הבנתי, המשך" calls `onAccept`, test "ביטול" calls `onCancel`, test has `role="alertdialog"`, test RTL layout (`dir="rtl"`)
+  - [x] 4.3 Integration test in AiCommandPalette tests (or editor page tests): test first action shows disclosure, test accepting disclosure executes action, test canceling disclosure does not execute action, test subsequent actions skip disclosure
 
-- [ ] Task 5: Verify integration and existing tests (AC: all)
-  - [ ] 5.1 Verify all existing tests still pass (baseline from Story 6.2)
-  - [ ] 5.2 Verify full flow: sparkle → palette → select action → disclosure → accept → action executes
-  - [ ] 5.3 Verify cancel flow: disclosure → cancel → no action executed → next attempt shows disclosure again
-  - [ ] 5.4 Verify session persistence: accept once → second action skips disclosure
+- [x] Task 5: Verify integration and existing tests (AC: all)
+  - [x] 5.1 Verify all existing tests still pass (baseline from Story 6.2)
+  - [x] 5.2 Verify full flow: sparkle → palette → select action → disclosure → accept → action executes
+  - [x] 5.3 Verify cancel flow: disclosure → cancel → no action executed → next attempt shows disclosure again
+  - [x] 5.4 Verify session persistence: accept once → second action skips disclosure
 
 ## Dev Notes
 
@@ -435,8 +435,37 @@ b2684da Implement Story 4.2: BiDi integration with rendering pipeline
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Debug Log References
+
+- ESLint `react-hooks/set-state-in-effect` flagged `setState` inside `useEffect`/`useLayoutEffect`. Refactored to `useSyncExternalStore` (React 18+ pattern) with `getServerSnapshot` for SSR safety and custom `ai-disclosure-change` event for reactivity.
+- Used `e.preventDefault()` on AlertDialogAction and AlertDialogCancel clicks to prevent Radix's auto-close from triggering `onOpenChange(false)` which would double-fire both `onAccept` and `onCancel` callbacks.
 
 ### Completion Notes List
 
+- Created `useAiDisclosure` hook using `useSyncExternalStore` for reading `sessionStorage` — SSR-safe, no hydration mismatch, ESLint clean.
+- Created `AiDisclosure` dialog component using existing shadcn `AlertDialog` — RTL layout, Hebrew text, `role="alertdialog"`, focus trap via Radix.
+- Integrated disclosure into `EditorPage` AI action flow: intercepts `handleAiAction`, stores pending action, shows disclosure on first use, executes immediately after acceptance.
+- 17 new tests (5 hook + 8 component + 4 integration) — all pass. Full suite: 420/420 pass, zero regressions.
+
 ### File List
+
+**New files:**
+- `lib/hooks/useAiDisclosure.ts` — Session-scoped disclosure state management hook
+- `components/ai/AiDisclosure.tsx` — AlertDialog-based privacy disclosure component
+- `lib/hooks/useAiDisclosure.test.ts` — 5 tests for disclosure hook
+- `components/ai/AiDisclosure.test.tsx` — 8 tests for disclosure dialog component
+- `components/ai/AiDisclosureIntegration.test.tsx` — 4 integration tests for full disclosure flow
+
+**Modified files:**
+- `app/editor/page.tsx` — Added `useAiDisclosure` hook, `pendingAiAction` state, disclosure accept/cancel handlers, and `AiDisclosure` dialog rendering
+
+**Modified tracking files:**
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — Status: ready-for-dev → in-progress → review
+- `_bmad-output/implementation-artifacts/6-3-ai-privacy-disclosure.md` — Tasks marked complete, Dev Agent Record filled
+
+## Change Log
+
+- **2026-03-08**: Implemented AI privacy disclosure feature (Story 6.3). Added session-scoped disclosure dialog that appears before first AI action, with Hebrew text explaining data handling. Uses `sessionStorage` for per-session persistence. 13 new tests added, all 416 tests passing.
+- **2026-03-08**: Code review fixes — Added 4 missing integration tests (Task 4.3), removed `flex-row-reverse` footer override for consistent RTL button order, removed duplicate CSS classes from AlertDialogDescription, used gender-neutral Hebrew phrasing, stabilized test selector. Full suite: 420/420 pass.
