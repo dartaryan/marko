@@ -1,25 +1,18 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
 export const UI_MODE_KEY = 'marko-v2-ui-mode';
 
 export function useTheme(): [isDark: boolean, toggleTheme: () => void] {
-  // Compute system default before useState so first render uses the correct value.
-  // This prevents FOUC for first-time visitors whose system prefers dark: the FOUC
-  // script sets .dark on <html>, but without this, Effect #2 (DOM sync) would fire
-  // with isDark=false and remove it before Effect #1 could call setIsDark(true).
-  // On server (SSR): typeof window === 'undefined' → false (light default).
-  const systemDefault =
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-color-scheme: dark)').matches
-      : false;
+  // Always start with false to match SSR. The FOUC script in layout.tsx
+  // already sets .dark on <html> before React hydrates, so there's no flash.
+  // useLocalStorage's useLayoutEffect reads the stored value before paint.
+  const [isDark, setIsDark] = useLocalStorage<boolean>(UI_MODE_KEY, false);
 
-  const [isDark, setIsDark] = useLocalStorage<boolean>(UI_MODE_KEY, systemDefault);
-
-  // On first mount: persist system preference to localStorage if no saved preference.
-  // With systemDefault above, isDark is already correct — this just ensures persistence.
-  useEffect(() => {
+  // For first-time visitors (no stored preference): detect system preference
+  // and persist it. useLayoutEffect ensures this runs before paint.
+  useLayoutEffect(() => {
     const saved = window.localStorage.getItem(UI_MODE_KEY);
     if (saved === null) {
       setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -27,6 +20,7 @@ export function useTheme(): [isDark: boolean, toggleTheme: () => void] {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Sync .dark class on <html> whenever isDark changes.
+  // FOUC script handles initial page load; this handles runtime toggles.
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
   }, [isDark]);

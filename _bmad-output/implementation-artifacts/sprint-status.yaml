@@ -78,15 +78,15 @@ development_status:
   epic-5: in-progress
   5-1-clerk-authentication-integration-and-user-sync: done
   5-2-anonymous-and-authenticated-editor-experience: done
-  5-3-three-tier-authorization-and-account-deletion: backlog
+  5-3-three-tier-authorization-and-account-deletion: done
   epic-5-retrospective: optional
 
   # Epic 6: AI Document Actions
-  epic-6: backlog
-  6-1-ai-proxy-backend-and-model-routing: backlog
-  6-2-ai-actions-ui-and-document-interactions: backlog
-  6-3-ai-privacy-disclosure: backlog
-  6-4-ai-usage-limits-and-upgrade-prompts: backlog
+  epic-6: in-progress
+  6-1-ai-proxy-backend-and-model-routing: done
+  6-2-ai-actions-ui-and-document-interactions: ready-for-dev
+  6-3-ai-privacy-disclosure: ready-for-dev
+  6-4-ai-usage-limits-and-upgrade-prompts: ready-for-dev
   epic-6-retrospective: optional
 
   # Epic 7: SEO Landing Page & Discovery
