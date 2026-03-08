@@ -86,7 +86,7 @@ development_status:
   6-1-ai-proxy-backend-and-model-routing: done
   6-2-ai-actions-ui-and-document-interactions: done
   6-3-ai-privacy-disclosure: done
-  6-4-ai-usage-limits-and-upgrade-prompts: ready-for-dev
+  6-4-ai-usage-limits-and-upgrade-prompts: done
   epic-6-retrospective: optional
 
   # Epic 7: SEO Landing Page & Discovery
@@ -96,9 +96,9 @@ development_status:
   epic-7-retrospective: optional
 
   # Epic 8: Analytics & Operator Tools
-  epic-8: backlog
-  8-1-analytics-event-pipeline: backlog
-  8-2-ai-cost-tracking-and-monitoring: backlog
+  epic-8: in-progress
+  8-1-analytics-event-pipeline: ready-for-dev
+  8-2-ai-cost-tracking-and-monitoring: ready-for-dev
   8-3-abuse-detection-and-account-flagging: backlog
   epic-8-retrospective: optional
 

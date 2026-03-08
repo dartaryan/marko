@@ -46,14 +46,14 @@ export const getMyMonthlyUsage = query({
   args: {},
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
-    if (!identity) return { count: 0, limit: FREE_MONTHLY_AI_LIMIT };
+    if (!identity) return { count: 0, limit: 0 };
 
     const user = await ctx.db
       .query("users")
       .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
       .unique();
 
-    if (!user) return { count: 0, limit: FREE_MONTHLY_AI_LIMIT };
+    if (!user) return { count: 0, limit: 0 };
 
     const startOfMonth = getStartOfMonth();
     const records = await ctx.db
@@ -63,7 +63,11 @@ export const getMyMonthlyUsage = query({
       )
       .collect();
 
-    return { count: records.length, limit: FREE_MONTHLY_AI_LIMIT };
+    const isPaid = user.tier === "paid";
+    return {
+      count: records.length,
+      limit: isPaid ? null : FREE_MONTHLY_AI_LIMIT,
+    };
   },
 });
 

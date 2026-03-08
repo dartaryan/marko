@@ -52,6 +52,18 @@ vi.mock("@/convex/_generated/api", () => ({
   },
 }));
 
+vi.mock("sonner", () => ({
+  toast: { info: vi.fn(), error: vi.fn(), success: vi.fn() },
+}));
+
+vi.mock("@/components/auth/UpgradePrompt", () => ({
+  UpgradePrompt: ({ variant }: { variant?: string }) => (
+    <div data-testid="upgrade-prompt" data-variant={variant}>
+      שדרג עכשיו
+    </div>
+  ),
+}));
+
 let container: HTMLDivElement;
 let root: ReturnType<typeof createRoot>;
 
@@ -205,7 +217,7 @@ describe("AiCommandPalette", () => {
       tier: "paid",
       isLoading: false,
     });
-    mockUseQuery.mockReturnValue({ count: 50, limit: 0 });
+    mockUseQuery.mockReturnValue({ count: 50, limit: null });
 
     renderPalette();
 
@@ -242,5 +254,183 @@ describe("AiCommandPalette", () => {
     });
 
     expect(onOpenChange).toHaveBeenCalledWith(false);
+  });
+
+  // Story 6.4 tests
+  it("shows UpgradePrompt component in gate section when user at limit", () => {
+    mockUseCurrentUser.mockReturnValue({
+      user: { tier: "free" },
+      isLoading: false,
+      isAuthenticated: true,
+    });
+    mockUseCapabilities.mockReturnValue({
+      capabilities: { canUseAi: true, maxMonthlyAiCalls: 10 },
+      tier: "free",
+      isLoading: false,
+    });
+    mockUseQuery.mockReturnValue({ count: 10, limit: 10 });
+
+    renderPalette();
+
+    const upgradePrompt = document.querySelector(
+      '[data-testid="upgrade-prompt"]'
+    );
+    expect(upgradePrompt).not.toBeNull();
+    expect(upgradePrompt!.getAttribute("data-variant")).toBe("palette");
+  });
+
+  it("does not show UpgradePrompt for free user with remaining quota", () => {
+    mockUseCurrentUser.mockReturnValue({
+      user: { tier: "free" },
+      isLoading: false,
+      isAuthenticated: true,
+    });
+    mockUseCapabilities.mockReturnValue({
+      capabilities: { canUseAi: true, maxMonthlyAiCalls: 10 },
+      tier: "free",
+      isLoading: false,
+    });
+    mockUseQuery.mockReturnValue({ count: 3, limit: 10 });
+
+    renderPalette();
+
+    const upgradePrompt = document.querySelector(
+      '[data-testid="upgrade-prompt"]'
+    );
+    expect(upgradePrompt).toBeNull();
+  });
+
+  it("does not show UpgradePrompt or limit info for paid user", () => {
+    mockUseCurrentUser.mockReturnValue({
+      user: { tier: "paid" },
+      isLoading: false,
+      isAuthenticated: true,
+    });
+    mockUseCapabilities.mockReturnValue({
+      capabilities: { canUseAi: true, maxMonthlyAiCalls: null },
+      tier: "paid",
+      isLoading: false,
+    });
+    mockUseQuery.mockReturnValue({ count: 50, limit: null });
+
+    renderPalette();
+
+    const upgradePrompt = document.querySelector(
+      '[data-testid="upgrade-prompt"]'
+    );
+    expect(upgradePrompt).toBeNull();
+    expect(document.body.innerHTML).not.toContain("נותרו");
+    expect(document.body.innerHTML).not.toContain("ניצלת");
+  });
+
+  it("disabled actions have aria-disabled='true' when at limit", () => {
+    mockUseCurrentUser.mockReturnValue({
+      user: { tier: "free" },
+      isLoading: false,
+      isAuthenticated: true,
+    });
+    mockUseCapabilities.mockReturnValue({
+      capabilities: { canUseAi: true, maxMonthlyAiCalls: 10 },
+      tier: "free",
+      isLoading: false,
+    });
+    mockUseQuery.mockReturnValue({ count: 10, limit: 10 });
+
+    renderPalette();
+
+    const actionItems = document.querySelectorAll(
+      '[data-testid^="ai-action-"]'
+    );
+    actionItems.forEach((item) => {
+      expect(item.getAttribute("aria-disabled")).toBe("true");
+    });
+  });
+
+  it("disables actions while usage query is loading", () => {
+    mockUseCurrentUser.mockReturnValue({
+      user: { tier: "free" },
+      isLoading: false,
+      isAuthenticated: true,
+    });
+    mockUseCapabilities.mockReturnValue({
+      capabilities: { canUseAi: true, maxMonthlyAiCalls: 10 },
+      tier: "free",
+      isLoading: false,
+    });
+    mockUseQuery.mockReturnValue(undefined); // Loading state
+
+    renderPalette();
+
+    const actionItems = document.querySelectorAll(
+      '[data-testid^="ai-action-"]'
+    );
+    actionItems.forEach((item) => {
+      expect(item.getAttribute("aria-disabled")).toBe("true");
+    });
+    // Should not show gate or remaining count while loading
+    expect(document.body.innerHTML).not.toContain(
+      'data-testid="ai-limit-gate"'
+    );
+    expect(document.body.innerHTML).not.toContain(
+      'data-testid="ai-remaining-count"'
+    );
+  });
+
+  it("calls useQuery with 'skip' for anonymous user", () => {
+    mockUseCurrentUser.mockReturnValue({
+      user: null,
+      isLoading: false,
+      isAuthenticated: false,
+    });
+    mockUseCapabilities.mockReturnValue({
+      capabilities: { canUseAi: false, maxMonthlyAiCalls: null },
+      tier: "anonymous",
+      isLoading: false,
+    });
+    mockUseQuery.mockReturnValue(undefined);
+
+    renderPalette();
+
+    expect(mockUseQuery).toHaveBeenCalledWith("getMyMonthlyUsage", "skip");
+  });
+
+  it("calls useQuery with args for authenticated user", () => {
+    mockUseCurrentUser.mockReturnValue({
+      user: { tier: "free" },
+      isLoading: false,
+      isAuthenticated: true,
+    });
+    mockUseCapabilities.mockReturnValue({
+      capabilities: { canUseAi: true, maxMonthlyAiCalls: 10 },
+      tier: "free",
+      isLoading: false,
+    });
+    mockUseQuery.mockReturnValue({ count: 3, limit: 10 });
+
+    renderPalette();
+
+    expect(mockUseQuery).toHaveBeenCalledWith("getMyMonthlyUsage", {});
+  });
+
+  it("remaining count section has aria-live='polite'", () => {
+    mockUseCurrentUser.mockReturnValue({
+      user: { tier: "free" },
+      isLoading: false,
+      isAuthenticated: true,
+    });
+    mockUseCapabilities.mockReturnValue({
+      capabilities: { canUseAi: true, maxMonthlyAiCalls: 10 },
+      tier: "free",
+      isLoading: false,
+    });
+    mockUseQuery.mockReturnValue({ count: 3, limit: 10 });
+
+    renderPalette();
+
+    const remainingSection = document.querySelector(
+      '[data-testid="ai-remaining-count"]'
+    );
+    expect(remainingSection).not.toBeNull();
+    expect(remainingSection!.getAttribute("aria-live")).toBe("polite");
   });
 });

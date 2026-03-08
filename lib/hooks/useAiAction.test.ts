@@ -226,6 +226,28 @@ describe("useAiAction", () => {
     expect(hookResult.errorCode).toBeNull();
   });
 
+  it("does NOT show error toast for AI_LIMIT_REACHED error code", async () => {
+    mockCallAi.mockRejectedValue({
+      data: {
+        code: "AI_LIMIT_REACHED",
+        message: "הגעת למגבלת השימוש החודשית ב-AI",
+      },
+    });
+
+    act(() => {
+      root = createRoot(container);
+      root.render(React.createElement(TestComponent));
+    });
+
+    await act(async () => {
+      await hookResult.executeAction("summarize", "content");
+    });
+
+    expect(hookResult.errorCode).toBe("AI_LIMIT_REACHED");
+    expect(hookResult.error).toBe("הגעת למגבלת השימוש החודשית ב-AI");
+    expect(mockToast.error).not.toHaveBeenCalled();
+  });
+
   it("passes targetLanguage for translate action", async () => {
     mockCallAi.mockResolvedValue({
       result: "Translated",

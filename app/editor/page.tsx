@@ -52,6 +52,14 @@ export default function EditorPage() {
   const [pendingAiAction, setPendingAiAction] = useState<AiActionType | null>(null);
   const isAiUnavailable = aiErrorCode === 'AI_UNAVAILABLE';
 
+  // Reopen palette when AI limit is reached (AC #4: display exhausted state)
+  useEffect(() => {
+    if (aiErrorCode === 'AI_LIMIT_REACHED') {
+      setIsAiPaletteOpen(true);
+      clearAiResult();
+    }
+  }, [aiErrorCode, clearAiResult]);
+
   const runAiAction = useCallback(
     async (actionType: AiActionType) => {
       const targetLanguage = actionType === 'translate' ? 'en' : undefined;

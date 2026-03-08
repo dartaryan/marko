@@ -1,6 +1,6 @@
 # Story 6.4: AI Usage Limits & Upgrade Prompts
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -32,44 +32,44 @@ So that I understand the value proposition without feeling pressured.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Create public usage query (AC: #1)
-  - [ ] 1.1 Add `getMyMonthlyUsage` public query to `convex/usage.ts` — verifies auth via `ctx.auth.getUserIdentity()`, looks up user by clerkId, counts `aiUsage` records for the current calendar month, returns `{ count: number, limit: number | null }`
-  - [ ] 1.2 For free users: return `{ count: N, limit: 10 }` (using `FREE_MONTHLY_AI_LIMIT` from `convex/lib/tierLimits.ts`)
-  - [ ] 1.3 For paid users: return `{ count: N, limit: null }` (unlimited)
-  - [ ] 1.4 For unauthenticated users: return `{ count: 0, limit: 0 }` (no AI access)
+- [x] Task 1: Create public usage query (AC: #1)
+  - [x] 1.1 Add `getMyMonthlyUsage` public query to `convex/usage.ts` — verifies auth via `ctx.auth.getUserIdentity()`, looks up user by clerkId, counts `aiUsage` records for the current calendar month, returns `{ count: number, limit: number | null }`
+  - [x] 1.2 For free users: return `{ count: N, limit: 10 }` (using `FREE_MONTHLY_AI_LIMIT` from `convex/lib/tierLimits.ts`)
+  - [x] 1.3 For paid users: return `{ count: N, limit: null }` (unlimited)
+  - [x] 1.4 For unauthenticated users: return `{ count: 0, limit: 0 }` (no AI access)
 
-- [ ] Task 2: Integrate usage display into AiCommandPalette (AC: #2, #3, #4, #9)
-  - [ ] 2.1 In `components/ai/AiCommandPalette.tsx` — add `useQuery(api.usage.getMyMonthlyUsage)` to fetch current usage
-  - [ ] 2.2 Below the action list, add a remaining count section: if `usage.limit !== null && usage.count < usage.limit`, show "נותרו {remaining} פעולות AI" in muted text
-  - [ ] 2.3 When `usage.limit !== null && usage.count >= usage.limit`: dim all action items (`aria-disabled="true"`, muted styling, `pointer-events-none`), show gate section at bottom with exhausted message
-  - [ ] 2.4 Handle `AI_LIMIT_REACHED` error from backend: if `executeAction` throws with code `AI_LIMIT_REACHED`, update palette UI to show exhausted state (refetch usage query), do NOT show error toast for this specific error code
+- [x] Task 2: Integrate usage display into AiCommandPalette (AC: #2, #3, #4, #9)
+  - [x] 2.1 In `components/ai/AiCommandPalette.tsx` — add `useQuery(api.usage.getMyMonthlyUsage)` to fetch current usage
+  - [x] 2.2 Below the action list, add a remaining count section: if `usage.limit !== null && usage.count < usage.limit`, show "נותרו {remaining} פעולות AI" in muted text
+  - [x] 2.3 When `usage.limit !== null && usage.count >= usage.limit`: dim all action items (`aria-disabled="true"`, muted styling, `pointer-events-none`), show gate section at bottom with exhausted message
+  - [x] 2.4 Handle `AI_LIMIT_REACHED` error from backend: if `executeAction` throws with code `AI_LIMIT_REACHED`, update palette UI to show exhausted state (refetch usage query), do NOT show error toast for this specific error code
 
-- [ ] Task 3: Create UpgradePrompt component (AC: #5, #8, #9)
-  - [ ] 3.1 Create `components/auth/UpgradePrompt.tsx` — a reusable upgrade CTA component with Hebrew text
-  - [ ] 3.2 Props: `variant: "inline" | "palette"` — `inline` for general use, `palette` for inside command palette styling
-  - [ ] 3.3 Upgrade button text: "שדרג עכשיו" (Upgrade now), styled as primary/green button
-  - [ ] 3.4 Phase 1 behavior: clicking shows toast "שדרוג יהיה זמין בקרוב!" via `sonner`
-  - [ ] 3.5 Add `aria-label="שדרג לגישה בלתי מוגבלת ל-AI"` on the button
-  - [ ] 3.6 RTL layout: use `dir="rtl"`, Tailwind logical properties (`ms-*`, `me-*`)
+- [x] Task 3: Create UpgradePrompt component (AC: #5, #8, #9)
+  - [x] 3.1 Create `components/auth/UpgradePrompt.tsx` — a reusable upgrade CTA component with Hebrew text
+  - [x] 3.2 Props: `variant: "inline" | "palette"` — `inline` for general use, `palette` for inside command palette styling
+  - [x] 3.3 Upgrade button text: "שדרג עכשיו" (Upgrade now), styled as primary/green button
+  - [x] 3.4 Phase 1 behavior: clicking shows toast "שדרוג יהיה זמין בקרוב!" via `sonner`
+  - [x] 3.5 Add `aria-label="שדרג לגישה בלתי מוגבלת ל-AI"` on the button
+  - [x] 3.6 RTL layout: use `dir="rtl"`, Tailwind logical properties (`ms-*`, `me-*`)
 
-- [ ] Task 4: Wire upgrade prompt into palette gate section (AC: #3, #5)
-  - [ ] 4.1 In the AiCommandPalette quota gate section — render `<UpgradePrompt variant="palette" />` below the exhausted message
-  - [ ] 4.2 The gate section layout: exhausted message text → upgrade button, all inside the CommandList area
-  - [ ] 4.3 Ensure gate section is RTL and uses logical CSS properties
+- [x] Task 4: Wire upgrade prompt into palette gate section (AC: #3, #5)
+  - [x] 4.1 In the AiCommandPalette quota gate section — render `<UpgradePrompt variant="palette" />` below the exhausted message
+  - [x] 4.2 The gate section layout: exhausted message text → upgrade button, all inside the CommandList area
+  - [x] 4.3 Ensure gate section is RTL and uses logical CSS properties
 
-- [ ] Task 5: Create tests (AC: all)
-  - [ ] 5.1 Create `convex/__tests__/usagePublicQuery.test.ts` — test `getMyMonthlyUsage` returns correct count for free user, returns null limit for paid user, returns zero for unauthenticated
-  - [ ] 5.2 Create `components/auth/UpgradePrompt.test.tsx` — test renders Hebrew upgrade text, test click shows toast in Phase 1, test has correct ARIA attributes, test RTL layout
-  - [ ] 5.3 Update `components/ai/AiCommandPalette.test.tsx` — test remaining count display for free user with quota, test dimmed actions for user at limit, test gate section with upgrade prompt appears when exhausted, test `AI_LIMIT_REACHED` error handling (no toast, shows gate)
-  - [ ] 5.4 Test paid user sees no limit display and no upgrade prompt
+- [x] Task 5: Create tests (AC: all)
+  - [x] 5.1 Create `convex/__tests__/usagePublicQuery.test.ts` — test `getMyMonthlyUsage` returns correct count for free user, returns null limit for paid user, returns zero for unauthenticated
+  - [x] 5.2 Create `components/auth/UpgradePrompt.test.tsx` — test renders Hebrew upgrade text, test click shows toast in Phase 1, test has correct ARIA attributes, test RTL layout
+  - [x] 5.3 Update `components/ai/AiCommandPalette.test.tsx` — test remaining count display for free user with quota, test dimmed actions for user at limit, test gate section with upgrade prompt appears when exhausted, test `AI_LIMIT_REACHED` error handling (no toast, shows gate)
+  - [x] 5.4 Test paid user sees no limit display and no upgrade prompt
 
-- [ ] Task 6: Verify integration and existing tests (AC: all)
-  - [ ] 6.1 Verify all existing tests still pass (baseline from Stories 6.1, 6.2, 6.3)
-  - [ ] 6.2 Verify free user with remaining quota: palette shows actions + remaining count
-  - [ ] 6.3 Verify free user at limit: palette shows dimmed actions + exhausted message + upgrade button
-  - [ ] 6.4 Verify upgrade button shows Phase 1 toast
-  - [ ] 6.5 Verify non-AI features (editing, export, theming) unaffected when at limit
-  - [ ] 6.6 Verify paid user sees no limits or upgrade prompts
+- [x] Task 6: Verify integration and existing tests (AC: all)
+  - [x] 6.1 Verify all existing tests still pass (baseline from Stories 6.1, 6.2, 6.3)
+  - [x] 6.2 Verify free user with remaining quota: palette shows actions + remaining count
+  - [x] 6.3 Verify free user at limit: palette shows dimmed actions + exhausted message + upgrade button
+  - [x] 6.4 Verify upgrade button shows Phase 1 toast
+  - [x] 6.5 Verify non-AI features (editing, export, theming) unaffected when at limit
+  - [x] 6.6 Verify paid user sees no limits or upgrade prompts
 
 ## Dev Notes
 
@@ -492,8 +492,39 @@ Story 6.1 is in the working tree (not yet committed to main) with status `review
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Debug Log References
+
+- UpgradePrompt test initially failed due to `vi.mock` hoisting issue — fixed by using `vi.hoisted()` for the mock function
 
 ### Completion Notes List
 
+- Fixed `getMyMonthlyUsage` query: unauthenticated returns `{count:0, limit:0}` (was returning `FREE_MONTHLY_AI_LIMIT`), paid users return `{limit: null}` (was returning `FREE_MONTHLY_AI_LIMIT`)
+- Added `UpgradePrompt` component with Phase 1 toast placeholder, RTL layout, ARIA accessibility
+- Integrated UpgradePrompt into AiCommandPalette gate section
+- Added `aria-live="polite"` on remaining count section
+- Added `aria-disabled="true"` and title on disabled action items
+- Modified `useAiAction` to suppress toast for `AI_LIMIT_REACHED` error code
+- Created 5 new tests for public usage query, 6 tests for UpgradePrompt, 5 new tests for AiCommandPalette, 1 new test for useAiAction
+- All 437 tests pass across 44 test files with zero regressions
+
+### Change Log
+
+- 2026-03-08: Implemented Story 6.4 — AI usage limits and upgrade prompts. Fixed public usage query for paid/unauthenticated users, created UpgradePrompt component, integrated into command palette, added AI_LIMIT_REACHED error handling, added comprehensive accessibility attributes, created tests.
+- 2026-03-08: Code review fixes — (1) AC #4: Added useEffect in EditorPage to reopen palette on AI_LIMIT_REACHED, (2) Removed dual source of truth: palette now uses backend `usage.limit` instead of frontend `capabilities.maxMonthlyAiCalls`, removed useCapabilities dependency, (3) Fixed paid user test mock from `limit: 0` to `limit: null`, (4) Added query parameter assertions to usage query tests, (5) Added loading state guard: actions disabled while usage query loads, (6) Fixed stale closure: useRef for loading guard in useAiAction, (7) Added useQuery skip/args verification tests. All 440 tests pass.
+
 ### File List
+
+**New files:**
+- `components/auth/UpgradePrompt.tsx` — Reusable upgrade CTA component (Phase 1: toast placeholder)
+- `components/auth/UpgradePrompt.test.tsx` — Tests for UpgradePrompt component
+- `convex/__tests__/usagePublicQuery.test.ts` — Tests for getMyMonthlyUsage public query
+
+**Modified files:**
+- `convex/usage.ts` — Fixed getMyMonthlyUsage: paid users return null limit, unauthenticated return limit 0
+- `components/ai/AiCommandPalette.tsx` — Added UpgradePrompt in gate section, aria-live on remaining count, aria-disabled on limited actions; uses backend `usage.limit` as single source of truth; added loading state guard
+- `lib/hooks/useAiAction.ts` — Suppress toast for AI_LIMIT_REACHED error code; useRef for loading guard
+- `components/ai/AiCommandPalette.test.tsx` — Added Story 6.4 tests: UpgradePrompt, aria-disabled, aria-live, paid user, loading state, useQuery skip/args verification
+- `lib/hooks/useAiAction.test.ts` — Added AI_LIMIT_REACHED no-toast test
+- `app/editor/page.tsx` — Reopen palette on AI_LIMIT_REACHED error (AC #4)

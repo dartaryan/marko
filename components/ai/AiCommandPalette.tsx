@@ -13,7 +13,7 @@ import {
   CommandEmpty,
 } from "@/components/ui/command";
 import { useCurrentUser } from "@/lib/hooks/useCurrentUser";
-import { useCapabilities } from "@/lib/hooks/useCapabilities";
+import { UpgradePrompt } from "@/components/auth/UpgradePrompt";
 import type { AiActionType } from "@/types/ai";
 
 const AI_ACTIONS: {
@@ -39,23 +39,20 @@ export function AiCommandPalette({
   onAction,
 }: AiCommandPaletteProps) {
   const { isAuthenticated, isLoading: authLoading } = useCurrentUser();
-  const { capabilities, tier } = useCapabilities();
   const usage = useQuery(
     api.usage.getMyMonthlyUsage,
     isAuthenticated ? {} : "skip"
   );
 
+  const isUsageLoading = isAuthenticated && usage === undefined;
   const isAtLimit =
-    tier === "free" &&
     usage !== undefined &&
-    capabilities.maxMonthlyAiCalls !== null &&
-    usage.count >= capabilities.maxMonthlyAiCalls;
+    usage.limit !== null &&
+    usage.count >= usage.limit;
 
   const remaining =
-    tier === "free" &&
-    usage !== undefined &&
-    capabilities.maxMonthlyAiCalls !== null
-      ? capabilities.maxMonthlyAiCalls - usage.count
+    usage !== undefined && usage.limit !== null
+      ? usage.limit - usage.count
       : null;
 
   function handleAction(actionType: AiActionType) {
@@ -103,8 +100,10 @@ export function AiCommandPalette({
                 <CommandItem
                   key={type}
                   onSelect={() => handleAction(type)}
-                  disabled={isAtLimit}
+                  disabled={isAtLimit || isUsageLoading}
                   aria-label={label}
+                  aria-disabled={isAtLimit || isUsageLoading ? "true" : undefined}
+                  title={isAtLimit ? "הגעת למגבלת השימוש החודשית" : undefined}
                   data-testid={`ai-action-${type}`}
                 >
                   <Icon className="me-2 h-4 w-4" />
@@ -119,10 +118,11 @@ export function AiCommandPalette({
               className="border-t border-border p-4 text-center text-sm text-muted-foreground"
               data-testid="ai-limit-gate"
             >
-              <p>
+              <p className="mb-3">
                 ניצלת את כל פעולות ה-AI החינמיות החודש. שדרג לגישה בלתי מוגבלת
                 ל-AI.
               </p>
+              <UpgradePrompt variant="palette" />
             </div>
           )}
 
@@ -133,6 +133,7 @@ export function AiCommandPalette({
               <div
                 className="border-t border-border px-4 py-2 text-center text-xs text-muted-foreground"
                 data-testid="ai-remaining-count"
+                aria-live="polite"
               >
                 נותרו {remaining} פעולות AI
               </div>
