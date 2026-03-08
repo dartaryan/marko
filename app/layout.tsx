@@ -21,7 +21,10 @@ const FOUC_SCRIPT = `try{var s=localStorage.getItem('marko-v2-ui-mode');var d=s!
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "מארקו - עורך מארקדאון בעברית | כלי מארקדאון עם תמיכה מלאה ב-RTL",
+  title: {
+    default: "מארקו - עורך מארקדאון בעברית | כלי מארקדאון עם תמיכה מלאה ב-RTL",
+    template: "%s | מארקו",
+  },
   description:
     "מארקו הוא עורך מארקדאון עברי עם תמיכה מלאה ב-RTL, ייצוא מעוצב ל-PDF ו-HTML, ערכות עיצוב, דיאגרמות וכלי AI חכמים. חינמי ובלי הרשמה.",
   openGraph: {
@@ -32,6 +35,20 @@ export const metadata: Metadata = {
     type: "website",
     locale: "he_IL",
     siteName: "מארקו",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "מארקו — עורך מארקדאון בעברית",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "מארקו - עורך מארקדאון בעברית",
+    description:
+      "כלי מארקדאון עברי עם תמיכה מלאה ב-RTL, ייצוא מעוצב, ערכות עיצוב וכלי AI. חינמי ובלי הרשמה.",
     images: [
       {
         url: "/og-image.png",

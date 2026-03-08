@@ -92,7 +92,7 @@ development_status:
   # Epic 7: SEO Landing Page & Discovery
   epic-7: in-progress
   7-1-ssr-landing-page-with-hebrew-content: done
-  7-2-structured-data-meta-tags-and-seo-assets: ready-for-dev
+  7-2-structured-data-meta-tags-and-seo-assets: done
   epic-7-retrospective: optional
 
   # Epic 8: Analytics & Operator Tools
@@ -103,8 +103,8 @@ development_status:
   epic-8-retrospective: optional
 
   # Epic 9: Payments & Subscription (Phase 2)
-  epic-9: backlog
-  9-1-payment-provider-integration-and-subscription-flow: backlog
+  epic-9: in-progress
+  9-1-payment-provider-integration-and-subscription-flow: ready-for-dev
   9-2-opus-access-and-force-opus-toggle: backlog
   9-3-israeli-tax-compliance-and-sumit-receipts: backlog
   9-4-subscription-management: backlog
