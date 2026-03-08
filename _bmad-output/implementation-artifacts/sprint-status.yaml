@@ -91,7 +91,7 @@ development_status:
 
   # Epic 7: SEO Landing Page & Discovery
   epic-7: in-progress
-  7-1-ssr-landing-page-with-hebrew-content: ready-for-dev
+  7-1-ssr-landing-page-with-hebrew-content: done
   7-2-structured-data-meta-tags-and-seo-assets: ready-for-dev
   epic-7-retrospective: optional
 
@@ -99,7 +99,7 @@ development_status:
   epic-8: in-progress
   8-1-analytics-event-pipeline: ready-for-dev
   8-2-ai-cost-tracking-and-monitoring: ready-for-dev
-  8-3-abuse-detection-and-account-flagging: backlog
+  8-3-abuse-detection-and-account-flagging: ready-for-dev
   epic-8-retrospective: optional
 
   # Epic 9: Payments & Subscription (Phase 2)

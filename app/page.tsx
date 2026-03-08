@@ -1,10 +1,37 @@
+import { Hero } from "@/components/landing/Hero";
+import { Features } from "@/components/landing/Features";
+import { Demo } from "@/components/landing/Demo";
+import { SITE_URL } from "@/lib/constants";
+
+export const runtime = "edge";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "מארקו",
+  description: "עורך מארקדאון עברי עם תמיכה מלאה ב-RTL וייצוא מעוצב",
+  url: SITE_URL,
+  applicationCategory: "Multimedia",
+  operatingSystem: "Web",
+  offers: { "@type": "Offer", price: "0", priceCurrency: "ILS" },
+  inLanguage: "he",
+};
+
 export default function LandingPage() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center">
-      <h1 className="text-4xl font-bold text-[var(--color-h1)]">מארקו</h1>
-      <p className="mt-4 text-lg text-[var(--color-secondary-text)]">
-        עורך מארקדאון עברי עם תמיכה מלאה ב-RTL וייצוא מעוצב
-      </p>
-    </main>
+    <>
+      <main className="min-h-screen">
+        <Hero />
+        <Features />
+        <Demo />
+      </main>
+      <footer className="border-t border-border px-6 py-8 text-center text-sm text-muted-foreground">
+        <p>מארקו — כלי מארקדאון חינמי בעברית</p>
+      </footer>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+    </>
   );
 }
