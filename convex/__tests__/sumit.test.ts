@@ -33,7 +33,7 @@ describe("generateReceipt", () => {
     customerName: "John Doe",
     customerEmail: "john@example.com",
     amount: 99.0,
-    currency: "ILS",
+    currency: "ils", // Stripe sends lowercase — Sumit expects uppercase
     description: "Monthly Subscription - Marko Pro - 09/03/2026",
     stripeReference: "session_123",
   };

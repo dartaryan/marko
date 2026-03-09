@@ -54,14 +54,14 @@ export const generateReceipt = internalAction({
             Description: args.description,
             Price: args.amount,
             Quantity: 1,
-            Currency: args.currency,
+            Currency: args.currency.toUpperCase(),
           },
         ],
         Payment: [
           {
             Type: 4,
             Amount: args.amount,
-            Currency: args.currency,
+            Currency: args.currency.toUpperCase(),
           },
         ],
         SendDocumentByEmail: true,

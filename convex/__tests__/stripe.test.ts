@@ -685,11 +685,8 @@ describe("Receipt generation in webhook handlers", () => {
       current_period_end: Math.floor(Date.now() / 1000) + 2592000,
     });
 
-    const runMutationCalls: string[] = [];
-    const runActionCalls: string[] = [];
-
     const ctx = {
-      runQuery: vi.fn().mockImplementation((fn, args) => {
+      runQuery: vi.fn().mockImplementation((fn) => {
         if (fn === "internal:users:getUserByClerkId") {
           return Promise.resolve({
             _id: "user_123",
@@ -701,19 +698,13 @@ describe("Receipt generation in webhook handlers", () => {
         }
         return Promise.resolve(null);
       }),
-      runMutation: vi.fn().mockImplementation((fn, args) => {
-        runMutationCalls.push(typeof fn === "string" ? fn : "unknown");
-        return Promise.resolve(undefined);
-      }),
-      runAction: vi.fn().mockImplementation((fn, args) => {
-        runActionCalls.push(typeof fn === "string" ? fn : "unknown");
-        return Promise.resolve({
-          success: true,
-          documentNumber: "0042",
-          documentId: "doc_123",
-          documentUrl: "https://sumit.co.il/doc/0042",
-          pdfUrl: "https://sumit.co.il/pdf/0042",
-        });
+      runMutation: vi.fn().mockResolvedValue(undefined),
+      runAction: vi.fn().mockResolvedValue({
+        success: true,
+        documentNumber: "0042",
+        documentId: "doc_123",
+        documentUrl: "https://sumit.co.il/doc/0042",
+        pdfUrl: "https://sumit.co.il/pdf/0042",
       }),
     };
 
@@ -723,9 +714,28 @@ describe("Receipt generation in webhook handlers", () => {
     });
 
     expect(result).toEqual({ success: true });
-    // Verify that receipt generation was called
-    expect(runActionCalls.length).toBeGreaterThan(0);
-    expect(runMutationCalls.length).toBeGreaterThan(0);
+    // Verify Sumit API was called with correct amount conversion (cents -> ILS)
+    expect(ctx.runAction).toHaveBeenCalledWith(
+      "internal:sumit:generateReceipt",
+      expect.objectContaining({
+        customerName: "John Doe",
+        customerEmail: "john@example.com",
+        amount: 99, // 9900 cents / 100
+        currency: "ils",
+      })
+    );
+    // Verify receipt was stored with Sumit response data
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      "internal:receipts:createReceipt",
+      expect.objectContaining({
+        userId: "user_123",
+        stripeSessionId: "session_123",
+        sumitDocumentId: "doc_123",
+        sumitDocumentNumber: "0042",
+        amount: 99,
+        status: "success",
+      })
+    );
   });
 
   it("generates receipt on invoice.paid webhook (renewal)", async () => {
@@ -753,7 +763,7 @@ describe("Receipt generation in webhook handlers", () => {
     });
 
     const ctx = {
-      runQuery: vi.fn().mockImplementation((fn, args) => {
+      runQuery: vi.fn().mockImplementation((fn) => {
         if (fn === "internal:subscriptions:getSubscriptionByStripeId") {
           return Promise.resolve({
             _id: "sub_convex_123",
@@ -779,8 +789,95 @@ describe("Receipt generation in webhook handlers", () => {
     });
 
     expect(result).toEqual({ success: true });
-    expect(ctx.runAction).toHaveBeenCalled();
-    expect(ctx.runMutation).toHaveBeenCalled();
+    // Verify Sumit API called with correct amount and invoice data
+    expect(ctx.runAction).toHaveBeenCalledWith(
+      "internal:sumit:generateReceipt",
+      expect.objectContaining({
+        customerName: "John Doe",
+        customerEmail: "john@example.com",
+        amount: 99, // 9900 / 100
+        stripeReference: "inv_789",
+      })
+    );
+    // Verify receipt stored with renewal invoice ID
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      "internal:receipts:createReceipt",
+      expect.objectContaining({
+        userId: "user_123",
+        stripeInvoiceId: "inv_789",
+        sumitDocumentId: "doc_456",
+        status: "success",
+      })
+    );
+  });
+
+  it("skips receipt generation when receipt already exists (idempotency)", async () => {
+    const { fulfillStripeWebhook } = await import("../stripe");
+    const handler = getHandler(fulfillStripeWebhook);
+
+    const mockSession = {
+      id: "session_duplicate",
+      mode: "subscription",
+      subscription: "sub_stripe_123",
+      customer: "cus_123",
+      customer_details: { name: "John Doe", email: "john@example.com" },
+      amount_total: 9900,
+      currency: "ils",
+      created: Math.floor(Date.now() / 1000),
+      metadata: { clerkId: "clerk_123" },
+    };
+
+    mockWebhooksConstructEvent.mockReturnValue({
+      type: "checkout.session.completed",
+      data: { object: mockSession },
+    });
+
+    mockSubscriptionsRetrieve.mockResolvedValue({
+      id: "sub_stripe_123",
+      current_period_end: Math.floor(Date.now() / 1000) + 2592000,
+    });
+
+    const ctx = {
+      runQuery: vi.fn().mockImplementation((fn) => {
+        if (fn === "internal:users:getUserByClerkId") {
+          return Promise.resolve({
+            _id: "user_123",
+            clerkId: "clerk_123",
+            tier: "free",
+          });
+        }
+        if (fn === "internal:subscriptions:getSubscriptionByStripeId") {
+          return Promise.resolve(null);
+        }
+        if (fn === "internal:receipts:getReceiptByStripeSessionId") {
+          // Receipt already exists for this session
+          return Promise.resolve({
+            _id: "existing_receipt",
+            stripeSessionId: "session_duplicate",
+          });
+        }
+        return Promise.resolve(null);
+      }),
+      runMutation: vi.fn().mockResolvedValue(undefined),
+      runAction: vi.fn(),
+    };
+
+    const result = await handler(ctx, {
+      signature: "sig_valid",
+      payload: "{}",
+    });
+
+    expect(result).toEqual({ success: true });
+    // Sumit API should NOT be called — receipt already exists
+    expect(ctx.runAction).not.toHaveBeenCalledWith(
+      "internal:sumit:generateReceipt",
+      expect.anything()
+    );
+    // No new receipt should be created
+    expect(ctx.runMutation).not.toHaveBeenCalledWith(
+      "internal:receipts:createReceipt",
+      expect.anything()
+    );
   });
 
   it("does not fail webhook if receipt generation fails", async () => {

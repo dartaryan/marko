@@ -101,7 +101,22 @@ async function generateAndStoreReceipt(
         },
       });
     } else {
-      // Log failed receipt generation but don't fail webhook
+      // Store failed receipt for audit trail
+      await ctx.runMutation(internal.receipts.createReceipt, {
+        userId,
+        subscriptionId,
+        stripeSessionId,
+        stripeInvoiceId,
+        sumitDocumentId: "",
+        sumitDocumentNumber: "",
+        sumitDocumentUrl: "",
+        sumitPdfUrl: "",
+        amount: amountIls,
+        currency,
+        status: "failed",
+        errorMessage: sumitResult.error,
+      });
+
       await ctx.runMutation(internal.analytics.logEvent, {
         userId,
         event: "receipt.generation_failed",
@@ -126,15 +141,19 @@ async function generateAndStoreReceipt(
       error instanceof Error ? error.message : error
     );
 
-    await ctx.runMutation(internal.analytics.logEvent, {
-      userId,
-      event: "receipt.generation_failed",
-      metadata: {
-        error: error instanceof Error ? error.message : "Unknown error",
-        stripeSessionId,
-        stripeInvoiceId,
-      },
-    });
+    try {
+      await ctx.runMutation(internal.analytics.logEvent, {
+        userId,
+        event: "receipt.generation_failed",
+        metadata: {
+          error: error instanceof Error ? error.message : "Unknown error",
+          stripeSessionId,
+          stripeInvoiceId,
+        },
+      });
+    } catch {
+      // Swallow — analytics logging must never break the webhook
+    }
   }
 }
 
