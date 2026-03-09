@@ -9,6 +9,7 @@ import { useColorTheme } from '@/lib/hooks/useColorTheme';
 import { useAiAction } from '@/lib/hooks/useAiAction';
 import { useAiDisclosure } from '@/lib/hooks/useAiDisclosure';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
+import { useSubscriptionReturn } from '@/lib/hooks/useSubscriptionReturn';
 import { Header } from '@/components/layout/Header';
 import { ColorPanel } from '@/components/theme/ColorPanel';
 import { ExportModal } from '@/components/export/ExportModal';
@@ -51,6 +52,7 @@ export default function EditorPage() {
   const { executeAction, isLoading: isAiLoading, result: aiResult, errorCode: aiErrorCode, clearResult: clearAiResult } = useAiAction();
   const { needsDisclosure, acceptDisclosure } = useAiDisclosure();
   const { track } = useAnalytics();
+  useSubscriptionReturn();
   const [pendingAiAction, setPendingAiAction] = useState<AiActionType | null>(null);
   const isAiUnavailable = aiErrorCode === 'AI_UNAVAILABLE';
 

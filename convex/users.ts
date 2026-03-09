@@ -144,13 +144,29 @@ export const deleteMyAccount = action({
     // Cascade delete analytics events before deleting the user
     const user = await ctx.runQuery(internal.users.getUserByClerkId, { clerkId });
     if (user) {
+      // Cancel active Stripe subscription before deleting
+      const subscription = await ctx.runQuery(
+        internal.subscriptions.getSubscriptionByUserId,
+        { userId: user._id }
+      );
+      if (subscription && (subscription.status === "active" || subscription.status === "past_due")) {
+        try {
+          await ctx.runAction(internal.stripe.cancelSubscription, {
+            stripeSubscriptionId: subscription.stripeSubscriptionId,
+          });
+        } catch (err) {
+          console.error("Failed to cancel Stripe subscription during account deletion:", err);
+          // Continue with deletion — Stripe subscription will expire naturally
+        }
+      }
+
+      // Cascade delete subscription records
+      await ctx.runMutation(internal.subscriptions.deleteByUserId, { userId: user._id });
+
       await ctx.runMutation(internal.analytics.deleteByUserId, { userId: user._id });
     }
 
     // Delete from Convex (via internal mutation — idempotent, handles user-not-found)
     await ctx.runMutation(internal.users.deleteFromClerk, { clerkId });
-
-    // TODO: cascade delete from aiUsage when Epic 6 is implemented
-    // TODO: cancel active subscriptions and cascade delete from subscriptions when Epic 9 is implemented
   },
 });

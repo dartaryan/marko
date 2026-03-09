@@ -1,6 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useAction } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useState } from "react";
 import { toast } from "sonner";
 
 interface UpgradePromptProps {
@@ -12,20 +15,35 @@ export function UpgradePrompt({
   variant = "inline",
   className,
 }: UpgradePromptProps) {
-  const handleUpgrade = () => {
-    // Phase 1: Placeholder — no payment flow yet
-    toast.info("שדרוג יהיה זמין בקרוב!");
+  const createCheckout = useAction(api.stripe.createCheckoutSession);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleUpgrade = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
+    try {
+      const { url } = await createCheckout();
+      window.location.href = url;
+    } catch (err: unknown) {
+      const errorData = (err as { data?: { code?: string; message?: string } })
+        ?.data;
+      const message = errorData?.message || "שגיאה ביצירת דף התשלום";
+      toast.error(message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div dir="rtl" className={className}>
       <Button
         onClick={handleUpgrade}
+        disabled={isLoading}
         aria-label="שדרג לגישה בלתי מוגבלת ל-AI"
         variant={variant === "palette" ? "default" : "outline"}
         size={variant === "palette" ? "sm" : "default"}
       >
-        שדרג עכשיו
+        {isLoading ? "מעבד..." : "שדרג עכשיו"}
       </Button>
     </div>
   );

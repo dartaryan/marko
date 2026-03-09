@@ -1,0 +1,604 @@
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { ConvexError } from "convex/values";
+
+// Mock Stripe SDK
+const mockCheckoutSessionsCreate = vi.fn();
+const mockWebhooksConstructEvent = vi.fn();
+const mockSubscriptionsRetrieve = vi.fn();
+const mockSubscriptionsCancel = vi.fn();
+const mockCustomersCreate = vi.fn();
+
+vi.mock("stripe", () => {
+  return {
+    default: class MockStripe {
+      checkout = { sessions: { create: mockCheckoutSessionsCreate } };
+      webhooks = { constructEvent: mockWebhooksConstructEvent };
+      subscriptions = {
+        retrieve: mockSubscriptionsRetrieve,
+        cancel: mockSubscriptionsCancel,
+      };
+      customers = { create: mockCustomersCreate };
+    },
+  };
+});
+
+vi.mock("../_generated/api", () => ({
+  internal: {
+    users: {
+      getUserByClerkId: "internal:users:getUserByClerkId",
+    },
+    subscriptions: {
+      createSubscription: "internal:subscriptions:createSubscription",
+      updateSubscriptionStatus:
+        "internal:subscriptions:updateSubscriptionStatus",
+      updateUserTier: "internal:subscriptions:updateUserTier",
+      getSubscriptionByUserId:
+        "internal:subscriptions:getSubscriptionByUserId",
+      getSubscriptionByStripeId:
+        "internal:subscriptions:getSubscriptionByStripeId",
+    },
+    analytics: {
+      logEvent: "internal:analytics:logEvent",
+    },
+  },
+}));
+
+vi.mock("../_generated/server", () => ({
+  action: (config: { args: unknown; handler: Function }) => ({
+    _handler: config.handler,
+  }),
+  internalAction: (config: { args: unknown; handler: Function }) => ({
+    _handler: config.handler,
+  }),
+}));
+
+function getHandler(fn: unknown): Function {
+  const registration = fn as { _handler?: Function };
+  if (registration._handler) return registration._handler;
+  throw new Error("Could not find handler on Convex function registration");
+}
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_123");
+  vi.stubEnv("STRIPE_PRICE_ID", "price_test_123");
+  vi.stubEnv("STRIPE_WEBHOOKS_SECRET", "whsec_test_123");
+  vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://marko.app");
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+  vi.resetModules();
+});
+
+describe("createCheckoutSession", () => {
+  it("throws AUTH_REQUIRED when no identity", async () => {
+    const { createCheckoutSession } = await import("../stripe");
+    const handler = getHandler(createCheckoutSession);
+
+    const ctx = {
+      auth: { getUserIdentity: vi.fn().mockResolvedValue(null) },
+      runQuery: vi.fn(),
+    };
+
+    await expect(handler(ctx)).rejects.toThrowError(ConvexError);
+    await expect(handler(ctx)).rejects.toMatchObject({
+      data: { code: "AUTH_REQUIRED" },
+    });
+  });
+
+  it("throws USER_NOT_FOUND when user doesn't exist", async () => {
+    const { createCheckoutSession } = await import("../stripe");
+    const handler = getHandler(createCheckoutSession);
+
+    const ctx = {
+      auth: {
+        getUserIdentity: vi
+          .fn()
+          .mockResolvedValue({ subject: "clerk_123" }),
+      },
+      runQuery: vi.fn().mockResolvedValue(null),
+    };
+
+    await expect(handler(ctx)).rejects.toMatchObject({
+      data: { code: "USER_NOT_FOUND" },
+    });
+  });
+
+  it("throws ALREADY_SUBSCRIBED when user is paid tier", async () => {
+    const { createCheckoutSession } = await import("../stripe");
+    const handler = getHandler(createCheckoutSession);
+
+    const ctx = {
+      auth: {
+        getUserIdentity: vi
+          .fn()
+          .mockResolvedValue({ subject: "clerk_123" }),
+      },
+      runQuery: vi
+        .fn()
+        .mockResolvedValueOnce({
+          _id: "user_123",
+          clerkId: "clerk_123",
+          tier: "paid",
+        }),
+    };
+
+    await expect(handler(ctx)).rejects.toMatchObject({
+      data: { code: "ALREADY_SUBSCRIBED" },
+    });
+  });
+
+  it("creates checkout session and returns URL for free user", async () => {
+    const { createCheckoutSession } = await import("../stripe");
+    const handler = getHandler(createCheckoutSession);
+
+    mockCustomersCreate.mockResolvedValue({ id: "cus_new_123" });
+    mockCheckoutSessionsCreate.mockResolvedValue({
+      url: "https://checkout.stripe.com/session_123",
+    });
+
+    const ctx = {
+      auth: {
+        getUserIdentity: vi
+          .fn()
+          .mockResolvedValue({ subject: "clerk_123" }),
+      },
+      runQuery: vi
+        .fn()
+        .mockResolvedValueOnce({
+          _id: "user_123",
+          clerkId: "clerk_123",
+          tier: "free",
+          email: "test@example.com",
+          name: "Test User",
+        })
+        .mockResolvedValueOnce(null), // no existing subscription
+    };
+
+    const result = await handler(ctx);
+
+    expect(result).toEqual({
+      url: "https://checkout.stripe.com/session_123",
+    });
+    expect(mockCustomersCreate).toHaveBeenCalledWith({
+      email: "test@example.com",
+      name: "Test User",
+      metadata: { convexUserId: "user_123", clerkId: "clerk_123" },
+    });
+    expect(mockCheckoutSessionsCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        mode: "subscription",
+        customer: "cus_new_123",
+        locale: "he",
+        currency: "ils",
+      })
+    );
+  });
+
+  it("reuses existing Stripe customer ID when available", async () => {
+    const { createCheckoutSession } = await import("../stripe");
+    const handler = getHandler(createCheckoutSession);
+
+    mockCheckoutSessionsCreate.mockResolvedValue({
+      url: "https://checkout.stripe.com/session_123",
+    });
+
+    const ctx = {
+      auth: {
+        getUserIdentity: vi
+          .fn()
+          .mockResolvedValue({ subject: "clerk_123" }),
+      },
+      runQuery: vi
+        .fn()
+        .mockResolvedValueOnce({
+          _id: "user_123",
+          clerkId: "clerk_123",
+          tier: "free",
+        })
+        .mockResolvedValueOnce({
+          stripeCustomerId: "cus_existing_456",
+        }), // existing subscription with customer ID
+    };
+
+    await handler(ctx);
+
+    expect(mockCustomersCreate).not.toHaveBeenCalled();
+    expect(mockCheckoutSessionsCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        customer: "cus_existing_456",
+      })
+    );
+  });
+
+  it("throws CONFIG_ERROR when STRIPE_SECRET_KEY is missing", async () => {
+    vi.unstubAllEnvs();
+    vi.stubEnv("STRIPE_SECRET_KEY", "");
+    vi.resetModules();
+
+    // Re-mock all dependencies
+    vi.doMock("stripe", () => ({
+      default: class MockStripe {
+        checkout = { sessions: { create: mockCheckoutSessionsCreate } };
+        webhooks = { constructEvent: mockWebhooksConstructEvent };
+        subscriptions = { retrieve: mockSubscriptionsRetrieve, cancel: mockSubscriptionsCancel };
+        customers = { create: mockCustomersCreate };
+      },
+    }));
+    vi.doMock("../_generated/api", () => ({
+      internal: {
+        users: { getUserByClerkId: "internal:users:getUserByClerkId" },
+        subscriptions: {
+          createSubscription: "internal:subscriptions:createSubscription",
+          updateSubscriptionStatus: "internal:subscriptions:updateSubscriptionStatus",
+          updateUserTier: "internal:subscriptions:updateUserTier",
+          getSubscriptionByUserId: "internal:subscriptions:getSubscriptionByUserId",
+          getSubscriptionByStripeId: "internal:subscriptions:getSubscriptionByStripeId",
+        },
+        analytics: { logEvent: "internal:analytics:logEvent" },
+      },
+    }));
+    vi.doMock("../_generated/server", () => ({
+      action: (config: { args: unknown; handler: Function }) => ({
+        _handler: config.handler,
+      }),
+      internalAction: (config: { args: unknown; handler: Function }) => ({
+        _handler: config.handler,
+      }),
+    }));
+
+    const { createCheckoutSession } = await import("../stripe");
+    const handler = getHandler(createCheckoutSession);
+
+    const ctx = {
+      auth: {
+        getUserIdentity: vi
+          .fn()
+          .mockResolvedValue({ subject: "clerk_123" }),
+      },
+      runQuery: vi
+        .fn()
+        .mockResolvedValueOnce({
+          _id: "user_123",
+          clerkId: "clerk_123",
+          tier: "free",
+        })
+        .mockResolvedValueOnce(null),
+    };
+
+    await expect(handler(ctx)).rejects.toMatchObject({
+      data: { code: "CONFIG_ERROR" },
+    });
+  });
+});
+
+describe("fulfillStripeWebhook", () => {
+  it("returns success: false when STRIPE_WEBHOOKS_SECRET is missing", async () => {
+    vi.unstubAllEnvs();
+    vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_123");
+    vi.stubEnv("STRIPE_WEBHOOKS_SECRET", "");
+    vi.resetModules();
+
+    vi.doMock("stripe", () => ({
+      default: class MockStripe {
+        checkout = { sessions: { create: mockCheckoutSessionsCreate } };
+        webhooks = { constructEvent: mockWebhooksConstructEvent };
+        subscriptions = { retrieve: mockSubscriptionsRetrieve, cancel: mockSubscriptionsCancel };
+        customers = { create: mockCustomersCreate };
+      },
+    }));
+    vi.doMock("../_generated/api", () => ({
+      internal: {
+        users: { getUserByClerkId: "internal:users:getUserByClerkId" },
+        subscriptions: {
+          createSubscription: "internal:subscriptions:createSubscription",
+          updateSubscriptionStatus: "internal:subscriptions:updateSubscriptionStatus",
+          updateUserTier: "internal:subscriptions:updateUserTier",
+          getSubscriptionByUserId: "internal:subscriptions:getSubscriptionByUserId",
+          getSubscriptionByStripeId: "internal:subscriptions:getSubscriptionByStripeId",
+        },
+        analytics: { logEvent: "internal:analytics:logEvent" },
+      },
+    }));
+    vi.doMock("../_generated/server", () => ({
+      action: (config: { args: unknown; handler: Function }) => ({
+        _handler: config.handler,
+      }),
+      internalAction: (config: { args: unknown; handler: Function }) => ({
+        _handler: config.handler,
+      }),
+    }));
+
+    const { fulfillStripeWebhook } = await import("../stripe");
+    const handler = getHandler(fulfillStripeWebhook);
+
+    const ctx = { runMutation: vi.fn(), runAction: vi.fn() };
+    const result = await handler(ctx, {
+      signature: "sig_123",
+      payload: "{}",
+    });
+
+    expect(result).toEqual({ success: false });
+  });
+
+  it("returns success: false when signature verification fails", async () => {
+    const { fulfillStripeWebhook } = await import("../stripe");
+    const handler = getHandler(fulfillStripeWebhook);
+
+    mockWebhooksConstructEvent.mockImplementation(() => {
+      throw new Error("Invalid signature");
+    });
+
+    const ctx = { runMutation: vi.fn(), runAction: vi.fn() };
+    const result = await handler(ctx, {
+      signature: "bad_sig",
+      payload: "{}",
+    });
+
+    expect(result).toEqual({ success: false });
+  });
+
+  it("handles checkout.session.completed event", async () => {
+    const { fulfillStripeWebhook } = await import("../stripe");
+    const handler = getHandler(fulfillStripeWebhook);
+
+    mockWebhooksConstructEvent.mockReturnValue({
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          mode: "subscription",
+          subscription: "sub_new_123",
+          customer: "cus_abc",
+          metadata: { convexUserId: "user_123", clerkId: "clerk_123" },
+        },
+      },
+    });
+
+    mockSubscriptionsRetrieve.mockResolvedValue({
+      id: "sub_new_123",
+      current_period_end: 1700000000,
+    });
+
+    const ctx = {
+      runMutation: vi.fn().mockResolvedValue(undefined),
+      runQuery: vi.fn().mockImplementation(async (fn: string) => {
+        if (fn === "internal:users:getUserByClerkId") {
+          return { _id: "user_123", clerkId: "clerk_123" };
+        }
+        return null; // getSubscriptionByStripeId returns null (no existing)
+      }),
+      runAction: vi.fn(),
+    };
+    const result = await handler(ctx, {
+      signature: "sig_valid",
+      payload: "{}",
+    });
+
+    expect(result).toEqual({ success: true });
+    expect(ctx.runQuery).toHaveBeenCalledWith(
+      "internal:users:getUserByClerkId",
+      { clerkId: "clerk_123" }
+    );
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      "internal:subscriptions:createSubscription",
+      expect.objectContaining({
+        userId: "user_123",
+        stripeCustomerId: "cus_abc",
+        stripeSubscriptionId: "sub_new_123",
+        status: "active",
+        currentPeriodEnd: 1700000000000,
+      })
+    );
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      "internal:subscriptions:updateUserTier",
+      { userId: "user_123", tier: "paid" }
+    );
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      "internal:analytics:logEvent",
+      expect.objectContaining({
+        userId: "user_123",
+        event: "subscription.created",
+      })
+    );
+  });
+
+  it("skips subscription creation on duplicate webhook (idempotency)", async () => {
+    const { fulfillStripeWebhook } = await import("../stripe");
+    const handler = getHandler(fulfillStripeWebhook);
+
+    mockWebhooksConstructEvent.mockReturnValue({
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          mode: "subscription",
+          subscription: "sub_existing_123",
+          customer: "cus_abc",
+          metadata: { convexUserId: "user_123", clerkId: "clerk_123" },
+        },
+      },
+    });
+
+    mockSubscriptionsRetrieve.mockResolvedValue({
+      id: "sub_existing_123",
+      current_period_end: 1700000000,
+    });
+
+    const ctx = {
+      runMutation: vi.fn().mockResolvedValue(undefined),
+      runQuery: vi.fn().mockImplementation(async (fn: string) => {
+        if (fn === "internal:users:getUserByClerkId") {
+          return { _id: "user_123", clerkId: "clerk_123" };
+        }
+        if (fn === "internal:subscriptions:getSubscriptionByStripeId") {
+          return { _id: "sub_id", stripeSubscriptionId: "sub_existing_123" }; // already exists
+        }
+        return null;
+      }),
+      runAction: vi.fn(),
+    };
+    const result = await handler(ctx, {
+      signature: "sig_valid",
+      payload: "{}",
+    });
+
+    expect(result).toEqual({ success: true });
+    // createSubscription should NOT be called (duplicate)
+    expect(ctx.runMutation).not.toHaveBeenCalledWith(
+      "internal:subscriptions:createSubscription",
+      expect.anything()
+    );
+    // But tier update should still happen (idempotent)
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      "internal:subscriptions:updateUserTier",
+      { userId: "user_123", tier: "paid" }
+    );
+  });
+
+  it("handles invoice.paid event", async () => {
+    const { fulfillStripeWebhook } = await import("../stripe");
+    const handler = getHandler(fulfillStripeWebhook);
+
+    mockWebhooksConstructEvent.mockReturnValue({
+      type: "invoice.paid",
+      data: {
+        object: {
+          subscription: "sub_existing_123",
+        },
+      },
+    });
+
+    mockSubscriptionsRetrieve.mockResolvedValue({
+      id: "sub_existing_123",
+      current_period_end: 1800000000,
+    });
+
+    const ctx = { runMutation: vi.fn().mockResolvedValue(undefined), runAction: vi.fn() };
+    const result = await handler(ctx, {
+      signature: "sig_valid",
+      payload: "{}",
+    });
+
+    expect(result).toEqual({ success: true });
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      "internal:subscriptions:updateSubscriptionStatus",
+      {
+        stripeSubscriptionId: "sub_existing_123",
+        status: "active",
+        currentPeriodEnd: 1800000000000,
+      }
+    );
+  });
+
+  it("handles invoice.payment_failed event", async () => {
+    const { fulfillStripeWebhook } = await import("../stripe");
+    const handler = getHandler(fulfillStripeWebhook);
+
+    mockWebhooksConstructEvent.mockReturnValue({
+      type: "invoice.payment_failed",
+      data: {
+        object: {
+          subscription: "sub_failing_123",
+        },
+      },
+    });
+
+    const ctx = { runMutation: vi.fn().mockResolvedValue(undefined), runAction: vi.fn() };
+    const result = await handler(ctx, {
+      signature: "sig_valid",
+      payload: "{}",
+    });
+
+    expect(result).toEqual({ success: true });
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      "internal:subscriptions:updateSubscriptionStatus",
+      {
+        stripeSubscriptionId: "sub_failing_123",
+        status: "past_due",
+      }
+    );
+  });
+
+  it("handles customer.subscription.deleted event and reverts tier to free", async () => {
+    const { fulfillStripeWebhook } = await import("../stripe");
+    const handler = getHandler(fulfillStripeWebhook);
+
+    mockWebhooksConstructEvent.mockReturnValue({
+      type: "customer.subscription.deleted",
+      data: {
+        object: {
+          id: "sub_deleted_123",
+        },
+      },
+    });
+
+    const ctx = {
+      runMutation: vi.fn().mockResolvedValue(undefined),
+      runQuery: vi.fn().mockImplementation(async (fn: string) => {
+        if (fn === "internal:subscriptions:getSubscriptionByStripeId") {
+          return { userId: "user_456", stripeSubscriptionId: "sub_deleted_123" };
+        }
+        return null;
+      }),
+      runAction: vi.fn(),
+    };
+
+    const result = await handler(ctx, {
+      signature: "sig_valid",
+      payload: "{}",
+    });
+
+    expect(result).toEqual({ success: true });
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      "internal:subscriptions:updateSubscriptionStatus",
+      {
+        stripeSubscriptionId: "sub_deleted_123",
+        status: "canceled",
+      }
+    );
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      "internal:subscriptions:updateUserTier",
+      { userId: "user_456", tier: "free" }
+    );
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      "internal:analytics:logEvent",
+      expect.objectContaining({
+        userId: "user_456",
+        event: "subscription.canceled",
+      })
+    );
+  });
+
+  it("handles unrecognized event types gracefully", async () => {
+    const { fulfillStripeWebhook } = await import("../stripe");
+    const handler = getHandler(fulfillStripeWebhook);
+
+    mockWebhooksConstructEvent.mockReturnValue({
+      type: "some.unknown.event",
+      data: { object: {} },
+    });
+
+    const ctx = { runMutation: vi.fn(), runAction: vi.fn() };
+    const result = await handler(ctx, {
+      signature: "sig_valid",
+      payload: "{}",
+    });
+
+    expect(result).toEqual({ success: true });
+    expect(ctx.runMutation).not.toHaveBeenCalled();
+  });
+});
+
+describe("cancelSubscription", () => {
+  it("calls stripe.subscriptions.cancel with subscription ID", async () => {
+    const { cancelSubscription } = await import("../stripe");
+    const handler = getHandler(cancelSubscription);
+
+    mockSubscriptionsCancel.mockResolvedValue({ id: "sub_canceled" });
+
+    const ctx = {};
+    await handler(ctx, { stripeSubscriptionId: "sub_to_cancel" });
+
+    expect(mockSubscriptionsCancel).toHaveBeenCalledWith("sub_to_cancel");
+  });
+});

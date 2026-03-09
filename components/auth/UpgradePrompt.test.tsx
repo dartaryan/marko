@@ -4,12 +4,26 @@ import { createRoot } from "react-dom/client";
 import { act } from "react";
 import { UpgradePrompt } from "./UpgradePrompt";
 
-const { mockToastInfo } = vi.hoisted(() => ({
-  mockToastInfo: vi.fn(),
+const mockCreateCheckout = vi.fn();
+
+const { mockToastError } = vi.hoisted(() => ({
+  mockToastError: vi.fn(),
 }));
 
 vi.mock("sonner", () => ({
-  toast: { info: mockToastInfo, error: vi.fn(), success: vi.fn() },
+  toast: { info: vi.fn(), error: mockToastError, success: vi.fn() },
+}));
+
+vi.mock("convex/react", () => ({
+  useAction: () => mockCreateCheckout,
+}));
+
+vi.mock("@/convex/_generated/api", () => ({
+  api: {
+    stripe: {
+      createCheckoutSession: "api:stripe:createCheckoutSession",
+    },
+  },
 }));
 
 let container: HTMLDivElement;
@@ -45,7 +59,58 @@ describe("UpgradePrompt", () => {
     expect(button!.textContent).toContain("שדרג עכשיו");
   });
 
-  it("click calls toast.info with Phase 1 placeholder message", () => {
+  it("calls createCheckoutSession on click and redirects", async () => {
+    mockCreateCheckout.mockResolvedValue({
+      url: "https://checkout.stripe.com/test",
+    });
+
+    // Mock window.location
+    const originalLocation = window.location;
+    Object.defineProperty(window, "location", {
+      writable: true,
+      value: { ...originalLocation, href: "" },
+    });
+
+    renderComponent();
+    const button = container.querySelector("button")!;
+
+    await act(async () => {
+      button.click();
+    });
+
+    expect(mockCreateCheckout).toHaveBeenCalled();
+    expect(window.location.href).toBe("https://checkout.stripe.com/test");
+
+    // Restore
+    Object.defineProperty(window, "location", {
+      writable: true,
+      value: originalLocation,
+    });
+  });
+
+  it("shows error toast when checkout fails", async () => {
+    mockCreateCheckout.mockRejectedValue({
+      data: { code: "CHECKOUT_ERROR", message: "שגיאה ביצירת דף התשלום" },
+    });
+
+    renderComponent();
+    const button = container.querySelector("button")!;
+
+    await act(async () => {
+      button.click();
+    });
+
+    expect(mockToastError).toHaveBeenCalledWith("שגיאה ביצירת דף התשלום");
+  });
+
+  it("disables button during loading", async () => {
+    let resolveCheckout: (value: { url: string }) => void;
+    mockCreateCheckout.mockReturnValue(
+      new Promise((resolve) => {
+        resolveCheckout = resolve;
+      })
+    );
+
     renderComponent();
     const button = container.querySelector("button")!;
 
@@ -53,7 +118,14 @@ describe("UpgradePrompt", () => {
       button.click();
     });
 
-    expect(mockToastInfo).toHaveBeenCalledWith("שדרוג יהיה זמין בקרוב!");
+    // Button should show loading text
+    expect(button.textContent).toContain("מעבד...");
+    expect(button.disabled).toBe(true);
+
+    // Resolve the checkout
+    await act(async () => {
+      resolveCheckout!({ url: "https://checkout.stripe.com/test" });
+    });
   });
 
   it('has aria-label="שדרג לגישה בלתי מוגבלת ל-AI"', () => {
@@ -73,14 +145,12 @@ describe("UpgradePrompt", () => {
   it('renders correct variant styling for "palette"', () => {
     renderComponent({ variant: "palette" });
     const button = container.querySelector("button")!;
-    // palette variant uses "default" variant and "sm" size — no "outline" class
     expect(button.className).not.toContain("border-input");
   });
 
   it('renders correct variant styling for "inline"', () => {
     renderComponent({ variant: "inline" });
     const button = container.querySelector("button")!;
-    // inline variant uses "outline" variant — has border styling
     expect(button.className).toContain("border");
   });
 });

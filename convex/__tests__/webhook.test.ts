@@ -20,15 +20,18 @@ vi.mock("../_generated/api", () => ({
     analytics: {
       logEvent: "internal:analytics:logEvent",
     },
+    stripe: {
+      fulfillStripeWebhook: "internal:stripe:fulfillStripeWebhook",
+    },
   },
 }));
 
-// Capture the handler passed to httpAction
-let capturedHandler: Function | null = null;
+// Capture ALL handlers passed to httpAction (Clerk is first, Stripe is second)
+const capturedHandlers: Function[] = [];
 
 vi.mock("../_generated/server", () => ({
   httpAction: vi.fn((handler: Function) => {
-    capturedHandler = handler;
+    capturedHandlers.push(handler);
     return handler;
   }),
 }));
@@ -73,7 +76,7 @@ describe("Clerk webhook handler", () => {
   }
 
   it("returns 400 for missing svix headers", async () => {
-    const handler = capturedHandler!;
+    const handler = capturedHandlers[0]!;
     const request = new Request(
       "https://example.convex.site/clerk-users-webhook",
       { method: "POST", body: "{}" }
@@ -85,7 +88,7 @@ describe("Clerk webhook handler", () => {
   });
 
   it("returns 500 when CLERK_WEBHOOK_SECRET is not set", async () => {
-    const handler = capturedHandler!;
+    const handler = capturedHandlers[0]!;
     delete process.env.CLERK_WEBHOOK_SECRET;
 
     const request = createRequest(JSON.stringify({ type: "user.created", data: { id: "x" } }));
@@ -96,7 +99,7 @@ describe("Clerk webhook handler", () => {
   });
 
   it("returns 400 for invalid webhook signature", async () => {
-    const handler = capturedHandler!;
+    const handler = capturedHandlers[0]!;
     mockVerify.mockImplementation(() => {
       throw new Error("Invalid signature");
     });
@@ -109,7 +112,7 @@ describe("Clerk webhook handler", () => {
   });
 
   it("processes user.created event and calls upsertFromClerk with primary email", async () => {
-    const handler = capturedHandler!;
+    const handler = capturedHandlers[0]!;
     const eventData = {
       type: "user.created",
       data: {
@@ -145,7 +148,7 @@ describe("Clerk webhook handler", () => {
   });
 
   it("processes user.updated event and calls upsertFromClerk", async () => {
-    const handler = capturedHandler!;
+    const handler = capturedHandlers[0]!;
     const eventData = {
       type: "user.updated",
       data: {
@@ -171,7 +174,7 @@ describe("Clerk webhook handler", () => {
   });
 
   it("processes user.deleted event and calls deleteFromClerk", async () => {
-    const handler = capturedHandler!;
+    const handler = capturedHandlers[0]!;
     const eventData = {
       type: "user.deleted",
       data: { id: "user_deleted" },
@@ -200,7 +203,7 @@ describe("Clerk webhook handler", () => {
   });
 
   it("returns 200 for unhandled event types", async () => {
-    const handler = capturedHandler!;
+    const handler = capturedHandlers[0]!;
     const eventData = {
       type: "session.created",
       data: { id: "session_123" },

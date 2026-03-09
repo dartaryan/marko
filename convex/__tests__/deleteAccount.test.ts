@@ -11,6 +11,13 @@ vi.mock("../_generated/api", () => ({
     analytics: {
       deleteByUserId: "internal:analytics:deleteByUserId",
     },
+    subscriptions: {
+      getSubscriptionByUserId: "internal:subscriptions:getSubscriptionByUserId",
+      deleteByUserId: "internal:subscriptions:deleteByUserId",
+    },
+    stripe: {
+      cancelSubscription: "internal:stripe:cancelSubscription",
+    },
   },
 }));
 
@@ -81,7 +88,13 @@ describe("deleteMyAccount", () => {
         getUserIdentity: vi.fn().mockResolvedValue({ subject: "clerk_123" }),
       },
       runMutation: vi.fn().mockResolvedValue(undefined),
-      runQuery: vi.fn().mockResolvedValue({ _id: "user_123", clerkId: "clerk_123" }),
+      runQuery: vi.fn().mockImplementation(async (fn: string) => {
+        if (fn === "internal:subscriptions:getSubscriptionByUserId") {
+          return null; // no active subscription
+        }
+        return { _id: "user_123", clerkId: "clerk_123" };
+      }),
+      runAction: vi.fn().mockResolvedValue(undefined),
     };
 
     await handler(ctx);
@@ -111,7 +124,13 @@ describe("deleteMyAccount", () => {
         getUserIdentity: vi.fn().mockResolvedValue({ subject: "clerk_123" }),
       },
       runMutation: vi.fn().mockResolvedValue(undefined),
-      runQuery: vi.fn().mockResolvedValue({ _id: "user_123", clerkId: "clerk_123" }),
+      runQuery: vi.fn().mockImplementation(async (fn: string) => {
+        if (fn === "internal:subscriptions:getSubscriptionByUserId") {
+          return null;
+        }
+        return { _id: "user_123", clerkId: "clerk_123" };
+      }),
+      runAction: vi.fn().mockResolvedValue(undefined),
     };
 
     // Should not throw
@@ -134,6 +153,13 @@ describe("deleteMyAccount", () => {
         },
         analytics: {
           deleteByUserId: "internal:analytics:deleteByUserId",
+        },
+        subscriptions: {
+          getSubscriptionByUserId: "internal:subscriptions:getSubscriptionByUserId",
+          deleteByUserId: "internal:subscriptions:deleteByUserId",
+        },
+        stripe: {
+          cancelSubscription: "internal:stripe:cancelSubscription",
         },
       },
     }));
@@ -219,15 +245,21 @@ describe("deleteMyAccount", () => {
       runMutation: vi.fn().mockImplementation(async () => {
         callOrder.push("convex-mutation");
       }),
-      runQuery: vi.fn().mockImplementation(async () => {
+      runQuery: vi.fn().mockImplementation(async (fn: string) => {
         callOrder.push("convex-query");
+        if (fn === "internal:subscriptions:getSubscriptionByUserId") {
+          return null; // no active subscription
+        }
         return { _id: "user_123", clerkId: "clerk_123" };
+      }),
+      runAction: vi.fn().mockImplementation(async () => {
+        callOrder.push("convex-action");
       }),
     };
 
     await handler(ctx);
 
-    // Clerk API first, then query user, cascade delete analytics, then delete user
+    // Clerk API first, then queries and mutations
     expect(callOrder[0]).toBe("clerk-api");
     expect(callOrder).toContain("convex-query");
     expect(callOrder.filter(c => c === "convex-mutation").length).toBeGreaterThanOrEqual(2);

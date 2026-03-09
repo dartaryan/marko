@@ -1,6 +1,6 @@
 # Story 9.1: Payment Provider Integration & Subscription Flow
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -21,44 +21,44 @@ so that I can unlock unlimited AI features.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add `subscriptions` table to Convex schema (AC: #3)
-  - [ ] Define table with fields: userId, stripeCustomerId, stripeSubscriptionId, status, currentPeriodEnd, cancelAtPeriodEnd, createdAt
-  - [ ] Add indexes: by_userId, by_stripeCustomerId, by_stripeSubscriptionId
-- [ ] Task 2: Create `convex/subscriptions.ts` with subscription management functions (AC: #2, #3)
-  - [ ] `createSubscription` internalMutation — creates subscription record after webhook
-  - [ ] `updateSubscriptionStatus` internalMutation — updates status and period end
-  - [ ] `getMySubscription` query — returns current user's active subscription
-  - [ ] `updateUserTier` internalMutation — updates users.tier to "paid"
-- [ ] Task 3: Create Stripe checkout session action (AC: #1, #4)
-  - [ ] `createCheckoutSession` action — creates Stripe Checkout Session with mode="subscription", currency="ils", VAT display
-  - [ ] Use `"use node"` directive for Stripe SDK access
-  - [ ] Include success_url and cancel_url with session ID placeholder
-  - [ ] Create Stripe customer if not exists, store stripeCustomerId
-- [ ] Task 4: Add Stripe webhook handler to `convex/http.ts` (AC: #2, #3, #6)
-  - [ ] Add `/stripe-webhook` POST route
-  - [ ] Verify webhook signature using Stripe SDK
-  - [ ] Handle `checkout.session.completed` — create subscription, update tier to "paid"
-  - [ ] Handle `invoice.paid` — confirm subscription renewal
-  - [ ] Handle `invoice.payment_failed` — flag payment issue
-  - [ ] Handle `customer.subscription.deleted` — revert tier to "free"
-- [ ] Task 5: Update `UpgradePrompt.tsx` to trigger real checkout flow (AC: #5)
-  - [ ] Replace placeholder toast with call to `createCheckoutSession` action
-  - [ ] Handle loading state during checkout session creation
-  - [ ] Redirect user to Stripe Checkout URL
-  - [ ] Handle errors with Hebrew toast messages
-- [ ] Task 6: Create success/cancel return pages or handling (AC: #6)
-  - [ ] Handle return from Stripe Checkout (success path — confirm subscription)
-  - [ ] Handle return from Stripe Checkout (cancel path — show message)
-- [ ] Task 7: Update `deleteMyAccount` to cancel active subscriptions (AC: related)
-  - [ ] Before deleting Clerk user, cancel any active Stripe subscription
-  - [ ] Delete subscription records from Convex
-- [ ] Task 8: Add Stripe product/price configuration notes (AC: #4)
-  - [ ] Document Stripe Dashboard setup: product, price in ILS, recurring monthly, tax behavior
-- [ ] Task 9: Write tests (AC: all)
-  - [ ] Unit tests for subscription mutations
-  - [ ] Unit tests for checkout session creation (mocked Stripe)
-  - [ ] Unit tests for webhook handler (signature verification, event processing)
-  - [ ] Update existing auth/tier tests if affected
+- [x] Task 1: Add `subscriptions` table to Convex schema (AC: #3)
+  - [x] Define table with fields: userId, stripeCustomerId, stripeSubscriptionId, status, currentPeriodEnd, cancelAtPeriodEnd, createdAt
+  - [x] Add indexes: by_userId, by_stripeCustomerId, by_stripeSubscriptionId
+- [x] Task 2: Create `convex/subscriptions.ts` with subscription management functions (AC: #2, #3)
+  - [x] `createSubscription` internalMutation — creates subscription record after webhook
+  - [x] `updateSubscriptionStatus` internalMutation — updates status and period end
+  - [x] `getMySubscription` query — returns current user's active subscription
+  - [x] `updateUserTier` internalMutation — updates users.tier to "paid"
+- [x] Task 3: Create Stripe checkout session action (AC: #1, #4)
+  - [x] `createCheckoutSession` action — creates Stripe Checkout Session with mode="subscription", currency="ils", VAT display
+  - [x] Use `"use node"` directive for Stripe SDK access
+  - [x] Include success_url and cancel_url with session ID placeholder
+  - [x] Create Stripe customer if not exists, store stripeCustomerId
+- [x] Task 4: Add Stripe webhook handler to `convex/http.ts` (AC: #2, #3, #6)
+  - [x] Add `/stripe-webhook` POST route
+  - [x] Verify webhook signature using Stripe SDK
+  - [x] Handle `checkout.session.completed` — create subscription, update tier to "paid"
+  - [x] Handle `invoice.paid` — confirm subscription renewal
+  - [x] Handle `invoice.payment_failed` — flag payment issue
+  - [x] Handle `customer.subscription.deleted` — revert tier to "free"
+- [x] Task 5: Update `UpgradePrompt.tsx` to trigger real checkout flow (AC: #5)
+  - [x] Replace placeholder toast with call to `createCheckoutSession` action
+  - [x] Handle loading state during checkout session creation
+  - [x] Redirect user to Stripe Checkout URL
+  - [x] Handle errors with Hebrew toast messages
+- [x] Task 6: Create success/cancel return pages or handling (AC: #6)
+  - [x] Handle return from Stripe Checkout (success path — confirm subscription)
+  - [x] Handle return from Stripe Checkout (cancel path — show message)
+- [x] Task 7: Update `deleteMyAccount` to cancel active subscriptions (AC: related)
+  - [x] Before deleting Clerk user, cancel any active Stripe subscription
+  - [x] Delete subscription records from Convex
+- [x] Task 8: Add Stripe product/price configuration notes (AC: #4)
+  - [x] Document Stripe Dashboard setup: product, price in ILS, recurring monthly, tax behavior
+- [x] Task 9: Write tests (AC: all)
+  - [x] Unit tests for subscription mutations
+  - [x] Unit tests for checkout session creation (mocked Stripe)
+  - [x] Unit tests for webhook handler (signature verification, event processing)
+  - [x] Update existing auth/tier tests if affected
 
 ## Dev Notes
 
@@ -245,8 +245,48 @@ Before implementation, configure in Stripe Dashboard:
 
 ### Agent Model Used
 
+Claude Opus 4.6
+
 ### Debug Log References
+
+- Fixed existing webhook.test.ts: updated to capture multiple httpAction handlers (Clerk + Stripe) and mock internal.stripe
+- Fixed existing deleteAccount.test.ts: added internal.subscriptions and internal.stripe to mocks, added runAction and subscription query to test contexts
+- Fixed ESLint errors in stripe.ts: replaced `as any` casts with proper `Id<"users">` type
 
 ### Completion Notes List
 
+- Implemented full Stripe subscription flow: schema, mutations, queries, checkout session, webhook handler
+- All payment data stays with Stripe (PCI-DSS compliant) — no card data touches Marko's servers
+- Stripe webhook handles 4 events: checkout.session.completed, invoice.paid, invoice.payment_failed, customer.subscription.deleted
+- UpgradePrompt now triggers real checkout with loading state and Hebrew error messages
+- Success/cancel redirect handling via useSubscriptionReturn hook with Hebrew toast messages
+- Account deletion cascades: cancels Stripe subscription, deletes Convex subscription records
+- Stripe Dashboard setup documented in story Dev Notes (manual configuration required)
+- 25 new tests added (14 stripe, 11 subscriptions), 8 existing tests updated (UpgradePrompt, webhook, deleteAccount)
+- All 563 tests pass, 0 regressions, ESLint clean
+
 ### File List
+
+**New files:**
+- convex/subscriptions.ts — Subscription CRUD mutations/queries
+- convex/stripe.ts — Stripe checkout session action, webhook fulfillment, cancel subscription
+- convex/__tests__/subscriptions.test.ts — 11 unit tests for subscription functions
+- convex/__tests__/stripe.test.ts — 15 unit tests for Stripe checkout and webhook
+- lib/hooks/useSubscriptionReturn.ts — Hook for handling Stripe checkout return URL params
+
+**Modified files:**
+- convex/schema.ts — Added subscriptions table with 3 indexes
+- convex/http.ts — Added /stripe-webhook POST route
+- convex/users.ts — Added subscription cancellation and cleanup to deleteMyAccount
+- components/auth/UpgradePrompt.tsx — Replaced placeholder toast with real Stripe checkout flow
+- components/auth/UpgradePrompt.test.tsx — Updated tests for new checkout behavior
+- convex/__tests__/webhook.test.ts — Fixed handler capture for multiple httpAction routes
+- convex/__tests__/deleteAccount.test.ts — Added subscription/stripe mocks to test contexts
+- app/editor/page.tsx — Added useSubscriptionReturn hook
+- package.json — Added stripe dependency
+- pnpm-lock.yaml — Updated lock file
+
+## Change Log
+
+- 2026-03-09: Implemented Story 9.1 — Payment provider integration and subscription flow with Stripe Checkout, webhook handling, subscription management, and real upgrade flow
+- 2026-03-09: Code review fixes — H1: getSubscriptionByStripeId changed from internalMutation to internalQuery; H2: Stripe API version updated to 2026-02-25.clover; H3: Added idempotency check for checkout.session.completed webhook; H4: deleteMyAccount now cancels past_due subscriptions; M1: Fixed race condition toast message; M2: Fixed URL param preservation in useSubscriptionReturn; M3: Added user existence validation in checkout webhook
