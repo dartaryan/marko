@@ -8,6 +8,9 @@ export default defineSchema({
     name: v.optional(v.string()),
     tier: v.union(v.literal("free"), v.literal("paid")),
     createdAt: v.number(),
+    flagged: v.optional(v.boolean()),
+    flagReason: v.optional(v.string()),
+    flaggedAt: v.optional(v.number()),
   }).index("by_clerkId", ["clerkId"]),
 
   aiUsage: defineTable({
