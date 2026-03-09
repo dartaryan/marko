@@ -44,14 +44,14 @@ export const generateReceipt = internalAction({
       APIKey: apiKey,
       Document: {
         Type: 3,
-        Description: description,
+        Description: args.description,
         Customer: {
           Name: args.customerName,
           EmailAddress: args.customerEmail,
         },
         Items: [
           {
-            Description: description,
+            Description: args.description,
             Price: args.amount,
             Quantity: 1,
             Currency: args.currency,

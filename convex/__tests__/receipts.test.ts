@@ -1,187 +1,294 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { ConvexError } from "convex/values";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 
-describe("receipts CRUD operations", () => {
-  // Mock Convex context
-  const mockDb = {
-    insert: vi.fn(),
-    query: vi.fn(),
-    delete: vi.fn(),
-  };
+// Mock _generated/server
+vi.mock("../_generated/server", () => ({
+  query: (config: { args: unknown; handler: Function }) => ({
+    _handler: config.handler,
+  }),
+  internalMutation: (config: { args: unknown; handler: Function }) => ({
+    _handler: config.handler,
+  }),
+  internalQuery: (config: { args: unknown; handler: Function }) => ({
+    _handler: config.handler,
+  }),
+}));
 
-  const mockCtx = {
-    db: mockDb,
-    auth: {
-      getUserIdentity: vi.fn(),
-    },
-  };
+function getHandler(fn: unknown): Function {
+  const registration = fn as { _handler?: Function };
+  if (registration._handler) return registration._handler;
+  throw new Error("Could not find handler on Convex function registration");
+}
 
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+beforeEach(() => {
+  vi.clearAllMocks();
+  vi.resetModules();
+});
 
-  describe("createReceipt", () => {
-    it("creates a receipt with all required fields", async () => {
-      const mockInsertId = "receipt_123";
-      mockDb.insert.mockResolvedValue(mockInsertId);
+describe("createReceipt", () => {
+  it("inserts a receipt record into the database", async () => {
+    const { createReceipt } = await import("../receipts");
+    const handler = getHandler(createReceipt);
 
-      // Import and call the function (simulate in real test)
-      const receipt = {
+    const mockInsert = vi.fn().mockResolvedValue("receipt_id_123");
+    const ctx = { db: { insert: mockInsert } };
+
+    const args = {
+      userId: "user_1",
+      subscriptionId: "sub_1",
+      stripeSessionId: "session_123",
+      stripeInvoiceId: undefined,
+      sumitDocumentId: "doc_123",
+      sumitDocumentNumber: "0042",
+      sumitDocumentUrl: "https://app.sumit.co.il/doc/0042",
+      sumitPdfUrl: "https://app.sumit.co.il/pdf/0042",
+      amount: 99.0,
+      currency: "ILS",
+      status: "success" as const,
+      errorMessage: undefined,
+    };
+
+    const result = await handler(ctx, args);
+
+    expect(result).toBe("receipt_id_123");
+    expect(mockInsert).toHaveBeenCalledWith(
+      "receipts",
+      expect.objectContaining({
         userId: "user_1",
         subscriptionId: "sub_1",
         stripeSessionId: "session_123",
-        stripeInvoiceId: undefined,
         sumitDocumentId: "doc_123",
         sumitDocumentNumber: "0042",
-        sumitDocumentUrl: "https://app.sumit.co.il/doc/0042",
-        sumitPdfUrl: "https://app.sumit.co.il/pdf/0042",
         amount: 99.0,
         currency: "ILS",
         status: "success",
-        errorMessage: undefined,
-        createdAt: Date.now(),
-      };
+        createdAt: expect.any(Number),
+      })
+    );
+  });
 
-      expect(receipt).toMatchObject({
-        userId: "user_1",
-        status: "success",
-        amount: 99.0,
-        currency: "ILS",
-      });
-    });
+  it("stores failed receipt with errorMessage", async () => {
+    const { createReceipt } = await import("../receipts");
+    const handler = getHandler(createReceipt);
 
-    it("creates a receipt with optional errorMessage when failed", async () => {
-      const receipt = {
-        userId: "user_1",
-        subscriptionId: undefined,
-        stripeSessionId: "session_123",
-        stripeInvoiceId: undefined,
-        sumitDocumentId: "",
-        sumitDocumentNumber: "",
-        sumitDocumentUrl: "",
-        sumitPdfUrl: "",
-        amount: 99.0,
-        currency: "ILS",
+    const mockInsert = vi.fn().mockResolvedValue("receipt_id_456");
+    const ctx = { db: { insert: mockInsert } };
+
+    const args = {
+      userId: "user_1",
+      subscriptionId: undefined,
+      stripeSessionId: "session_fail",
+      stripeInvoiceId: undefined,
+      sumitDocumentId: "",
+      sumitDocumentNumber: "",
+      sumitDocumentUrl: "",
+      sumitPdfUrl: "",
+      amount: 99.0,
+      currency: "ILS",
+      status: "failed" as const,
+      errorMessage: "Sumit API error",
+    };
+
+    await handler(ctx, args);
+
+    expect(mockInsert).toHaveBeenCalledWith(
+      "receipts",
+      expect.objectContaining({
         status: "failed",
         errorMessage: "Sumit API error",
-        createdAt: Date.now(),
-      };
+      })
+    );
+  });
+});
 
-      expect(receipt.status).toBe("failed");
-      expect(receipt.errorMessage).toBe("Sumit API error");
-    });
+describe("getReceiptByStripeSessionId", () => {
+  it("returns existing receipt for a Stripe session ID", async () => {
+    const { getReceiptByStripeSessionId } = await import("../receipts");
+    const handler = getHandler(getReceiptByStripeSessionId);
+
+    const mockReceipt = {
+      _id: "receipt_123",
+      stripeSessionId: "session_123",
+      status: "success",
+    };
+    const mockUnique = vi.fn().mockResolvedValue(mockReceipt);
+    const mockWithIndex = vi.fn().mockReturnValue({ unique: mockUnique });
+    const mockQuery = vi.fn().mockReturnValue({ withIndex: mockWithIndex });
+    const ctx = { db: { query: mockQuery } };
+
+    const result = await handler(ctx, { stripeSessionId: "session_123" });
+
+    expect(result).toEqual(mockReceipt);
+    expect(mockQuery).toHaveBeenCalledWith("receipts");
+    expect(mockWithIndex).toHaveBeenCalledWith(
+      "by_stripeSessionId",
+      expect.any(Function)
+    );
   });
 
-  describe("getReceiptByStripeSessionId idempotency", () => {
-    it("returns existing receipt for same Stripe session ID", async () => {
-      const mockReceipt = {
-        _id: "receipt_123",
-        stripeSessionId: "session_123",
-        sumitDocumentId: "doc_123",
-        status: "success",
-      };
+  it("returns null when no receipt exists (idempotency check)", async () => {
+    const { getReceiptByStripeSessionId } = await import("../receipts");
+    const handler = getHandler(getReceiptByStripeSessionId);
 
-      const mockQuery = {
-        withIndex: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        unique: vi.fn().mockResolvedValue(mockReceipt),
-      };
+    const mockUnique = vi.fn().mockResolvedValue(null);
+    const mockWithIndex = vi.fn().mockReturnValue({ unique: mockUnique });
+    const mockQuery = vi.fn().mockReturnValue({ withIndex: mockWithIndex });
+    const ctx = { db: { query: mockQuery } };
 
-      mockDb.query.mockReturnValue(mockQuery);
+    const result = await handler(ctx, { stripeSessionId: "session_new" });
+    expect(result).toBeNull();
+  });
+});
 
-      // Simulate the query execution
-      expect(mockReceipt).toBeDefined();
-      expect(mockReceipt.stripeSessionId).toBe("session_123");
-    });
+describe("getReceiptByStripeInvoiceId", () => {
+  it("returns existing receipt for a Stripe invoice ID", async () => {
+    const { getReceiptByStripeInvoiceId } = await import("../receipts");
+    const handler = getHandler(getReceiptByStripeInvoiceId);
 
-    it("returns null when no receipt exists for session ID", async () => {
-      const mockQuery = {
-        withIndex: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        unique: vi.fn().mockResolvedValue(null),
-      };
+    const mockReceipt = {
+      _id: "receipt_456",
+      stripeInvoiceId: "inv_789",
+      status: "success",
+    };
+    const mockUnique = vi.fn().mockResolvedValue(mockReceipt);
+    const mockWithIndex = vi.fn().mockReturnValue({ unique: mockUnique });
+    const mockQuery = vi.fn().mockReturnValue({ withIndex: mockWithIndex });
+    const ctx = { db: { query: mockQuery } };
 
-      mockDb.query.mockReturnValue(mockQuery);
-
-      // Simulate idempotency check
-      const result = null;
-      expect(result).toBeNull();
-    });
+    const result = await handler(ctx, { stripeInvoiceId: "inv_789" });
+    expect(result).toEqual(mockReceipt);
   });
 
-  describe("getReceiptByStripeInvoiceId idempotency", () => {
-    it("returns existing receipt for same Stripe invoice ID", async () => {
-      const mockReceipt = {
-        _id: "receipt_456",
-        stripeInvoiceId: "inv_789",
-        sumitDocumentId: "doc_456",
-        status: "success",
-      };
+  it("returns null when no receipt exists for invoice ID", async () => {
+    const { getReceiptByStripeInvoiceId } = await import("../receipts");
+    const handler = getHandler(getReceiptByStripeInvoiceId);
 
-      expect(mockReceipt.stripeInvoiceId).toBe("inv_789");
-    });
+    const mockUnique = vi.fn().mockResolvedValue(null);
+    const mockWithIndex = vi.fn().mockReturnValue({ unique: mockUnique });
+    const mockQuery = vi.fn().mockReturnValue({ withIndex: mockWithIndex });
+    const ctx = { db: { query: mockQuery } };
 
-    it("returns null when no receipt exists for invoice ID", async () => {
-      const result = null;
-      expect(result).toBeNull();
-    });
+    const result = await handler(ctx, { stripeInvoiceId: "inv_new" });
+    expect(result).toBeNull();
+  });
+});
+
+describe("getReceiptsByUserId", () => {
+  it("returns empty array for unauthenticated user", async () => {
+    const { getReceiptsByUserId } = await import("../receipts");
+    const handler = getHandler(getReceiptsByUserId);
+
+    const ctx = {
+      auth: { getUserIdentity: vi.fn().mockResolvedValue(null) },
+      db: { query: vi.fn() },
+    };
+
+    const result = await handler(ctx);
+    expect(result).toEqual([]);
+    expect(ctx.db.query).not.toHaveBeenCalled();
   });
 
-  describe("deleteByUserId cascade delete", () => {
-    it("deletes all receipts for a user", async () => {
-      const mockReceipts = [
-        { _id: "receipt_1", userId: "user_1" },
-        { _id: "receipt_2", userId: "user_1" },
-        { _id: "receipt_3", userId: "user_1" },
-      ];
+  it("returns empty array when user not found in DB", async () => {
+    const { getReceiptsByUserId } = await import("../receipts");
+    const handler = getHandler(getReceiptsByUserId);
 
-      const mockQuery = {
-        withIndex: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        collect: vi.fn().mockResolvedValue(mockReceipts),
-      };
+    const mockUnique = vi.fn().mockResolvedValue(null);
+    const mockWithIndex = vi.fn().mockReturnValue({ unique: mockUnique });
+    const mockQuery = vi.fn().mockReturnValue({ withIndex: mockWithIndex });
 
-      mockDb.query.mockReturnValue(mockQuery);
-      mockDb.delete.mockResolvedValue(undefined);
+    const ctx = {
+      auth: {
+        getUserIdentity: vi
+          .fn()
+          .mockResolvedValue({ subject: "clerk_unknown" }),
+      },
+      db: { query: mockQuery },
+    };
 
-      // Simulate cascade delete
-      expect(mockReceipts).toHaveLength(3);
-      for (const receipt of mockReceipts) {
-        expect(receipt.userId).toBe("user_1");
-      }
-    });
-
-    it("handles user with no receipts gracefully", async () => {
-      const mockQuery = {
-        withIndex: vi.fn().mockReturnThis(),
-        eq: vi.fn().mockReturnThis(),
-        collect: vi.fn().mockResolvedValue([]),
-      };
-
-      mockDb.query.mockReturnValue(mockQuery);
-
-      // Simulate query for user with no receipts
-      const receipts: unknown[] = [];
-      expect(receipts).toHaveLength(0);
-    });
+    const result = await handler(ctx);
+    expect(result).toEqual([]);
   });
 
-  describe("getReceiptsByUserId query", () => {
-    it("returns empty array for unauthenticated user", async () => {
-      mockCtx.auth.getUserIdentity.mockResolvedValue(null);
-      expect([]).toEqual([]);
-    });
+  it("returns user's receipts when authenticated", async () => {
+    const { getReceiptsByUserId } = await import("../receipts");
+    const handler = getHandler(getReceiptsByUserId);
 
-    it("returns user's receipts sorted by creation date", async () => {
-      const mockReceipts = [
-        { _id: "receipt_1", createdAt: 1000, amount: 99.0 },
-        { _id: "receipt_2", createdAt: 2000, amount: 99.0 },
-        { _id: "receipt_3", createdAt: 3000, amount: 99.0 },
-      ];
+    const mockReceipts = [
+      { _id: "r1", amount: 99.0, createdAt: 1000 },
+      { _id: "r2", amount: 99.0, createdAt: 2000 },
+    ];
 
-      expect(mockReceipts).toHaveLength(3);
-      expect(mockReceipts[0].createdAt).toBeLessThan(mockReceipts[1].createdAt);
-      expect(mockReceipts[1].createdAt).toBeLessThan(mockReceipts[2].createdAt);
-    });
+    // First query: users table lookup
+    const userUnique = vi
+      .fn()
+      .mockResolvedValue({ _id: "user_123", clerkId: "clerk_123" });
+    const userWithIndex = vi.fn().mockReturnValue({ unique: userUnique });
+
+    // Second query: receipts table lookup
+    const receiptsCollect = vi.fn().mockResolvedValue(mockReceipts);
+    const receiptsWithIndex = vi
+      .fn()
+      .mockReturnValue({ collect: receiptsCollect });
+
+    const mockQuery = vi
+      .fn()
+      .mockReturnValueOnce({ withIndex: userWithIndex }) // users query
+      .mockReturnValueOnce({ withIndex: receiptsWithIndex }); // receipts query
+
+    const ctx = {
+      auth: {
+        getUserIdentity: vi
+          .fn()
+          .mockResolvedValue({ subject: "clerk_123" }),
+      },
+      db: { query: mockQuery },
+    };
+
+    const result = await handler(ctx);
+    expect(result).toEqual(mockReceipts);
+    expect(mockQuery).toHaveBeenCalledWith("users");
+    expect(mockQuery).toHaveBeenCalledWith("receipts");
+  });
+});
+
+describe("deleteByUserId", () => {
+  it("deletes all receipts for a user", async () => {
+    const { deleteByUserId } = await import("../receipts");
+    const handler = getHandler(deleteByUserId);
+
+    const mockReceipts = [
+      { _id: "receipt_1" },
+      { _id: "receipt_2" },
+      { _id: "receipt_3" },
+    ];
+
+    const mockCollect = vi.fn().mockResolvedValue(mockReceipts);
+    const mockWithIndex = vi.fn().mockReturnValue({ collect: mockCollect });
+    const mockQuery = vi.fn().mockReturnValue({ withIndex: mockWithIndex });
+    const mockDelete = vi.fn().mockResolvedValue(undefined);
+
+    const ctx = { db: { query: mockQuery, delete: mockDelete } };
+
+    await handler(ctx, { userId: "user_1" });
+
+    expect(mockDelete).toHaveBeenCalledTimes(3);
+    expect(mockDelete).toHaveBeenCalledWith("receipt_1");
+    expect(mockDelete).toHaveBeenCalledWith("receipt_2");
+    expect(mockDelete).toHaveBeenCalledWith("receipt_3");
+  });
+
+  it("handles user with no receipts gracefully", async () => {
+    const { deleteByUserId } = await import("../receipts");
+    const handler = getHandler(deleteByUserId);
+
+    const mockCollect = vi.fn().mockResolvedValue([]);
+    const mockWithIndex = vi.fn().mockReturnValue({ collect: mockCollect });
+    const mockQuery = vi.fn().mockReturnValue({ withIndex: mockWithIndex });
+    const mockDelete = vi.fn();
+
+    const ctx = { db: { query: mockQuery, delete: mockDelete } };
+
+    await handler(ctx, { userId: "user_no_receipts" });
+
+    expect(mockDelete).not.toHaveBeenCalled();
   });
 });

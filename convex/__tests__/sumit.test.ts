@@ -1,182 +1,218 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
-describe("Sumit API integration", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    // Mock environment variables
-    process.env.SUMIT_COMPANY_ID = "test_company_id";
-    process.env.SUMIT_API_KEY = "test_api_key";
+// Mock _generated/server
+vi.mock("../_generated/server", () => ({
+  internalAction: (config: { args: unknown; handler: Function }) => ({
+    _handler: config.handler,
+  }),
+}));
+
+function getHandler(fn: unknown): Function {
+  const registration = fn as { _handler?: Function };
+  if (registration._handler) return registration._handler;
+  throw new Error("Could not find handler on Convex function registration");
+}
+
+let mockFetch: ReturnType<typeof vi.fn>;
+
+beforeEach(() => {
+  mockFetch = vi.fn();
+  vi.stubGlobal("fetch", mockFetch);
+  vi.stubEnv("SUMIT_COMPANY_ID", "test_company_id");
+  vi.stubEnv("SUMIT_API_KEY", "test_api_key");
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
+  vi.resetModules();
+});
+
+describe("generateReceipt", () => {
+  const defaultArgs = {
+    customerName: "John Doe",
+    customerEmail: "john@example.com",
+    amount: 99.0,
+    currency: "ILS",
+    description: "Monthly Subscription - Marko Pro - 09/03/2026",
+    stripeReference: "session_123",
+  };
+
+  it("builds correct request body with DocumentType 3 for Osek Patur", async () => {
+    mockFetch.mockResolvedValue({
+      json: () =>
+        Promise.resolve({
+          Status: 0,
+          DocumentNumber: "0042",
+          DocumentID: "doc_123",
+          DocumentURL: "https://app.sumit.co.il/doc/0042",
+          PdfURL: "https://app.sumit.co.il/pdf/0042",
+        }),
+    });
+
+    const { generateReceipt } = await import("../sumit");
+    const handler = getHandler(generateReceipt);
+    await handler({}, defaultArgs);
+
+    expect(mockFetch).toHaveBeenCalledOnce();
+    const [url, options] = mockFetch.mock.calls[0];
+    expect(url).toBe("https://api.sumit.co.il/billing/v1/documents/create");
+
+    const body = JSON.parse(options.body);
+    expect(body.CompanyID).toBe("test_company_id");
+    expect(body.APIKey).toBe("test_api_key");
+    expect(body.Document.Type).toBe(3); // Osek Patur — NOT 1 or 5
+    expect(body.Document.Payment[0].Type).toBe(4); // Credit Card
+    expect(body.Document.SendDocumentByEmail).toBe(true);
+    expect(body.Document.Language).toBe("he");
   });
 
-  afterEach(() => {
-    delete process.env.SUMIT_COMPANY_ID;
-    delete process.env.SUMIT_API_KEY;
+  it("sends correct customer and item data", async () => {
+    mockFetch.mockResolvedValue({
+      json: () =>
+        Promise.resolve({
+          Status: 0,
+          DocumentNumber: "0042",
+          DocumentID: "doc_123",
+          DocumentURL: "https://sumit.co.il/doc",
+          PdfURL: "https://sumit.co.il/pdf",
+        }),
+    });
+
+    const { generateReceipt } = await import("../sumit");
+    const handler = getHandler(generateReceipt);
+    await handler({}, defaultArgs);
+
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+    expect(body.Document.Customer.Name).toBe("John Doe");
+    expect(body.Document.Customer.EmailAddress).toBe("john@example.com");
+    expect(body.Document.Items[0].Price).toBe(99.0);
+    expect(body.Document.Items[0].Quantity).toBe(1);
+    expect(body.Document.Items[0].Currency).toBe("ILS");
   });
 
-  describe("generateReceipt", () => {
-    it("builds correct request body with DocumentType 3 for Osek Patur", async () => {
-      const expectedBody = {
-        CompanyID: "test_company_id",
-        APIKey: "test_api_key",
-        Document: {
-          Type: 3, // Invoice/Receipt for Osek Patur (NOT 1 or 5)
-          Description: "Monthly Subscription - Marko Pro",
-          Customer: {
-            Name: "John Doe",
-            EmailAddress: "john@example.com",
-          },
-          Items: [
-            {
-              Description: "Monthly Subscription - Marko Pro",
-              Price: 99.0,
-              Quantity: 1,
-              Currency: "ILS",
-            },
-          ],
-          Payment: [
-            {
-              Type: 4, // Credit Card
-              Amount: 99.0,
-              Currency: "ILS",
-            },
-          ],
-          SendDocumentByEmail: true,
-          Language: "he",
-        },
-      };
-
-      // Verify the body structure
-      expect(expectedBody.Document.Type).toBe(3);
-      expect(expectedBody.Document.Payment[0].Type).toBe(4);
-      expect(expectedBody.Document.Language).toBe("he");
-      expect(expectedBody.Document.SendDocumentByEmail).toBe(true);
+  it("returns success response with document details", async () => {
+    mockFetch.mockResolvedValue({
+      json: () =>
+        Promise.resolve({
+          Status: 0,
+          DocumentNumber: "0042",
+          DocumentID: "abc123-def456",
+          DocumentURL: "https://app.sumit.co.il/docs/0042",
+          PdfURL: "https://app.sumit.co.il/pdf/0042",
+        }),
     });
 
-    it("converts Stripe amount (cents) to ILS (÷ 100)", async () => {
-      const stipeAmountCents = 9900; // $99.00
-      const expectedAmountIls = 9900 / 100; // 99.00 ILS
+    const { generateReceipt } = await import("../sumit");
+    const handler = getHandler(generateReceipt);
+    const result = await handler({}, defaultArgs);
 
-      expect(expectedAmountIls).toBe(99.0);
-    });
-
-    it("handles successful Sumit API response", async () => {
-      const mockSuccessResponse = {
-        DocumentNumber: "0042",
-        DocumentID: "abc123-def456",
-        DocumentURL: "https://app.sumit.co.il/docs/0042",
-        PdfURL: "https://app.sumit.co.il/pdf/0042",
-        Status: 0,
-      };
-
-      // Simulate successful response parsing
-      expect(mockSuccessResponse.Status).toBe(0);
-      expect(mockSuccessResponse).toMatchObject({
-        DocumentNumber: expect.any(String),
-        DocumentID: expect.any(String),
-        DocumentURL: expect.any(String),
-        PdfURL: expect.any(String),
-      });
-    });
-
-    it("handles Sumit API error response", async () => {
-      const mockErrorResponse = {
-        Status: 1,
-        ErrorMessage: "Invalid customer email",
-        UserErrorMessage: "Customer email is required",
-      };
-
-      // Simulate error response
-      expect(mockErrorResponse.Status).toBe(1);
-      expect(mockErrorResponse.ErrorMessage).toBeDefined();
-    });
-
-    it("returns error when API credentials are missing", async () => {
-      delete process.env.SUMIT_COMPANY_ID;
-
-      const result = {
-        success: false,
-        error: "Missing Sumit API credentials",
-      };
-
-      expect(result.success).toBe(false);
-      expect(result.error).toContain("credentials");
-    });
-
-    it("handles network errors gracefully", async () => {
-      // Simulate fetch failure
-      const result = {
-        success: false,
-        error: "Network error or API unreachable",
-      };
-
-      expect(result.success).toBe(false);
-      expect(result.error).toBeDefined();
-    });
-
-    it("returns success response with correct structure", async () => {
-      const result = {
-        success: true,
-        documentNumber: "0042",
-        documentId: "abc123",
-        documentUrl: "https://app.sumit.co.il/docs/0042",
-        pdfUrl: "https://app.sumit.co.il/pdf/0042",
-      };
-
-      expect(result.success).toBe(true);
-      expect(result).toMatchObject({
-        documentNumber: expect.any(String),
-        documentId: expect.any(String),
-        documentUrl: expect.any(String),
-        pdfUrl: expect.any(String),
-      });
-    });
-
-    it("includes customer email in SendDocumentByEmail flow", async () => {
-      const requestBody = {
-        Document: {
-          Customer: {
-            EmailAddress: "user@example.com",
-          },
-          SendDocumentByEmail: true,
-        },
-      };
-
-      // When SendDocumentByEmail=true, Sumit will email the receipt automatically
-      expect(requestBody.Document.SendDocumentByEmail).toBe(true);
-      expect(requestBody.Document.Customer.EmailAddress).toBe("user@example.com");
+    expect(result).toEqual({
+      success: true,
+      documentNumber: "0042",
+      documentId: "abc123-def456",
+      documentUrl: "https://app.sumit.co.il/docs/0042",
+      pdfUrl: "https://app.sumit.co.il/pdf/0042",
     });
   });
 
-  describe("Amount conversion for Osek Patur (VAT-exempt)", () => {
-    it("does NOT add VAT to the amount", async () => {
-      const amountChargedByStripe = 99.0; // ILS
-      const expectedAmountInReceipt = 99.0; // Same - NO VAT added
-
-      expect(expectedAmountInReceipt).toBe(amountChargedByStripe);
+  it("returns error on Sumit API error response", async () => {
+    mockFetch.mockResolvedValue({
+      json: () =>
+        Promise.resolve({
+          Status: 1,
+          ErrorMessage: "Invalid customer email",
+          UserErrorMessage: "Customer email is required",
+        }),
     });
 
-    it("uses Currency 'ILS' without VAT breakdown", async () => {
-      const requestBody = {
-        Items: [
-          {
-            Price: 99.0,
-            Currency: "ILS",
-          },
-        ],
-        Payment: [
-          {
-            Amount: 99.0,
-            Currency: "ILS",
-          },
-        ],
-      };
+    const { generateReceipt } = await import("../sumit");
+    const handler = getHandler(generateReceipt);
+    const result = await handler({}, defaultArgs);
 
-      // Osek Patur is VAT-exempt - no VAT field or breakdown
-      expect(requestBody.Items[0].Currency).toBe("ILS");
-      expect(requestBody.Items[0].Price).toBe(99.0);
-      expect(requestBody.Payment[0].Amount).toBe(99.0);
-      // No VAT-related fields
-      expect((requestBody.Items[0] as any).VAT).toBeUndefined();
+    expect(result).toEqual({
+      success: false,
+      error: "Invalid customer email",
     });
+  });
+
+  it("returns error when API credentials are missing", async () => {
+    vi.unstubAllEnvs();
+    vi.resetModules();
+
+    vi.doMock("../_generated/server", () => ({
+      internalAction: (config: { args: unknown; handler: Function }) => ({
+        _handler: config.handler,
+      }),
+    }));
+
+    const { generateReceipt } = await import("../sumit");
+    const handler = getHandler(generateReceipt);
+    const result = await handler({}, defaultArgs);
+
+    expect(result).toEqual({
+      success: false,
+      error: "Missing Sumit API credentials",
+    });
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it("handles network/fetch errors gracefully", async () => {
+    mockFetch.mockRejectedValue(new Error("Network timeout"));
+
+    const { generateReceipt } = await import("../sumit");
+    const handler = getHandler(generateReceipt);
+    const result = await handler({}, defaultArgs);
+
+    expect(result).toEqual({
+      success: false,
+      error: "Network timeout",
+    });
+  });
+
+  it("does NOT add VAT — Osek Patur is VAT-exempt", async () => {
+    mockFetch.mockResolvedValue({
+      json: () =>
+        Promise.resolve({
+          Status: 0,
+          DocumentNumber: "0042",
+          DocumentID: "doc_123",
+          DocumentURL: "https://sumit.co.il/doc",
+          PdfURL: "https://sumit.co.il/pdf",
+        }),
+    });
+
+    const { generateReceipt } = await import("../sumit");
+    const handler = getHandler(generateReceipt);
+    await handler({}, { ...defaultArgs, amount: 99.0 });
+
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body);
+    // Amount sent to Sumit should equal exactly what was passed — no VAT added
+    expect(body.Document.Items[0].Price).toBe(99.0);
+    expect(body.Document.Payment[0].Amount).toBe(99.0);
+    // No VAT-related fields
+    expect(body.Document.Items[0].VAT).toBeUndefined();
+    expect(body.Document.VATRate).toBeUndefined();
+  });
+
+  it("posts with correct Content-Type header", async () => {
+    mockFetch.mockResolvedValue({
+      json: () =>
+        Promise.resolve({
+          Status: 0,
+          DocumentNumber: "0042",
+          DocumentID: "doc_123",
+          DocumentURL: "https://sumit.co.il/doc",
+          PdfURL: "https://sumit.co.il/pdf",
+        }),
+    });
+
+    const { generateReceipt } = await import("../sumit");
+    const handler = getHandler(generateReceipt);
+    await handler({}, defaultArgs);
+
+    const options = mockFetch.mock.calls[0][1];
+    expect(options.method).toBe("POST");
+    expect(options.headers["Content-Type"]).toBe("application/json");
   });
 });

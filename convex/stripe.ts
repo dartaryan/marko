@@ -2,6 +2,7 @@
 
 import Stripe from "stripe";
 import { action, internalAction } from "./_generated/server";
+import type { ActionCtx } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v, ConvexError } from "convex/values";
 import { requireAuth } from "./lib/authorization";
@@ -19,17 +20,30 @@ function getStripeClient(): Stripe {
 }
 
 async function generateAndStoreReceipt(
-  ctx: any,
-  userId: string,
-  subscriptionId: string | undefined,
-  stripeSessionId: string | undefined,
-  stripeInvoiceId: string | undefined,
-  amountCents: number,
-  currency: string,
-  customerName: string,
-  customerEmail: string,
-  description: string
+  ctx: ActionCtx,
+  args: {
+    userId: string;
+    subscriptionId: string | undefined;
+    stripeSessionId: string | undefined;
+    stripeInvoiceId: string | undefined;
+    amountCents: number;
+    currency: string;
+    customerName: string;
+    customerEmail: string;
+    description: string;
+  }
 ) {
+  const {
+    userId,
+    subscriptionId,
+    stripeSessionId,
+    stripeInvoiceId,
+    amountCents,
+    currency,
+    customerName,
+    customerEmail,
+    description,
+  } = args;
   try {
     // Check idempotency
     if (stripeSessionId) {
@@ -260,12 +274,15 @@ export const fulfillStripeWebhook = internalAction({
         );
 
         // Idempotency: skip creation if webhook was already processed
+        let convexSubId: string | undefined;
         const existingSub = await ctx.runQuery(
           internal.subscriptions.getSubscriptionByStripeId,
           { stripeSubscriptionId: subscription.id }
         );
-        if (!existingSub) {
-          await ctx.runMutation(internal.subscriptions.createSubscription, {
+        if (existingSub) {
+          convexSubId = existingSub._id;
+        } else {
+          convexSubId = await ctx.runMutation(internal.subscriptions.createSubscription, {
             userId: user._id,
             stripeCustomerId: session.customer as string,
             stripeSubscriptionId: subscription.id,
@@ -294,18 +311,17 @@ export const fulfillStripeWebhook = internalAction({
         const customerEmail = session.customer_details?.email || user.email || "";
         const description = `Monthly Subscription - Marko Pro - ${new Date(session.created * 1000).toLocaleDateString("he-IL")}`;
 
-        await generateAndStoreReceipt(
-          ctx,
-          user._id,
-          undefined, // subscriptionId will be set after subscription creation
-          session.id,
-          undefined,
-          session.amount_total || 0,
-          session.currency || "ils",
+        await generateAndStoreReceipt(ctx, {
+          userId: user._id,
+          subscriptionId: convexSubId,
+          stripeSessionId: session.id,
+          stripeInvoiceId: undefined,
+          amountCents: session.amount_total || 0,
+          currency: session.currency || "ils",
           customerName,
           customerEmail,
-          description
-        );
+          description,
+        });
         break;
       }
 
@@ -341,18 +357,17 @@ export const fulfillStripeWebhook = internalAction({
           const customerEmail = invoice.customer_email || "";
           const description = `Monthly Subscription - Marko Pro - ${new Date(invoice.created * 1000).toLocaleDateString("he-IL")}`;
 
-          await generateAndStoreReceipt(
-            ctx,
-            convexSub.userId,
-            convexSub._id,
-            undefined,
-            invoice.id,
-            invoice.amount_paid || 0,
-            invoice.currency || "ils",
+          await generateAndStoreReceipt(ctx, {
+            userId: convexSub.userId,
+            subscriptionId: convexSub._id,
+            stripeSessionId: undefined,
+            stripeInvoiceId: invoice.id,
+            amountCents: invoice.amount_paid || 0,
+            currency: invoice.currency || "ils",
             customerName,
             customerEmail,
-            description
-          );
+            description,
+          });
         }
         break;
       }
