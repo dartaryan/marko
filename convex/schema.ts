@@ -53,4 +53,24 @@ export default defineSchema({
     .index("by_userId", ["userId"])
     .index("by_event", ["event"])
     .index("by_createdAt", ["createdAt"]),
+
+  receipts: defineTable({
+    userId: v.id("users"),
+    subscriptionId: v.optional(v.id("subscriptions")),
+    stripeSessionId: v.optional(v.string()),
+    stripeInvoiceId: v.optional(v.string()),
+    sumitDocumentId: v.string(),
+    sumitDocumentNumber: v.string(),
+    sumitDocumentUrl: v.string(),
+    sumitPdfUrl: v.string(),
+    amount: v.number(),
+    currency: v.string(),
+    status: v.union(v.literal("success"), v.literal("failed")),
+    errorMessage: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_stripeSessionId", ["stripeSessionId"])
+    .index("by_stripeInvoiceId", ["stripeInvoiceId"])
+    .index("by_subscriptionId", ["subscriptionId"]),
 });

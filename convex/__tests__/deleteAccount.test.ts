@@ -15,6 +15,9 @@ vi.mock("../_generated/api", () => ({
       getSubscriptionByUserId: "internal:subscriptions:getSubscriptionByUserId",
       deleteByUserId: "internal:subscriptions:deleteByUserId",
     },
+    receipts: {
+      deleteByUserId: "internal:receipts:deleteByUserId",
+    },
     stripe: {
       cancelSubscription: "internal:stripe:cancelSubscription",
     },
@@ -158,6 +161,9 @@ describe("deleteMyAccount", () => {
           getSubscriptionByUserId: "internal:subscriptions:getSubscriptionByUserId",
           deleteByUserId: "internal:subscriptions:deleteByUserId",
         },
+        receipts: {
+          deleteByUserId: "internal:receipts:deleteByUserId",
+        },
         stripe: {
           cancelSubscription: "internal:stripe:cancelSubscription",
         },
@@ -263,5 +269,42 @@ describe("deleteMyAccount", () => {
     expect(callOrder[0]).toBe("clerk-api");
     expect(callOrder).toContain("convex-query");
     expect(callOrder.filter(c => c === "convex-mutation").length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("cascades delete receipts when user account is deleted", async () => {
+    const { deleteMyAccount } = await import("../users");
+    const handler = getHandler(deleteMyAccount);
+
+    mockFetch.mockResolvedValue({ ok: true, status: 200 });
+
+    const mutationCalls: Array<{
+      fn: string;
+      args: Record<string, unknown>;
+    }> = [];
+
+    const ctx = {
+      auth: {
+        getUserIdentity: vi.fn().mockResolvedValue({ subject: "clerk_123" }),
+      },
+      runMutation: vi.fn().mockImplementation(async (fn: string, args) => {
+        mutationCalls.push({ fn, args });
+      }),
+      runQuery: vi.fn().mockImplementation(async (fn: string) => {
+        if (fn === "internal:subscriptions:getSubscriptionByUserId") {
+          return null;
+        }
+        return { _id: "user_123", clerkId: "clerk_123" };
+      }),
+      runAction: vi.fn().mockResolvedValue(undefined),
+    };
+
+    await handler(ctx);
+
+    // Verify that receipt deletion was called with correct userId
+    const receiptDeleteCall = mutationCalls.find(
+      (call) => call.fn === "internal:receipts:deleteByUserId"
+    );
+    expect(receiptDeleteCall).toBeDefined();
+    expect(receiptDeleteCall?.args).toEqual({ userId: "user_123" });
   });
 });

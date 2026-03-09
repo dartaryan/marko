@@ -37,6 +37,16 @@ vi.mock("../_generated/api", () => ({
       getSubscriptionByStripeId:
         "internal:subscriptions:getSubscriptionByStripeId",
     },
+    receipts: {
+      getReceiptByStripeSessionId:
+        "internal:receipts:getReceiptByStripeSessionId",
+      getReceiptByStripeInvoiceId:
+        "internal:receipts:getReceiptByStripeInvoiceId",
+      createReceipt: "internal:receipts:createReceipt",
+    },
+    sumit: {
+      generateReceipt: "internal:sumit:generateReceipt",
+    },
     analytics: {
       logEvent: "internal:analytics:logEvent",
     },
@@ -236,6 +246,12 @@ describe("createCheckoutSession", () => {
           getSubscriptionByUserId: "internal:subscriptions:getSubscriptionByUserId",
           getSubscriptionByStripeId: "internal:subscriptions:getSubscriptionByStripeId",
         },
+        receipts: {
+          getReceiptByStripeSessionId: "internal:receipts:getReceiptByStripeSessionId",
+          getReceiptByStripeInvoiceId: "internal:receipts:getReceiptByStripeInvoiceId",
+          createReceipt: "internal:receipts:createReceipt",
+        },
+        sumit: { generateReceipt: "internal:sumit:generateReceipt" },
         analytics: { logEvent: "internal:analytics:logEvent" },
       },
     }));
@@ -298,6 +314,12 @@ describe("fulfillStripeWebhook", () => {
           getSubscriptionByUserId: "internal:subscriptions:getSubscriptionByUserId",
           getSubscriptionByStripeId: "internal:subscriptions:getSubscriptionByStripeId",
         },
+        receipts: {
+          getReceiptByStripeSessionId: "internal:receipts:getReceiptByStripeSessionId",
+          getReceiptByStripeInvoiceId: "internal:receipts:getReceiptByStripeInvoiceId",
+          createReceipt: "internal:receipts:createReceipt",
+        },
+        sumit: { generateReceipt: "internal:sumit:generateReceipt" },
         analytics: { logEvent: "internal:analytics:logEvent" },
       },
     }));
@@ -464,6 +486,12 @@ describe("fulfillStripeWebhook", () => {
       data: {
         object: {
           subscription: "sub_existing_123",
+          customer_email: "user@example.com",
+          customer_name: "User",
+          amount_paid: 9900,
+          currency: "ils",
+          id: "inv_existing",
+          created: Math.floor(Date.now() / 1000),
         },
       },
     });
@@ -473,7 +501,26 @@ describe("fulfillStripeWebhook", () => {
       current_period_end: 1800000000,
     });
 
-    const ctx = { runMutation: vi.fn().mockResolvedValue(undefined), runAction: vi.fn() };
+    const ctx = {
+      runQuery: vi.fn().mockImplementation((fn) => {
+        if (fn === "internal:subscriptions:getSubscriptionByStripeId") {
+          return Promise.resolve({
+            _id: "sub_convex_123",
+            userId: "user_123",
+            stripeSubscriptionId: "sub_existing_123",
+          });
+        }
+        return Promise.resolve(null);
+      }),
+      runMutation: vi.fn().mockResolvedValue(undefined),
+      runAction: vi.fn().mockResolvedValue({
+        success: true,
+        documentNumber: "0042",
+        documentId: "doc_123",
+        documentUrl: "https://sumit.co.il/doc/0042",
+        pdfUrl: "https://sumit.co.il/pdf/0042",
+      }),
+    };
     const result = await handler(ctx, {
       signature: "sig_valid",
       payload: "{}",
@@ -600,5 +647,196 @@ describe("cancelSubscription", () => {
     await handler(ctx, { stripeSubscriptionId: "sub_to_cancel" });
 
     expect(mockSubscriptionsCancel).toHaveBeenCalledWith("sub_to_cancel");
+  });
+});
+
+describe("Receipt generation in webhook handlers", () => {
+  beforeEach(() => {
+    vi.stubEnv("SUMIT_COMPANY_ID", "company_123");
+    vi.stubEnv("SUMIT_API_KEY", "api_key_456");
+  });
+
+  it("generates receipt on checkout.session.completed webhook", async () => {
+    const { fulfillStripeWebhook } = await import("../stripe");
+    const handler = getHandler(fulfillStripeWebhook);
+
+    const mockSession = {
+      id: "session_123",
+      mode: "subscription",
+      subscription: "sub_stripe_123",
+      customer: "cus_123",
+      customer_details: {
+        name: "John Doe",
+        email: "john@example.com",
+      },
+      amount_total: 9900, // 99.00 ILS in cents
+      currency: "ils",
+      created: Math.floor(Date.now() / 1000),
+      metadata: { clerkId: "clerk_123" },
+    };
+
+    mockWebhooksConstructEvent.mockReturnValue({
+      type: "checkout.session.completed",
+      data: { object: mockSession },
+    });
+
+    mockSubscriptionsRetrieve.mockResolvedValue({
+      id: "sub_stripe_123",
+      current_period_end: Math.floor(Date.now() / 1000) + 2592000,
+    });
+
+    const runMutationCalls: string[] = [];
+    const runActionCalls: string[] = [];
+
+    const ctx = {
+      runQuery: vi.fn().mockImplementation((fn, args) => {
+        if (fn === "internal:users:getUserByClerkId") {
+          return Promise.resolve({
+            _id: "user_123",
+            clerkId: "clerk_123",
+            tier: "free",
+            name: "John Doe",
+            email: "john@example.com",
+          });
+        }
+        return Promise.resolve(null);
+      }),
+      runMutation: vi.fn().mockImplementation((fn, args) => {
+        runMutationCalls.push(typeof fn === "string" ? fn : "unknown");
+        return Promise.resolve(undefined);
+      }),
+      runAction: vi.fn().mockImplementation((fn, args) => {
+        runActionCalls.push(typeof fn === "string" ? fn : "unknown");
+        return Promise.resolve({
+          success: true,
+          documentNumber: "0042",
+          documentId: "doc_123",
+          documentUrl: "https://sumit.co.il/doc/0042",
+          pdfUrl: "https://sumit.co.il/pdf/0042",
+        });
+      }),
+    };
+
+    const result = await handler(ctx, {
+      signature: "sig_valid",
+      payload: "{}",
+    });
+
+    expect(result).toEqual({ success: true });
+    // Verify that receipt generation was called
+    expect(runActionCalls.length).toBeGreaterThan(0);
+    expect(runMutationCalls.length).toBeGreaterThan(0);
+  });
+
+  it("generates receipt on invoice.paid webhook (renewal)", async () => {
+    const { fulfillStripeWebhook } = await import("../stripe");
+    const handler = getHandler(fulfillStripeWebhook);
+
+    const mockInvoice = {
+      id: "inv_789",
+      subscription: "sub_stripe_123",
+      customer_email: "john@example.com",
+      customer_name: "John Doe",
+      amount_paid: 9900,
+      currency: "ils",
+      created: Math.floor(Date.now() / 1000),
+    };
+
+    mockWebhooksConstructEvent.mockReturnValue({
+      type: "invoice.paid",
+      data: { object: mockInvoice },
+    });
+
+    mockSubscriptionsRetrieve.mockResolvedValue({
+      id: "sub_stripe_123",
+      current_period_end: Math.floor(Date.now() / 1000) + 2592000,
+    });
+
+    const ctx = {
+      runQuery: vi.fn().mockImplementation((fn, args) => {
+        if (fn === "internal:subscriptions:getSubscriptionByStripeId") {
+          return Promise.resolve({
+            _id: "sub_convex_123",
+            userId: "user_123",
+            stripeSubscriptionId: "sub_stripe_123",
+          });
+        }
+        return Promise.resolve(null);
+      }),
+      runMutation: vi.fn().mockResolvedValue(undefined),
+      runAction: vi.fn().mockResolvedValue({
+        success: true,
+        documentNumber: "0043",
+        documentId: "doc_456",
+        documentUrl: "https://sumit.co.il/doc/0043",
+        pdfUrl: "https://sumit.co.il/pdf/0043",
+      }),
+    };
+
+    const result = await handler(ctx, {
+      signature: "sig_valid",
+      payload: "{}",
+    });
+
+    expect(result).toEqual({ success: true });
+    expect(ctx.runAction).toHaveBeenCalled();
+    expect(ctx.runMutation).toHaveBeenCalled();
+  });
+
+  it("does not fail webhook if receipt generation fails", async () => {
+    const { fulfillStripeWebhook } = await import("../stripe");
+    const handler = getHandler(fulfillStripeWebhook);
+
+    const mockSession = {
+      id: "session_fail_123",
+      mode: "subscription",
+      subscription: "sub_stripe_123",
+      customer: "cus_123",
+      customer_details: {
+        name: "John Doe",
+        email: "john@example.com",
+      },
+      amount_total: 9900,
+      currency: "ils",
+      created: Math.floor(Date.now() / 1000),
+      metadata: { clerkId: "clerk_123" },
+    };
+
+    mockWebhooksConstructEvent.mockReturnValue({
+      type: "checkout.session.completed",
+      data: { object: mockSession },
+    });
+
+    mockSubscriptionsRetrieve.mockResolvedValue({
+      id: "sub_stripe_123",
+      current_period_end: Math.floor(Date.now() / 1000) + 2592000,
+    });
+
+    const ctx = {
+      runQuery: vi.fn().mockImplementation((fn) => {
+        if (fn === "internal:users:getUserByClerkId") {
+          return Promise.resolve({
+            _id: "user_123",
+            clerkId: "clerk_123",
+            tier: "free",
+          });
+        }
+        // Return null for receipt idempotency check
+        return Promise.resolve(null);
+      }),
+      runMutation: vi.fn().mockResolvedValue(undefined),
+      runAction: vi
+        .fn()
+        .mockRejectedValue(new Error("Sumit API unavailable")),
+    };
+
+    // Should NOT throw, even though runAction fails
+    const result = await handler(ctx, {
+      signature: "sig_valid",
+      payload: "{}",
+    });
+
+    expect(result).toEqual({ success: true });
+    expect(ctx.runAction).toHaveBeenCalled();
   });
 });

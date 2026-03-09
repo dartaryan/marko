@@ -18,6 +18,112 @@ function getStripeClient(): Stripe {
   return new Stripe(key, { apiVersion: "2026-02-25.clover" });
 }
 
+async function generateAndStoreReceipt(
+  ctx: any,
+  userId: string,
+  subscriptionId: string | undefined,
+  stripeSessionId: string | undefined,
+  stripeInvoiceId: string | undefined,
+  amountCents: number,
+  currency: string,
+  customerName: string,
+  customerEmail: string,
+  description: string
+) {
+  try {
+    // Check idempotency
+    if (stripeSessionId) {
+      const existing = await ctx.runQuery(
+        internal.receipts.getReceiptByStripeSessionId,
+        { stripeSessionId }
+      );
+      if (existing) return;
+    }
+    if (stripeInvoiceId) {
+      const existing = await ctx.runQuery(
+        internal.receipts.getReceiptByStripeInvoiceId,
+        { stripeInvoiceId }
+      );
+      if (existing) return;
+    }
+
+    // Convert Stripe amount (cents) to ILS
+    const amountIls = amountCents / 100;
+
+    // Call Sumit API to generate receipt
+    const sumitResult = await ctx.runAction(internal.sumit.generateReceipt, {
+      customerName,
+      customerEmail,
+      amount: amountIls,
+      currency,
+      description,
+      stripeReference: stripeSessionId || stripeInvoiceId || "unknown",
+    });
+
+    // Store receipt in database
+    if (sumitResult.success) {
+      await ctx.runMutation(internal.receipts.createReceipt, {
+        userId,
+        subscriptionId,
+        stripeSessionId,
+        stripeInvoiceId,
+        sumitDocumentId: sumitResult.documentId,
+        sumitDocumentNumber: sumitResult.documentNumber,
+        sumitDocumentUrl: sumitResult.documentUrl,
+        sumitPdfUrl: sumitResult.pdfUrl,
+        amount: amountIls,
+        currency,
+        status: "success",
+      });
+
+      await ctx.runMutation(internal.analytics.logEvent, {
+        userId,
+        event: "receipt.generated",
+        metadata: {
+          sumitDocumentId: sumitResult.documentId,
+          stripeSessionId,
+          stripeInvoiceId,
+          amount: amountIls,
+        },
+      });
+    } else {
+      // Log failed receipt generation but don't fail webhook
+      await ctx.runMutation(internal.analytics.logEvent, {
+        userId,
+        event: "receipt.generation_failed",
+        metadata: {
+          error: sumitResult.error,
+          stripeSessionId,
+          stripeInvoiceId,
+        },
+      });
+
+      console.error(
+        "Failed to generate receipt for user",
+        userId,
+        ":",
+        sumitResult.error
+      );
+    }
+  } catch (error) {
+    // Catch any errors and log them - never fail the webhook
+    console.error(
+      "Error in receipt generation flow:",
+      error instanceof Error ? error.message : error
+    );
+
+    await ctx.runMutation(internal.analytics.logEvent, {
+      userId,
+      event: "receipt.generation_failed",
+      metadata: {
+        error: error instanceof Error ? error.message : "Unknown error",
+        stripeSessionId,
+        stripeInvoiceId,
+      },
+    });
+  }
+}
+
 export const createCheckoutSession = action({
   args: {},
   handler: async (ctx) => {
@@ -182,6 +288,24 @@ export const fulfillStripeWebhook = internalAction({
             stripeCustomerId: session.customer as string,
           },
         });
+
+        // Generate receipt for initial payment (non-blocking)
+        const customerName = session.customer_details?.name || user.name || "Customer";
+        const customerEmail = session.customer_details?.email || user.email || "";
+        const description = `Monthly Subscription - Marko Pro - ${new Date(session.created * 1000).toLocaleDateString("he-IL")}`;
+
+        await generateAndStoreReceipt(
+          ctx,
+          user._id,
+          undefined, // subscriptionId will be set after subscription creation
+          session.id,
+          undefined,
+          session.amount_total || 0,
+          session.currency || "ils",
+          customerName,
+          customerEmail,
+          description
+        );
         break;
       }
 
@@ -205,6 +329,31 @@ export const fulfillStripeWebhook = internalAction({
             currentPeriodEnd: subscription.current_period_end * 1000,
           }
         );
+
+        // Generate receipt for renewal payment (non-blocking)
+        const convexSub = await ctx.runQuery(
+          internal.subscriptions.getSubscriptionByStripeId,
+          { stripeSubscriptionId: subscriptionId }
+        );
+
+        if (convexSub) {
+          const customerName = invoice.customer_name || "Customer";
+          const customerEmail = invoice.customer_email || "";
+          const description = `Monthly Subscription - Marko Pro - ${new Date(invoice.created * 1000).toLocaleDateString("he-IL")}`;
+
+          await generateAndStoreReceipt(
+            ctx,
+            convexSub.userId,
+            convexSub._id,
+            undefined,
+            invoice.id,
+            invoice.amount_paid || 0,
+            invoice.currency || "ils",
+            customerName,
+            customerEmail,
+            description
+          );
+        }
         break;
       }
 

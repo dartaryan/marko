@@ -164,6 +164,8 @@ export const deleteMyAccount = action({
       await ctx.runMutation(internal.subscriptions.deleteByUserId, { userId: user._id });
 
       await ctx.runMutation(internal.analytics.deleteByUserId, { userId: user._id });
+
+      await ctx.runMutation(internal.receipts.deleteByUserId, { userId: user._id });
     }
 
     // Delete from Convex (via internal mutation — idempotent, handles user-not-found)

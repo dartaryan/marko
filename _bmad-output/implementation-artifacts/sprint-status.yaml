@@ -105,7 +105,7 @@ development_status:
   # Epic 9: Payments & Subscription (Phase 2)
   epic-9: in-progress
   9-1-payment-provider-integration-and-subscription-flow: done
-  9-2-opus-access-and-force-opus-toggle: ready-for-dev
-  9-3-israeli-tax-compliance-and-sumit-receipts: backlog
-  9-4-subscription-management: backlog
+  9-2-opus-access-and-force-opus-toggle: review
+  9-3-israeli-tax-compliance-and-sumit-receipts: in-progress
+  9-4-subscription-management: ready-for-dev
   epic-9-retrospective: optional
