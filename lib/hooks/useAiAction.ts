@@ -18,7 +18,8 @@ export function useAiAction() {
     async (
       actionType: AiActionType,
       content: string,
-      targetLanguage?: "he" | "en"
+      targetLanguage?: "he" | "en",
+      forceOpus: boolean = false
     ) => {
       if (isLoadingRef.current) return null;
       isLoadingRef.current = true;
@@ -27,9 +28,15 @@ export function useAiAction() {
       setErrorCode(null);
       setResult(null);
       try {
-        const response = await callAi({ actionType, content, targetLanguage });
+        const response = await callAi({ actionType, content, targetLanguage, forceOpus });
         setResult(response);
-        toast.success("AI סיים לעבד");
+
+        // Handle Opus fallback notification
+        if (response.opusFallback) {
+          toast.warning("מכסת Opus היומית נוצלה, משתמש ב-Sonnet");
+        } else {
+          toast.success("AI סיים לעבד");
+        }
         return response;
       } catch (err: unknown) {
         const errorData = (err as { data?: { code?: string; message?: string } })?.data;

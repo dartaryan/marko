@@ -555,3 +555,140 @@ describe("getUserUsageSummary", () => {
     expect(summary.byActionType).toEqual({ summarize: 2, translate: 1 });
   });
 });
+
+describe("getDailyOpusUsageCount", () => {
+  it("returns 0 for user with no daily Opus records", async () => {
+    const { getDailyOpusUsageCount } = await import("../usage");
+    const ctx = createMockQueryCtx([]);
+
+    const handler = getHandler(getDailyOpusUsageCount);
+    const count = await handler(ctx, { userId: "user_new" });
+
+    expect(count).toBe(0);
+  });
+
+  it("counts only Opus model records, not Sonnet", async () => {
+    const { getDailyOpusUsageCount } = await import("../usage");
+
+    const now = Date.now();
+    const records = [
+      { userId: "user_1", model: "claude-opus-4-6", createdAt: now },
+      { userId: "user_1", model: "claude-opus-4-6", createdAt: now },
+      { userId: "user_1", model: "claude-sonnet-4-5-20250929", createdAt: now },
+      { userId: "user_1", model: "claude-sonnet-4-5-20250929", createdAt: now },
+    ];
+
+    const ctx = createMockQueryCtx(records);
+
+    const handler = getHandler(getDailyOpusUsageCount);
+    const count = await handler(ctx, { userId: "user_1" });
+
+    expect(count).toBe(2); // Only 2 Opus records
+  });
+
+  it("uses by_userId_createdAt compound index", async () => {
+    const { getDailyOpusUsageCount } = await import("../usage");
+    const ctx = createMockQueryCtx([]);
+
+    const handler = getHandler(getDailyOpusUsageCount);
+    await handler(ctx, { userId: "user_specific" });
+
+    expect(ctx.db.query).toHaveBeenCalledWith("aiUsage");
+    expect(ctx._mockWithIndex).toHaveBeenCalledWith(
+      "by_userId_createdAt",
+      expect.any(Function)
+    );
+  });
+});
+
+describe("getMyDailyOpusUsage", () => {
+  it("returns 0/0 when user is not authenticated", async () => {
+    const { getMyDailyOpusUsage } = await import("../usage");
+
+    const ctx = {
+      auth: {
+        getUserIdentity: vi.fn().mockResolvedValue(null),
+      },
+      db: {
+        query: vi.fn(),
+      },
+    };
+
+    const handler = getHandler(getMyDailyOpusUsage);
+    const result = await handler(ctx, {});
+
+    expect(result).toEqual({ count: 0, limit: 0 });
+  });
+
+  it("returns 0/0 when user not found in DB", async () => {
+    const { getMyDailyOpusUsage } = await import("../usage");
+
+    const ctx = {
+      auth: {
+        getUserIdentity: vi.fn().mockResolvedValue({ subject: "clerk_user_123" }),
+      },
+      db: {
+        query: vi.fn().mockReturnValue({
+          withIndex: vi.fn().mockReturnThis(),
+          unique: vi.fn().mockResolvedValue(null),
+        }),
+      },
+    };
+
+    const handler = getHandler(getMyDailyOpusUsage);
+    const result = await handler(ctx, {});
+
+    expect(result).toEqual({ count: 0, limit: 0 });
+  });
+
+  it("returns 0/0 for free user (no Opus access)", async () => {
+    const { getMyDailyOpusUsage } = await import("../usage");
+
+    const ctx = {
+      auth: {
+        getUserIdentity: vi.fn().mockResolvedValue({ subject: "clerk_user_123" }),
+      },
+      db: {
+        query: vi.fn().mockReturnValue({
+          withIndex: vi.fn().mockReturnThis(),
+          unique: vi.fn().mockResolvedValue({ _id: "user_free", tier: "free" }),
+          collect: vi.fn().mockResolvedValue([]),
+        }),
+      },
+    };
+
+    const handler = getHandler(getMyDailyOpusUsage);
+    const result = await handler(ctx, {});
+
+    expect(result).toEqual({ count: 0, limit: 0 }); // Free users don't get Opus limit shown
+  });
+
+  it("returns Opus count and limit (5) for paid user", async () => {
+    const { getMyDailyOpusUsage } = await import("../usage");
+
+    const now = Date.now();
+    const opusRecords = [
+      { userId: "user_paid", model: "claude-opus-4-6", createdAt: now },
+      { userId: "user_paid", model: "claude-opus-4-6", createdAt: now },
+      { userId: "user_paid", model: "claude-sonnet-4-5-20250929", createdAt: now },
+    ];
+
+    const ctx = {
+      auth: {
+        getUserIdentity: vi.fn().mockResolvedValue({ subject: "clerk_user_123" }),
+      },
+      db: {
+        query: vi.fn().mockReturnValue({
+          withIndex: vi.fn().mockReturnThis(),
+          unique: vi.fn().mockResolvedValue({ _id: "user_paid", tier: "paid" }),
+          collect: vi.fn().mockResolvedValue(opusRecords),
+        }),
+      },
+    };
+
+    const handler = getHandler(getMyDailyOpusUsage);
+    const result = await handler(ctx, {});
+
+    expect(result).toEqual({ count: 2, limit: 5 }); // 2 Opus calls, 5 limit
+  });
+});

@@ -225,6 +225,7 @@ describe("callAnthropicApi", () => {
       model: "claude-sonnet-4-5-20250929",
       inputTokens: 100,
       outputTokens: 50,
+      opusFallback: false,
     });
 
     expect(mockCreate).toHaveBeenCalledWith(
@@ -343,5 +344,154 @@ describe("callAnthropicApi", () => {
     // Verify the content sent to Anthropic was truncated
     const createCall = mockCreate.mock.calls[0][0];
     expect(createCall.messages[0].content.length).toBe(100_000);
+  });
+
+  // Story 9.2: Opus tests
+  it("skips monthly limit check for paid users", async () => {
+    const { callAnthropicApi } = await import("../ai");
+    const paidUser = { _id: "user_paid", tier: "paid" };
+    const ctx = createMockActionCtx({ identity: mockIdentity, user: paidUser });
+
+    let callCount = 0;
+    ctx.runQuery.mockImplementation(async (_ref: unknown, _args: unknown) => {
+      callCount++;
+      if (callCount === 1) return paidUser;
+      // For paid user, we don't check monthly limit, so getDailyOpusUsageCount should not be called
+      return 0;
+    });
+
+    const handler = getHandler(callAnthropicApi);
+    const result = await handler(ctx, defaultArgs);
+
+    expect(result.result).toBe("Mock AI response");
+    expect(result.model).toBe("claude-sonnet-4-5-20250929"); // Default, not Opus
+  });
+
+  it("returns Opus model when forceOpus=true and paid user is under daily limit", async () => {
+    const { callAnthropicApi } = await import("../ai");
+    const paidUser = { _id: "user_paid", tier: "paid" };
+    const ctx = createMockActionCtx({ identity: mockIdentity, user: paidUser });
+
+    let callCount = 0;
+    ctx.runQuery.mockImplementation(async (_ref: unknown, _args: unknown) => {
+      callCount++;
+      if (callCount === 1) return paidUser;
+      if (callCount === 2) return 2; // 2 Opus calls made today (under limit of 5)
+      return 0;
+    });
+
+    const handler = getHandler(callAnthropicApi);
+    const result = await handler(ctx, { ...defaultArgs, forceOpus: true });
+
+    expect(result.result).toBe("Mock AI response");
+    expect(result.model).toBe("claude-opus-4-6");
+    expect(result.opusFallback).toBe(false); // No fallback occurred (Opus was used)
+  });
+
+  it("falls back to Sonnet when forceOpus=true but paid user has exhausted daily Opus limit", async () => {
+    const { callAnthropicApi } = await import("../ai");
+    const paidUser = { _id: "user_paid", tier: "paid" };
+    const ctx = createMockActionCtx({ identity: mockIdentity, user: paidUser });
+
+    let callCount = 0;
+    ctx.runQuery.mockImplementation(async (_ref: unknown, _args: unknown) => {
+      callCount++;
+      if (callCount === 1) return paidUser;
+      if (callCount === 2) return 5; // 5 Opus calls made today (at limit of 5)
+      return 0;
+    });
+
+    const handler = getHandler(callAnthropicApi);
+    const result = await handler(ctx, { ...defaultArgs, forceOpus: true });
+
+    expect(result.result).toBe("Mock AI response");
+    expect(result.model).toBe("claude-sonnet-4-5-20250929"); // Fallback to Sonnet
+    expect(result.opusFallback).toBe(true);
+  });
+
+  it("logs ai.opus_used event when Opus is selected", async () => {
+    const { callAnthropicApi } = await import("../ai");
+    const paidUser = { _id: "user_paid", tier: "paid" };
+    const ctx = createMockActionCtx({ identity: mockIdentity, user: paidUser });
+
+    let callCount = 0;
+    ctx.runQuery.mockImplementation(async (_ref: unknown, _args: unknown) => {
+      callCount++;
+      if (callCount === 1) return paidUser;
+      if (callCount === 2) return 2; // Under daily limit
+      return 0;
+    });
+
+    const handler = getHandler(callAnthropicApi);
+    await handler(ctx, { ...defaultArgs, forceOpus: true });
+
+    // Should have: logAiUsage, ai.call event, ai.opus_used event
+    expect(ctx.runMutation).toHaveBeenCalledTimes(3);
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        userId: "user_paid",
+        event: "ai.opus_used",
+        metadata: expect.objectContaining({
+          actionType: "summarize",
+        }),
+      })
+    );
+  });
+
+  it("logs ai.opus_fallback event when Opus limit is reached", async () => {
+    const { callAnthropicApi } = await import("../ai");
+    const paidUser = { _id: "user_paid", tier: "paid" };
+    const ctx = createMockActionCtx({ identity: mockIdentity, user: paidUser });
+
+    let callCount = 0;
+    ctx.runQuery.mockImplementation(async (_ref: unknown, _args: unknown) => {
+      callCount++;
+      if (callCount === 1) return paidUser;
+      if (callCount === 2) return 5; // At daily limit
+      return 0;
+    });
+
+    const handler = getHandler(callAnthropicApi);
+    await handler(ctx, { ...defaultArgs, forceOpus: true });
+
+    // Should have: logAiUsage, ai.call event, ai.opus_fallback event
+    expect(ctx.runMutation).toHaveBeenCalledTimes(3);
+    expect(ctx.runMutation).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        userId: "user_paid",
+        event: "ai.opus_fallback",
+        metadata: expect.objectContaining({
+          actionType: "summarize",
+        }),
+      })
+    );
+  });
+
+  it("free user requesting forceOpus falls back to Sonnet (defense-in-depth)", async () => {
+    const { callAnthropicApi } = await import("../ai");
+    const freeUser = { _id: "user_free", tier: "free" };
+    const ctx = createMockActionCtx({ identity: mockIdentity, user: freeUser });
+
+    let callCount = 0;
+    ctx.runQuery.mockImplementation(async (_ref: unknown, _args: unknown) => {
+      callCount++;
+      if (callCount === 1) return freeUser;
+      return 0;
+    });
+
+    const handler = getHandler(callAnthropicApi);
+    const result = await handler(ctx, { ...defaultArgs, forceOpus: true });
+
+    expect(result.result).toBe("Mock AI response");
+    expect(result.model).toBe("claude-sonnet-4-5-20250929"); // Never gives Opus to free user
+    expect(result.opusFallback).toBe(false); // No fallback occurred (never attempted Opus for free user)
+
+    // Should NOT log ai.opus_used event for free user (defense-in-depth)
+    const opusUsedCalls = ctx.runMutation.mock.calls.filter(
+      (call: unknown[]) => (call[1] as { event?: string })?.event === "ai.opus_used"
+    );
+    expect(opusUsedCalls).toHaveLength(0);
   });
 });

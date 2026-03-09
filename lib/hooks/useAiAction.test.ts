@@ -6,7 +6,7 @@ import { useAiAction } from "./useAiAction";
 
 const { mockCallAi, mockToast } = vi.hoisted(() => ({
   mockCallAi: vi.fn(),
-  mockToast: { success: vi.fn(), error: vi.fn() },
+  mockToast: { success: vi.fn(), error: vi.fn(), warning: vi.fn() },
 }));
 
 vi.mock("convex/react", () => ({
@@ -269,6 +269,123 @@ describe("useAiAction", () => {
       actionType: "translate",
       content: "content",
       targetLanguage: "en",
+      forceOpus: false,
     });
+  });
+
+  // Story 9.2: forceOpus tests
+  it("passes forceOpus parameter to Convex action", async () => {
+    mockCallAi.mockResolvedValue({
+      result: "Result",
+      model: "claude-opus-4-6",
+      inputTokens: 10,
+      outputTokens: 5,
+    });
+
+    act(() => {
+      root = createRoot(container);
+      root.render(React.createElement(TestComponent));
+    });
+
+    await act(async () => {
+      await hookResult.executeAction("summarize", "content", undefined, true);
+    });
+
+    expect(mockCallAi).toHaveBeenCalledWith({
+      actionType: "summarize",
+      content: "content",
+      targetLanguage: undefined,
+      forceOpus: true,
+    });
+  });
+
+  it("defaults forceOpus to false when not specified", async () => {
+    mockCallAi.mockResolvedValue({
+      result: "Result",
+      model: "claude-sonnet",
+      inputTokens: 10,
+      outputTokens: 5,
+    });
+
+    act(() => {
+      root = createRoot(container);
+      root.render(React.createElement(TestComponent));
+    });
+
+    await act(async () => {
+      await hookResult.executeAction("summarize", "content");
+    });
+
+    expect(mockCallAi).toHaveBeenCalledWith({
+      actionType: "summarize",
+      content: "content",
+      targetLanguage: undefined,
+      forceOpus: false,
+    });
+  });
+
+  it("shows fallback toast when response includes opusFallback=true", async () => {
+    mockCallAi.mockResolvedValue({
+      result: "Result",
+      model: "claude-sonnet",
+      inputTokens: 10,
+      outputTokens: 5,
+      opusFallback: true,
+    });
+
+    act(() => {
+      root = createRoot(container);
+      root.render(React.createElement(TestComponent));
+    });
+
+    await act(async () => {
+      await hookResult.executeAction("summarize", "content", undefined, true);
+    });
+
+    expect(mockToast.success).not.toHaveBeenCalled(); // Should NOT show success toast
+    expect(mockToast.warning).toHaveBeenCalledWith("מכסת Opus היומית נוצלה, משתמש ב-Sonnet");
+  });
+
+  it("shows success toast when response has opusFallback=false or undefined", async () => {
+    mockCallAi.mockResolvedValue({
+      result: "Result",
+      model: "claude-opus-4-6",
+      inputTokens: 10,
+      outputTokens: 5,
+      opusFallback: false,
+    });
+
+    act(() => {
+      root = createRoot(container);
+      root.render(React.createElement(TestComponent));
+    });
+
+    await act(async () => {
+      await hookResult.executeAction("summarize", "content", undefined, true);
+    });
+
+    expect(mockToast.success).toHaveBeenCalledWith("AI סיים לעבד");
+    expect(mockToast.warning).not.toHaveBeenCalled();
+  });
+
+  it("stores opusFallback flag in result for application use", async () => {
+    mockCallAi.mockResolvedValue({
+      result: "Result",
+      model: "claude-sonnet",
+      inputTokens: 10,
+      outputTokens: 5,
+      opusFallback: true,
+    });
+
+    act(() => {
+      root = createRoot(container);
+      root.render(React.createElement(TestComponent));
+    });
+
+    await act(async () => {
+      await hookResult.executeAction("summarize", "content", undefined, true);
+    });
+
+    expect(hookResult.result?.opusFallback).toBe(true);
   });
 });

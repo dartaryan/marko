@@ -18,8 +18,13 @@ export const MODEL_IDS: Record<AiModel, string> = {
  */
 export function getModelForAction(
   actionType: AiActionType,
-  _userTier: "free" | "paid"
+  userTier: "free" | "paid",
+  forceOpus: boolean = false
 ): string {
+  // Defense-in-depth: Only allow Opus for paid users, even if forceOpus is true
+  if (forceOpus && userTier === "paid") {
+    return MODEL_IDS.opus;
+  }
   // Phase 1: All user-facing actions use Sonnet
   // Classification/internal tasks (future) would use Haiku
   // Opus is Phase 2, paid tier only — returns Sonnet for now

@@ -3,7 +3,7 @@ import { action } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { ConvexError, v } from "convex/values";
 import { requireAuth } from "./lib/authorization";
-import { FREE_MONTHLY_AI_LIMIT } from "./lib/tierLimits";
+import { FREE_MONTHLY_AI_LIMIT, PAID_DAILY_OPUS_LIMIT } from "./lib/tierLimits";
 import { getModelForAction, getTokenCostForModel } from "./modelRouter";
 import { getSystemPrompt } from "./prompts";
 
@@ -33,6 +33,7 @@ export const callAnthropicApi = action({
     ),
     content: v.string(),
     targetLanguage: v.optional(v.union(v.literal("he"), v.literal("en"))),
+    forceOpus: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     // 1. Auth verification (requireTier() excluded — it needs QueryCtx/MutationCtx,
@@ -73,11 +74,24 @@ export const callAnthropicApi = action({
       }
     }
 
+    // 3.5. Check Opus daily limit for paid users requesting forceOpus
+    let opusFallback = false;
+    if (args.forceOpus && user.tier === "paid") {
+      const dailyOpusCount = await ctx.runQuery(
+        internal.usage.getDailyOpusUsageCount,
+        { userId: user._id }
+      );
+      if (dailyOpusCount >= PAID_DAILY_OPUS_LIMIT) {
+        opusFallback = true; // Will use Sonnet instead
+      }
+    }
+
     // 4. Sanitize input
     const sanitizedContent = sanitizeInput(args.content);
 
-    // 5. Select model
-    const modelId = getModelForAction(args.actionType, user.tier);
+    // 5. Select model — pass effective forceOpus (false if fallback or free user)
+    const effectiveForceOpus = args.forceOpus === true && user.tier === "paid" && !opusFallback;
+    const modelId = getModelForAction(args.actionType, user.tier, effectiveForceOpus);
 
     // 6. Build prompt
     const systemPrompt = getSystemPrompt(args.actionType);
@@ -145,12 +159,30 @@ export const callAnthropicApi = action({
       metadata: { model: modelId, actionType: args.actionType },
     });
 
+    // 9.5. Log Opus-specific events
+    if (effectiveForceOpus) {
+      await ctx.runMutation(internal.analytics.logEvent, {
+        userId: user._id,
+        event: "ai.opus_used",
+        metadata: { actionType: args.actionType },
+      });
+    }
+
+    if (opusFallback) {
+      await ctx.runMutation(internal.analytics.logEvent, {
+        userId: user._id,
+        event: "ai.opus_fallback",
+        metadata: { actionType: args.actionType },
+      });
+    }
+
     // 10. Return result
     return {
       result,
       model: modelId,
       inputTokens,
       outputTokens,
+      opusFallback,
     };
   },
 });

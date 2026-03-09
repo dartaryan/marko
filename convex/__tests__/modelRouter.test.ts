@@ -40,6 +40,31 @@ describe("getModelForAction", () => {
     expect(getModelForAction("summarize", "paid")).toBe(MODEL_IDS.sonnet);
     expect(getModelForAction("translate", "paid")).toBe(MODEL_IDS.sonnet);
   });
+
+  // Story 9.2: forceOpus tests
+  it("returns Opus when forceOpus=true and user tier is paid", () => {
+    expect(getModelForAction("summarize", "paid", true)).toBe(MODEL_IDS.opus);
+    expect(getModelForAction("translate", "paid", true)).toBe(MODEL_IDS.opus);
+    expect(getModelForAction("extractActions", "paid", true)).toBe(MODEL_IDS.opus);
+    expect(getModelForAction("improveWriting", "paid", true)).toBe(MODEL_IDS.opus);
+  });
+
+  it("ignores forceOpus=true for free users (defense-in-depth)", () => {
+    expect(getModelForAction("summarize", "free", true)).toBe(MODEL_IDS.sonnet);
+    expect(getModelForAction("translate", "free", true)).toBe(MODEL_IDS.sonnet);
+    expect(getModelForAction("extractActions", "free", true)).toBe(MODEL_IDS.sonnet);
+    expect(getModelForAction("improveWriting", "free", true)).toBe(MODEL_IDS.sonnet);
+  });
+
+  it("returns Sonnet for paid user when forceOpus=false", () => {
+    expect(getModelForAction("summarize", "paid", false)).toBe(MODEL_IDS.sonnet);
+    expect(getModelForAction("translate", "paid", false)).toBe(MODEL_IDS.sonnet);
+  });
+
+  it("defaults to forceOpus=false when not specified", () => {
+    expect(getModelForAction("summarize", "paid")).toBe(MODEL_IDS.sonnet);
+    expect(getModelForAction("summarize", "free")).toBe(MODEL_IDS.sonnet);
+  });
 });
 
 describe("getTokenCostForModel", () => {

@@ -54,6 +54,7 @@ export default function EditorPage() {
   const { track } = useAnalytics();
   useSubscriptionReturn();
   const [pendingAiAction, setPendingAiAction] = useState<AiActionType | null>(null);
+  const [pendingForceOpus, setPendingForceOpus] = useState(false);
   const isAiUnavailable = aiErrorCode === 'AI_UNAVAILABLE';
 
   // Track login once per browser session (fire-and-forget; skips if unauthenticated)
@@ -74,21 +75,22 @@ export default function EditorPage() {
   }, [aiErrorCode, clearAiResult]);
 
   const runAiAction = useCallback(
-    async (actionType: AiActionType) => {
+    async (actionType: AiActionType, forceOpus: boolean = false) => {
       const targetLanguage = actionType === 'translate' ? 'en' : undefined;
-      await executeAction(actionType, content, targetLanguage);
+      await executeAction(actionType, content, targetLanguage, forceOpus);
       track("ai.action_completed", { actionType });
     },
     [executeAction, content, track]
   );
 
   const handleAiAction = useCallback(
-    (actionType: AiActionType) => {
+    (actionType: AiActionType, forceOpus: boolean = false) => {
       if (needsDisclosure) {
         setPendingAiAction(actionType);
+        setPendingForceOpus(forceOpus);
         return;
       }
-      void runAiAction(actionType);
+      void runAiAction(actionType, forceOpus);
     },
     [needsDisclosure, runAiAction]
   );
@@ -96,13 +98,15 @@ export default function EditorPage() {
   const handleDisclosureAccept = useCallback(() => {
     acceptDisclosure();
     if (pendingAiAction) {
-      void runAiAction(pendingAiAction);
+      void runAiAction(pendingAiAction, pendingForceOpus);
       setPendingAiAction(null);
+      setPendingForceOpus(false);
     }
-  }, [acceptDisclosure, pendingAiAction, runAiAction]);
+  }, [acceptDisclosure, pendingAiAction, pendingForceOpus, runAiAction]);
 
   const handleDisclosureCancel = useCallback(() => {
     setPendingAiAction(null);
+    setPendingForceOpus(false);
   }, []);
 
   const handleAiAccept = useCallback(

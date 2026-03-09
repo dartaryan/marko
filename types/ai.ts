@@ -10,6 +10,7 @@ export interface AiRequestArgs {
   actionType: AiActionType;
   content: string;
   targetLanguage?: "he" | "en";
+  forceOpus?: boolean;
 }
 
 export interface AiResponse {
@@ -17,4 +18,5 @@ export interface AiResponse {
   model: string;
   inputTokens: number;
   outputTokens: number;
+  opusFallback?: boolean;
 }

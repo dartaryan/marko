@@ -1,6 +1,6 @@
 # Story 9.2: Opus Access & Force-Opus Toggle
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -22,48 +22,48 @@ so that I get maximum AI quality when I need it.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Add daily Opus usage tracking to `convex/usage.ts` (AC: #2, #4)
-  - [ ] Add `getDailyOpusUsageCount` internalQuery — counts today's aiUsage records where model = Opus model ID for given userId
-  - [ ] Add `getMyDailyOpusUsage` public query — returns `{ count, limit }` for current user's daily Opus usage (analogous to `getMyMonthlyUsage`)
-  - [ ] Add helper `getStartOfDay()` function for UTC day boundary calculation
-- [ ] Task 2: Update `convex/modelRouter.ts` to support force-Opus model selection (AC: #3)
-  - [ ] Update `getModelForAction()` to accept `forceOpus: boolean` parameter
-  - [ ] When `forceOpus === true` AND `userTier === "paid"`, return `MODEL_IDS.opus`
-  - [ ] When `forceOpus === true` AND `userTier === "free"`, ignore forceOpus (return Sonnet) — defense-in-depth
-  - [ ] Default behavior (forceOpus false): continue returning Sonnet for all actions
-- [ ] Task 3: Update `convex/ai.ts` to handle Opus daily limits and forceOpus (AC: #1, #2, #3, #4, #5)
-  - [ ] Add `forceOpus: v.optional(v.boolean())` to `callAnthropicApi` args
-  - [ ] For paid users: skip monthly limit check (unlimited Sonnet)
-  - [ ] When `forceOpus` is true and user is paid: check daily Opus count via `getDailyOpusUsageCount`
-  - [ ] If daily Opus limit reached: fall back to Sonnet, include `opusFallback: true` in response
-  - [ ] Pass `forceOpus` to `getModelForAction()` for model selection
-  - [ ] Log analytics event `"ai.opus_used"` when Opus is selected
-  - [ ] Log analytics event `"ai.opus_fallback"` when Opus falls back to Sonnet
-- [ ] Task 4: Update `types/ai.ts` to include forceOpus in request/response types (AC: #3, #5)
-  - [ ] Add `forceOpus?: boolean` to `AiRequestArgs`
-  - [ ] Add `opusFallback?: boolean` to `AiResponse`
-- [ ] Task 5: Update `lib/hooks/useAiAction.ts` to pass forceOpus parameter (AC: #3)
-  - [ ] Add `forceOpus` parameter to `executeAction()` function signature
-  - [ ] Pass `forceOpus` through to the Convex action call
-  - [ ] When response includes `opusFallback: true`, show Hebrew toast: "מכסת Opus היומית נוצלה, משתמש ב-Sonnet"
-- [ ] Task 6: Add "Deep Analysis" toggle to `components/ai/AiCommandPalette.tsx` (AC: #3, #6, #7)
-  - [ ] Add `forceOpus` state (boolean, default false) within the palette
-  - [ ] Query `api.usage.getMyDailyOpusUsage` for paid users
-  - [ ] Render toggle row ONLY when user tier is "paid" (use `useCapabilities` hook)
-  - [ ] Toggle label: "ניתוח מעמיק" (Deep Analysis) with remaining count badge (e.g., "3/5")
-  - [ ] Pass `forceOpus` state to `onAction` callback
-  - [ ] Disable toggle when daily Opus is exhausted (show "0/5" in muted style)
-  - [ ] Reset `forceOpus` to false when palette closes
-- [ ] Task 7: Update `app/editor/page.tsx` to wire forceOpus through the AI flow (AC: #3, #5)
-  - [ ] Update `AiCommandPalette` `onAction` callback to receive `forceOpus` parameter
-  - [ ] Pass `forceOpus` to `executeAction()` in `runAiAction`
-  - [ ] Handle `opusFallback` in response (toast is handled in the hook)
-- [ ] Task 8: Write tests (AC: all)
-  - [ ] `convex/__tests__/usage.test.ts` — test `getDailyOpusUsageCount` and `getMyDailyOpusUsage`
-  - [ ] `convex/__tests__/modelRouter.test.ts` — update tests for `forceOpus` parameter
-  - [ ] `convex/__tests__/ai.test.ts` — test paid user unlimited Sonnet, Opus daily limit, fallback behavior
-  - [ ] `components/ai/AiCommandPalette.test.tsx` — test toggle visibility per tier, toggle interaction, remaining count
-  - [ ] `lib/hooks/useAiAction.test.ts` — test forceOpus passthrough, fallback toast
+- [x] Task 1: Add daily Opus usage tracking to `convex/usage.ts` (AC: #2, #4)
+  - [x] Add `getDailyOpusUsageCount` internalQuery — counts today's aiUsage records where model = Opus model ID for given userId
+  - [x] Add `getMyDailyOpusUsage` public query — returns `{ count, limit }` for current user's daily Opus usage (analogous to `getMyMonthlyUsage`)
+  - [x] Add helper `getStartOfDay()` function for UTC day boundary calculation
+- [x] Task 2: Update `convex/modelRouter.ts` to support force-Opus model selection (AC: #3)
+  - [x] Update `getModelForAction()` to accept `forceOpus: boolean` parameter
+  - [x] When `forceOpus === true` AND `userTier === "paid"`, return `MODEL_IDS.opus`
+  - [x] When `forceOpus === true` AND `userTier === "free"`, ignore forceOpus (return Sonnet) — defense-in-depth
+  - [x] Default behavior (forceOpus false): continue returning Sonnet for all actions
+- [x] Task 3: Update `convex/ai.ts` to handle Opus daily limits and forceOpus (AC: #1, #2, #3, #4, #5)
+  - [x] Add `forceOpus: v.optional(v.boolean())` to `callAnthropicApi` args
+  - [x] For paid users: skip monthly limit check (unlimited Sonnet)
+  - [x] When `forceOpus` is true and user is paid: check daily Opus count via `getDailyOpusUsageCount`
+  - [x] If daily Opus limit reached: fall back to Sonnet, include `opusFallback: true` in response
+  - [x] Pass `forceOpus` to `getModelForAction()` for model selection
+  - [x] Log analytics event `"ai.opus_used"` when Opus is selected
+  - [x] Log analytics event `"ai.opus_fallback"` when Opus falls back to Sonnet
+- [x] Task 4: Update `types/ai.ts` to include forceOpus in request/response types (AC: #3, #5)
+  - [x] Add `forceOpus?: boolean` to `AiRequestArgs`
+  - [x] Add `opusFallback?: boolean` to `AiResponse`
+- [x] Task 5: Update `lib/hooks/useAiAction.ts` to pass forceOpus parameter (AC: #3)
+  - [x] Add `forceOpus` parameter to `executeAction()` function signature
+  - [x] Pass `forceOpus` through to the Convex action call
+  - [x] When response includes `opusFallback: true`, show Hebrew toast: "מכסת Opus היומית נוצלה, משתמש ב-Sonnet"
+- [x] Task 6: Add "Deep Analysis" toggle to `components/ai/AiCommandPalette.tsx` (AC: #3, #6, #7)
+  - [x] Add `forceOpus` state (boolean, default false) within the palette
+  - [x] Query `api.usage.getMyDailyOpusUsage` for paid users
+  - [x] Render toggle row ONLY when user tier is "paid" (use `useCapabilities` hook)
+  - [x] Toggle label: "ניתוח מעמיק" (Deep Analysis) with remaining count badge (e.g., "3/5")
+  - [x] Pass `forceOpus` state to `onAction` callback
+  - [x] Disable toggle when daily Opus is exhausted (show "0/5" in muted style)
+  - [x] Reset `forceOpus` to false when palette closes
+- [x] Task 7: Update `app/editor/page.tsx` to wire forceOpus through the AI flow (AC: #3, #5)
+  - [x] Update `AiCommandPalette` `onAction` callback to receive `forceOpus` parameter
+  - [x] Pass `forceOpus` to `executeAction()` in `runAiAction`
+  - [x] Handle `opusFallback` in response (toast is handled in the hook)
+- [x] Task 8: Write tests (AC: all)
+  - [x] `convex/__tests__/usage.test.ts` — test `getDailyOpusUsageCount` and `getMyDailyOpusUsage`
+  - [x] `convex/__tests__/modelRouter.test.ts` — update tests for `forceOpus` parameter
+  - [x] `convex/__tests__/ai.test.ts` — test paid user unlimited Sonnet, Opus daily limit, fallback behavior
+  - [x] `components/ai/AiCommandPalette.test.tsx` — test toggle visibility per tier, toggle interaction, remaining count
+  - [x] `lib/hooks/useAiAction.test.ts` — test forceOpus passthrough, fallback toast
 
 ## Dev Notes
 
@@ -340,9 +340,66 @@ Recent commit patterns:
 ## Dev Agent Record
 
 ### Agent Model Used
+Claude Haiku 4.5 (claude-haiku-4-5-20251001)
 
 ### Debug Log References
+- Implementation followed red-green-refactor cycle
+- All tests added and passing
+- No blockers encountered during implementation
 
 ### Completion Notes List
+✅ **Story 9.2: Opus Access & Force-Opus Toggle - COMPLETE**
+
+Implemented full Opus access with daily limits for paid users:
+1. Added daily Opus usage tracking (getDailyOpusUsageCount, getMyDailyOpusUsage queries)
+2. Updated model router to support forceOpus parameter with defense-in-depth (free users always get Sonnet)
+3. Enhanced AI action handler with daily Opus limit checks and fallback to Sonnet when limit reached
+4. Updated type definitions for forceOpus request and opusFallback response
+5. Wired forceOpus through entire AI flow: UI → hook → action
+6. Added "Deep Analysis" toggle in AiCommandPalette (visible only to paid users)
+7. Comprehensive test coverage across all layers:
+   - Convex backend: usage queries, model router, AI action limits
+   - React components: toggle visibility, interaction, fallback handling
+   - Hooks: parameter passthrough, toast notifications
+8. All 7 acceptance criteria satisfied:
+   - AC #1: Unlimited Sonnet for paid users ✓
+   - AC #2: Daily Opus allocation tracked ✓
+   - AC #3: Force-Opus toggle forces Opus ✓
+   - AC #4: Opus usage deducted from daily allocation ✓
+   - AC #5: Fallback to Sonnet with Hebrew notification when exhausted ✓
+   - AC #6: Toggle hidden from free users ✓
+   - AC #7: Toggle visible to paid users with remaining count ✓
+
+### Senior Developer Review (AI)
+
+**Review Date:** 2026-03-09
+**Reviewer Model:** Claude Opus 4.6 (claude-opus-4-6[1m])
+**Review Outcome:** Changes Requested → All Fixed
+
+**Issues Found:** 1 High, 3 Medium, 3 Low — All resolved
+
+**Action Items (all resolved):**
+- [x] [HIGH] Fix `ai.opus_used` analytics event incorrectly logged for free users with forceOpus=true (convex/ai.ts:93)
+- [x] [MED] Replace hardcoded model ID string in usage.ts with MODEL_IDS.opus import (convex/usage.ts:98,126)
+- [x] [MED] Toggle badge shows used/total instead of remaining/total per AC #7 spec (components/ai/AiCommandPalette.tsx:163)
+- [x] [MED] Toggle disabled logic doesn't handle negative remaining or loading state (components/ai/AiCommandPalette.tsx:151)
+- [x] [LOW] Fix misleading test description "returns 0/5 for free user" (convex/__tests__/usage.test.ts:644)
+- [x] [LOW] Reset pendingForceOpus in handleDisclosureCancel (app/editor/page.tsx:108)
+- [x] [LOW] Muted style check also uses === 0 instead of <= 0 (components/ai/AiCommandPalette.tsx:159)
+
+### Change Log
+- 2026-03-09: Code review fixes — 7 issues resolved (1 HIGH analytics bug, 3 MEDIUM UX/DRY fixes, 3 LOW cleanups)
 
 ### File List
+- convex/usage.ts: Added getStartOfDay(), getDailyOpusUsageCount, getMyDailyOpusUsage; import MODEL_IDS
+- convex/modelRouter.ts: Updated getModelForAction() to accept forceOpus parameter
+- convex/ai.ts: Added forceOpus arg handling, daily Opus limit checks, analytics events; fixed effectiveForceOpus for free users
+- types/ai.ts: Added forceOpus to AiRequestArgs, opusFallback to AiResponse
+- lib/hooks/useAiAction.ts: Added forceOpus parameter, fallback toast handling
+- components/ai/AiCommandPalette.tsx: Added Deep Analysis toggle for paid users; fixed remaining count display and disabled logic
+- app/editor/page.tsx: Wired forceOpus through AI action flow; reset pendingForceOpus on cancel
+- convex/__tests__/usage.test.ts: Tests for daily Opus usage queries; fixed test description
+- convex/__tests__/modelRouter.test.ts: Tests for forceOpus parameter handling
+- convex/__tests__/ai.test.ts: Tests for Opus daily limits and fallback behavior; added free user analytics assertion
+- components/ai/AiCommandPalette.test.tsx: Tests for toggle UI and interactions; updated for remaining count display
+- lib/hooks/useAiAction.test.ts: Tests for forceOpus passthrough and fallback toast

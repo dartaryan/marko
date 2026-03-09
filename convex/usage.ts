@@ -1,10 +1,16 @@
 import { v } from "convex/values";
 import { internalMutation, internalQuery, query } from "./_generated/server";
-import { FREE_MONTHLY_AI_LIMIT } from "./lib/tierLimits";
+import { FREE_MONTHLY_AI_LIMIT, PAID_DAILY_OPUS_LIMIT } from "./lib/tierLimits";
+import { MODEL_IDS } from "./modelRouter";
 
 function getStartOfMonth(): number {
   const now = new Date();
   return new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+}
+
+function getStartOfDay(): number {
+  const now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
 }
 
 function roundCost(value: number): number {
@@ -71,6 +77,57 @@ export const getMyMonthlyUsage = query({
     return {
       count: records.length,
       limit: isPaid ? null : FREE_MONTHLY_AI_LIMIT,
+    };
+  },
+});
+
+export const getDailyOpusUsageCount = internalQuery({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const startOfDay = getStartOfDay();
+
+    const records = await ctx.db
+      .query("aiUsage")
+      .withIndex("by_userId_createdAt", (q) =>
+        q.eq("userId", args.userId).gte("createdAt", startOfDay)
+      )
+      .collect();
+
+    // Filter for Opus model specifically
+    return records.filter((r) => r.model === MODEL_IDS.opus).length;
+  },
+});
+
+export const getMyDailyOpusUsage = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return { count: 0, limit: 0 };
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_clerkId", (q) => q.eq("clerkId", identity.subject))
+      .unique();
+
+    if (!user) return { count: 0, limit: 0 };
+
+    const isPaid = user.tier === "paid";
+    if (!isPaid) return { count: 0, limit: 0 };
+
+    const startOfDay = getStartOfDay();
+    const records = await ctx.db
+      .query("aiUsage")
+      .withIndex("by_userId_createdAt", (q) =>
+        q.eq("userId", user._id).gte("createdAt", startOfDay)
+      )
+      .collect();
+
+    const opusCount = records.filter((r) => r.model === MODEL_IDS.opus).length;
+    return {
+      count: opusCount,
+      limit: PAID_DAILY_OPUS_LIMIT,
     };
   },
 });

@@ -4,6 +4,7 @@ import { useQuery } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { SignInButton } from "@clerk/nextjs";
 import { FileText, Languages, ListChecks, Sparkles } from "lucide-react";
+import { useState } from "react";
 import {
   CommandDialog,
   CommandInput,
@@ -13,7 +14,9 @@ import {
   CommandEmpty,
 } from "@/components/ui/command";
 import { useCurrentUser } from "@/lib/hooks/useCurrentUser";
+import { useCapabilities } from "@/lib/hooks/useCapabilities";
 import { UpgradePrompt } from "@/components/auth/UpgradePrompt";
+import { cn } from "@/lib/utils";
 import type { AiActionType } from "@/types/ai";
 
 const AI_ACTIONS: {
@@ -30,7 +33,7 @@ const AI_ACTIONS: {
 interface AiCommandPaletteProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAction: (actionType: AiActionType) => void;
+  onAction: (actionType: AiActionType, forceOpus: boolean) => void;
 }
 
 export function AiCommandPalette({
@@ -39,9 +42,17 @@ export function AiCommandPalette({
   onAction,
 }: AiCommandPaletteProps) {
   const { isAuthenticated, isLoading: authLoading } = useCurrentUser();
+  const { capabilities } = useCapabilities();
+  const [forceOpus, setForceOpus] = useState(false);
+
   const usage = useQuery(
     api.usage.getMyMonthlyUsage,
     isAuthenticated ? {} : "skip"
+  );
+
+  const opusUsage = useQuery(
+    api.usage.getMyDailyOpusUsage,
+    isAuthenticated && capabilities.canUseOpus ? {} : "skip"
   );
 
   const isUsageLoading = isAuthenticated && usage === undefined;
@@ -55,15 +66,28 @@ export function AiCommandPalette({
       ? usage.limit - usage.count
       : null;
 
+  const opusRemaining =
+    opusUsage !== undefined && capabilities.canUseOpus
+      ? opusUsage.limit - opusUsage.count
+      : null;
+
   function handleAction(actionType: AiActionType) {
-    onAction(actionType);
+    onAction(actionType, forceOpus);
     onOpenChange(false);
+  }
+
+  // Reset forceOpus when palette closes
+  function handleOpenChange(newOpen: boolean) {
+    if (!newOpen) {
+      setForceOpus(false);
+    }
+    onOpenChange(newOpen);
   }
 
   return (
     <CommandDialog
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={handleOpenChange}
       title="פעולות AI"
       description="בחר פעולת AI לביצוע על המסמך"
       showCloseButton={false}
@@ -111,6 +135,34 @@ export function AiCommandPalette({
                 </CommandItem>
               ))}
             </CommandGroup>
+          )}
+
+          {isAuthenticated && capabilities.canUseOpus && (
+            <div
+              className="flex items-center justify-between border-t border-border px-4 py-2"
+              dir="rtl"
+              data-testid="opus-toggle"
+            >
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={forceOpus}
+                  onChange={(e) => setForceOpus(e.target.checked)}
+                  disabled={opusRemaining === null || opusRemaining <= 0}
+                  className="rounded"
+                  aria-label="ניתוח מעמיק — שימוש במודל Opus"
+                />
+                <span>ניתוח מעמיק</span>
+              </label>
+              <span
+                className={cn(
+                  "text-xs",
+                  opusRemaining === null || opusRemaining <= 0 ? "text-muted-foreground" : "text-foreground"
+                )}
+              >
+                {opusRemaining ?? 0}/{opusUsage?.limit ?? 5}
+              </span>
+            </div>
           )}
 
           {isAuthenticated && isAtLimit && (
