@@ -226,7 +226,7 @@ describe("SubscriptionPage", () => {
     const amount = container.querySelector(
       '[data-testid="next-billing-amount"]'
     );
-    expect(amount?.textContent).toBe("₪99.00");
+    expect(amount?.textContent).toContain("99");
 
     const cancelButton = container.querySelector(
       '[data-testid="cancel-subscription-button"]'

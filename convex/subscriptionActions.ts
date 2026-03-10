@@ -5,17 +5,17 @@ import { action } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v, ConvexError } from "convex/values";
 import { requireAuth } from "./lib/authorization";
+import { getStripeClient } from "./stripe";
 
-function getStripeClient(): Stripe {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) {
-    throw new ConvexError({
-      code: "CONFIG_ERROR",
-      message: "שגיאת הגדרות שרת",
-      messageEn: "Server configuration error: missing STRIPE_SECRET_KEY",
-    });
-  }
-  return new Stripe(key, { apiVersion: "2026-02-25.clover" });
+function wrapStripeError(err: unknown): never {
+  if (err instanceof ConvexError) throw err;
+  const message =
+    err instanceof Error ? err.message : "Unknown Stripe error";
+  throw new ConvexError({
+    code: "STRIPE_ERROR",
+    message: "שגיאה בתקשורת עם ספק התשלומים",
+    messageEn: `Payment provider error: ${message}`,
+  });
 }
 
 export const getSubscriptionDetails = action({
@@ -46,39 +46,43 @@ export const getSubscriptionDetails = action({
 
     const stripe = getStripeClient();
 
-    const stripeSub = await stripe.subscriptions.retrieve(
-      subscription.stripeSubscriptionId,
-      { expand: ["default_payment_method"] }
-    );
+    try {
+      const stripeSub = await stripe.subscriptions.retrieve(
+        subscription.stripeSubscriptionId,
+        { expand: ["default_payment_method"] }
+      );
 
-    let paymentMethodSummary: string | null = null;
-    const pm = stripeSub.default_payment_method;
-    if (pm && typeof pm === "object" && "card" in pm) {
-      const card = (pm as Stripe.PaymentMethod).card;
-      if (card) {
-        paymentMethodSummary = `${card.brand} **** ${card.last4}`;
+      let paymentMethodSummary: string | null = null;
+      const pm = stripeSub.default_payment_method;
+      if (pm && typeof pm === "object" && "card" in pm) {
+        const card = (pm as Stripe.PaymentMethod).card;
+        if (card) {
+          paymentMethodSummary = `${card.brand} **** ${card.last4}`;
+        }
       }
-    }
 
-    let nextBillingAmount: number | null = null;
-    let currency = "ils";
-    const priceItem = stripeSub.items?.data?.[0];
-    if (priceItem?.price?.unit_amount != null) {
-      nextBillingAmount = priceItem.price.unit_amount / 100;
-      currency = priceItem.price.currency || "ils";
-    }
+      let nextBillingAmount: number | null = null;
+      let currency = "ils";
+      const priceItem = stripeSub.items?.data?.[0];
+      if (priceItem?.price?.unit_amount != null) {
+        nextBillingAmount = priceItem.price.unit_amount / 100;
+        currency = priceItem.price.currency || "ils";
+      }
 
-    return {
-      tier: user.tier,
-      subscription: {
-        status: stripeSub.status,
-        currentPeriodEnd: subscription.currentPeriodEnd,
-        cancelAtPeriodEnd: stripeSub.cancel_at_period_end,
-        paymentMethodSummary,
-        nextBillingAmount,
-        currency,
-      },
-    };
+      return {
+        tier: user.tier,
+        subscription: {
+          status: stripeSub.status,
+          currentPeriodEnd: subscription.currentPeriodEnd,
+          cancelAtPeriodEnd: stripeSub.cancel_at_period_end,
+          paymentMethodSummary,
+          nextBillingAmount,
+          currency,
+        },
+      };
+    } catch (err) {
+      wrapStripeError(err);
+    }
   },
 });
 
@@ -110,46 +114,50 @@ export const listInvoices = action({
 
     const stripe = getStripeClient();
 
-    const stripeInvoices = await stripe.invoices.list({
-      customer: subscription.stripeCustomerId,
-      limit: 20,
-    });
+    try {
+      const stripeInvoices = await stripe.invoices.list({
+        customer: subscription.stripeCustomerId,
+        limit: 20,
+      });
 
-    const receipts = await ctx.runQuery(
-      internal.receipts.getReceiptsByUserIdInternal,
-      { userId: user._id }
-    );
+      const receipts = await ctx.runQuery(
+        internal.receipts.getReceiptsByUserIdInternal,
+        { userId: user._id }
+      );
 
-    const receiptMap = new Map<
-      string,
-      { sumitPdfUrl: string; sumitDocumentUrl: string }
-    >();
-    for (const r of receipts) {
-      if (r.stripeInvoiceId && r.status === "success") {
-        receiptMap.set(r.stripeInvoiceId, {
-          sumitPdfUrl: r.sumitPdfUrl,
-          sumitDocumentUrl: r.sumitDocumentUrl,
-        });
+      const receiptMap = new Map<
+        string,
+        { sumitPdfUrl: string; sumitDocumentUrl: string }
+      >();
+      for (const r of receipts) {
+        if (r.stripeInvoiceId && r.status === "success") {
+          receiptMap.set(r.stripeInvoiceId, {
+            sumitPdfUrl: r.sumitPdfUrl,
+            sumitDocumentUrl: r.sumitDocumentUrl,
+          });
+        }
       }
+
+      const invoices = stripeInvoices.data.map((inv) => {
+        const receipt = receiptMap.get(inv.id);
+        return {
+          id: inv.id,
+          date: inv.created * 1000,
+          amountPaid: (inv.amount_paid || 0) / 100,
+          currency: inv.currency || "ils",
+          status: inv.status as string,
+          paymentIntent:
+            typeof inv.payment_intent === "string"
+              ? inv.payment_intent
+              : inv.payment_intent?.id || null,
+          receiptPdfUrl: receipt?.sumitPdfUrl || null,
+        };
+      });
+
+      return { invoices };
+    } catch (err) {
+      wrapStripeError(err);
     }
-
-    const invoices = stripeInvoices.data.map((inv) => {
-      const receipt = receiptMap.get(inv.id);
-      return {
-        id: inv.id,
-        date: inv.created * 1000,
-        amountPaid: (inv.amount_paid || 0) / 100,
-        currency: inv.currency || "ils",
-        status: inv.status as string,
-        paymentIntent:
-          typeof inv.payment_intent === "string"
-            ? inv.payment_intent
-            : inv.payment_intent?.id || null,
-        receiptPdfUrl: receipt?.sumitPdfUrl || null,
-      };
-    });
-
-    return { invoices };
   },
 });
 
@@ -185,9 +193,13 @@ export const cancelSubscription = action({
 
     const stripe = getStripeClient();
 
-    await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
-      cancel_at_period_end: true,
-    });
+    try {
+      await stripe.subscriptions.update(subscription.stripeSubscriptionId, {
+        cancel_at_period_end: true,
+      });
+    } catch (err) {
+      wrapStripeError(err);
+    }
 
     await ctx.runMutation(internal.subscriptions.updateSubscriptionStatus, {
       stripeSubscriptionId: subscription.stripeSubscriptionId,
@@ -239,7 +251,13 @@ export const retryPayment = action({
 
     const stripe = getStripeClient();
 
-    const invoice = await stripe.invoices.retrieve(args.invoiceId);
+    let invoice: Stripe.Invoice;
+    try {
+      invoice = await stripe.invoices.retrieve(args.invoiceId);
+    } catch (err) {
+      wrapStripeError(err);
+    }
+
     if (invoice.customer !== subscription.stripeCustomerId) {
       throw new ConvexError({
         code: "INVOICE_NOT_FOUND",
@@ -256,7 +274,12 @@ export const retryPayment = action({
       });
     }
 
-    const paidInvoice = await stripe.invoices.pay(args.invoiceId);
+    let paidInvoice: Stripe.Invoice;
+    try {
+      paidInvoice = await stripe.invoices.pay(args.invoiceId);
+    } catch (err) {
+      wrapStripeError(err);
+    }
 
     await ctx.runMutation(internal.analytics.logEvent, {
       userId: user._id,

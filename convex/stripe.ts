@@ -7,7 +7,7 @@ import { internal } from "./_generated/api";
 import { v, ConvexError } from "convex/values";
 import { requireAuth } from "./lib/authorization";
 
-function getStripeClient(): Stripe {
+export function getStripeClient(): Stripe {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) {
     throw new ConvexError({

@@ -16,6 +16,26 @@ interface Invoice {
   receiptPdfUrl: string | null;
 }
 
+function formatCurrency(amount: number, currency: string): string {
+  return new Intl.NumberFormat("he-IL", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(amount);
+}
+
+// Stripe invoice status "open" = payment pending/failed (maps to AC#6 "past_due" concept).
+// Stripe invoice status "uncollectible" = payment permanently failed.
+function isUnpaid(status: string): boolean {
+  return status === "open" || status === "uncollectible";
+}
+
+function getStatusLabel(status: string): string {
+  if (status === "paid") return "שולם";
+  if (status === "open") return "ממתין לתשלום";
+  if (status === "uncollectible") return "תשלום נכשל";
+  return status;
+}
+
 export function BillingHistory() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -97,15 +117,16 @@ export function BillingHistory() {
             month: "short",
             day: "numeric",
           });
-          const amount = `₪${inv.amountPaid.toFixed(2)}`;
-          const isPastDue = inv.status === "open";
+          const amount = formatCurrency(inv.amountPaid, inv.currency);
+          const unpaid = isUnpaid(inv.status);
           const isPaid = inv.status === "paid";
+          const canRetry = inv.status === "open";
 
           return (
             <div
               key={inv.id}
               className={`flex items-center justify-between p-3 rounded text-sm ${
-                isPastDue
+                unpaid
                   ? "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
                   : "bg-muted/50"
               }`}
@@ -121,12 +142,12 @@ export function BillingHistory() {
                   className={`text-xs px-2 py-0.5 rounded ${
                     isPaid
                       ? "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
-                      : isPastDue
+                      : unpaid
                         ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
                         : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  {isPaid ? "שולם" : isPastDue ? "ממתין לתשלום" : inv.status}
+                  {getStatusLabel(inv.status)}
                 </span>
 
                 {isPaid && inv.receiptPdfUrl && (
@@ -141,7 +162,7 @@ export function BillingHistory() {
                   </a>
                 )}
 
-                {isPastDue && (
+                {canRetry && (
                   <Button
                     size="sm"
                     variant="outline"

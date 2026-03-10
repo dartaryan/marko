@@ -3,10 +3,10 @@ import { ConvexError } from "convex/values";
 
 const mockSubscriptionsUpdate = vi.fn();
 
-vi.mock("stripe", () => ({
-  default: class MockStripe {
-    subscriptions = { update: mockSubscriptionsUpdate };
-  },
+vi.mock("../stripe", () => ({
+  getStripeClient: () => ({
+    subscriptions: { update: mockSubscriptionsUpdate },
+  }),
 }));
 
 vi.mock("../_generated/api", () => ({
@@ -35,11 +35,9 @@ function getHandler(fn: unknown): Function {
 
 beforeEach(() => {
   vi.clearAllMocks();
-  vi.stubEnv("STRIPE_SECRET_KEY", "sk_test_123");
 });
 
 afterEach(() => {
-  vi.unstubAllEnvs();
   vi.resetModules();
 });
 

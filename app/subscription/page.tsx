@@ -10,6 +10,13 @@ import { toast } from "sonner";
 import { BillingHistory } from "./BillingHistory";
 import { CancelModal } from "./CancelModal";
 
+function formatCurrency(amount: number, currency: string): string {
+  return new Intl.NumberFormat("he-IL", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(amount);
+}
+
 interface SubscriptionInfo {
   status: string;
   currentPeriodEnd: number;
@@ -26,6 +33,7 @@ export default function SubscriptionPage() {
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const loadDetails = useCallback(async () => {
     try {
@@ -57,6 +65,11 @@ export default function SubscriptionPage() {
       loadDetails();
     }
   }, [user, loadDetails]);
+
+  const handleCanceled = useCallback(() => {
+    loadDetails();
+    setRefreshKey((k) => k + 1);
+  }, [loadDetails]);
 
   if (isUserLoading || !user || user.tier !== "paid") {
     return (
@@ -114,7 +127,7 @@ export default function SubscriptionPage() {
 
   const amountFormatted =
     subscription.nextBillingAmount != null
-      ? `₪${subscription.nextBillingAmount.toFixed(2)}`
+      ? formatCurrency(subscription.nextBillingAmount, subscription.currency)
       : null;
 
   return (
@@ -191,13 +204,13 @@ export default function SubscriptionPage() {
           )}
         </section>
 
-        <BillingHistory />
+        <BillingHistory key={refreshKey} />
 
         <CancelModal
           open={showCancelModal}
           onOpenChange={setShowCancelModal}
           expirationDate={renewalDate}
-          onCanceled={loadDetails}
+          onCanceled={handleCanceled}
         />
 
         <div className="mt-6">
@@ -206,7 +219,7 @@ export default function SubscriptionPage() {
             onClick={() => router.push("/editor")}
             aria-label="חזור לעורך"
           >
-            ← חזור לעורך
+            → חזור לעורך
           </Button>
         </div>
       </div>

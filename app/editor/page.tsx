@@ -10,6 +10,7 @@ import { useAiAction } from '@/lib/hooks/useAiAction';
 import { useAiDisclosure } from '@/lib/hooks/useAiDisclosure';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
 import { useSubscriptionReturn } from '@/lib/hooks/useSubscriptionReturn';
+import { useSubscriptionExpiredNotification } from '@/lib/hooks/useSubscriptionExpiredNotification';
 import { Header } from '@/components/layout/Header';
 import { ColorPanel } from '@/components/theme/ColorPanel';
 import { ExportModal } from '@/components/export/ExportModal';
@@ -53,6 +54,7 @@ export default function EditorPage() {
   const { needsDisclosure, acceptDisclosure } = useAiDisclosure();
   const { track } = useAnalytics();
   useSubscriptionReturn();
+  useSubscriptionExpiredNotification();
   const [pendingAiAction, setPendingAiAction] = useState<AiActionType | null>(null);
   const [pendingForceOpus, setPendingForceOpus] = useState(false);
   const isAiUnavailable = aiErrorCode === 'AI_UNAVAILABLE';

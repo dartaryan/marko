@@ -1,6 +1,6 @@
 # Story 9.4: Subscription Management
 
-Status: review
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -382,6 +382,7 @@ Claude Opus 4.6 (1M context)
 ### Change Log
 
 - 2026-03-10: Implemented Story 9.4 — Subscription management page, billing history, cancel flow, retry payment, and comprehensive tests
+- 2026-03-11: Code review fixes — Wrapped Stripe API errors in ConvexError, extracted shared getStripeClient, added retryPayment tests (8 tests), added subscription expired notification hook, fixed currency formatting (Intl.NumberFormat), fixed RTL arrow direction, added uncollectible invoice status handling, added BillingHistory refresh after cancel
 
 ### File List
 
@@ -393,13 +394,16 @@ New files:
 - `convex/__tests__/subscriptionDetails.test.ts` — Tests for getSubscriptionDetails action
 - `convex/__tests__/listInvoices.test.ts` — Tests for listInvoices action
 - `convex/__tests__/cancelSubscription.test.ts` — Tests for cancelSubscription action
+- `convex/__tests__/retryPayment.test.ts` — Tests for retryPayment action (8 tests)
 - `app/subscription/__tests__/SubscriptionPage.test.tsx` — Component tests for subscription page
+- `lib/hooks/useSubscriptionExpiredNotification.ts` — Hebrew notification on next login after subscription expires
 
 Modified files:
 - `convex/receipts.ts` — Added `getReceiptsByUserIdInternal` internal query
-- `convex/stripe.ts` — Added console.log to `customer.subscription.deleted` handler
+- `convex/stripe.ts` — Exported `getStripeClient`, added console.log to `customer.subscription.deleted` handler
 - `components/auth/UserMenu.tsx` — Added "ניהול מנוי" menu item for paid users with useRouter
 - `components/auth/UserMenu.test.tsx` — Added `next/navigation` mock
 - `components/auth/AuthGate.test.tsx` — Added `next/navigation` mock
 - `components/auth/auth-persistence.test.tsx` — Added `next/navigation` mock
 - `components/layout/Header.test.tsx` — Added `next/navigation` mock
+- `app/editor/page.tsx` — Added `useSubscriptionExpiredNotification` hook
