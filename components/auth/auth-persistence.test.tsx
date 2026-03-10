@@ -29,6 +29,10 @@ vi.mock("@/convex/_generated/api", () => ({
   },
 }));
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+}));
+
 vi.mock("@clerk/nextjs", () => ({
   SignInButton: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="sign-in-button-wrapper">{children}</div>

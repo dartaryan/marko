@@ -4,6 +4,10 @@ import { createRoot } from "react-dom/client";
 import { act } from "react";
 import { UserMenu } from "./UserMenu";
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
+}));
+
 vi.mock("@clerk/nextjs", () => {
   const UserButton = ({ children }: { children?: React.ReactNode }) => (
     <div data-testid="clerk-user-button">{children}</div>

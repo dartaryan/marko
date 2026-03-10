@@ -83,6 +83,16 @@ export const getReceiptsByUserId = query({
   },
 });
 
+export const getReceiptsByUserIdInternal = internalQuery({
+  args: { userId: v.id("users") },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("receipts")
+      .withIndex("by_userId", (q) => q.eq("userId", args.userId))
+      .collect();
+  },
+});
+
 export const deleteByUserId = internalMutation({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {

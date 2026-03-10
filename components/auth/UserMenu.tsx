@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { UserButton } from "@clerk/nextjs";
-import { Trash2 } from "lucide-react";
+import { Trash2, CreditCard } from "lucide-react";
 import type { UserTier } from "@/types/user";
 import { DeleteAccountDialog } from "./DeleteAccountDialog";
 
@@ -12,6 +13,7 @@ interface UserMenuProps {
 
 export function UserMenu({ tier }: UserMenuProps) {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const router = useRouter();
 
   return (
     <div className="relative inline-flex items-center" data-testid="user-menu">
@@ -26,6 +28,13 @@ export function UserMenu({ tier }: UserMenuProps) {
         }}
       >
         <UserButton.MenuItems>
+          {tier === "paid" && (
+            <UserButton.Action
+              label="ניהול מנוי"
+              labelIcon={<CreditCard className="h-4 w-4" />}
+              onClick={() => router.push("/subscription")}
+            />
+          )}
           <UserButton.Action
             label="מחיקת חשבון"
             labelIcon={<Trash2 className="h-4 w-4" />}

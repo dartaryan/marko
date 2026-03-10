@@ -412,6 +412,7 @@ export const fulfillStripeWebhook = internalAction({
 
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
+        console.log("Subscription deleted:", subscription.id);
 
         await ctx.runMutation(
           internal.subscriptions.updateSubscriptionStatus,
