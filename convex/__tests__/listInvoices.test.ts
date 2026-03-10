@@ -3,7 +3,7 @@ import { ConvexError } from "convex/values";
 
 const mockInvoicesList = vi.fn();
 
-vi.mock("../stripe", () => ({
+vi.mock("../lib/stripe", () => ({
   getStripeClient: () => ({
     invoices: { list: mockInvoicesList },
   }),

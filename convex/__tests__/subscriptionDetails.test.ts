@@ -3,7 +3,7 @@ import { ConvexError } from "convex/values";
 
 const mockSubscriptionsRetrieve = vi.fn();
 
-vi.mock("../stripe", () => ({
+vi.mock("../lib/stripe", () => ({
   getStripeClient: () => ({
     subscriptions: { retrieve: mockSubscriptionsRetrieve },
   }),

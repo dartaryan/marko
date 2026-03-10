@@ -5,7 +5,7 @@ import { action } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v, ConvexError } from "convex/values";
 import { requireAuth } from "./lib/authorization";
-import { getStripeClient } from "./stripe";
+import { getStripeClient } from "./lib/stripe";
 
 function wrapStripeError(err: unknown): never {
   if (err instanceof ConvexError) throw err;
@@ -18,9 +18,31 @@ function wrapStripeError(err: unknown): never {
   });
 }
 
+interface SubscriptionDetailsResult {
+  tier: string;
+  subscription: {
+    status: string;
+    currentPeriodEnd: number;
+    cancelAtPeriodEnd: boolean;
+    paymentMethodSummary: string | null;
+    nextBillingAmount: number | null;
+    currency: string;
+  } | null;
+}
+
+interface InvoiceItem {
+  id: string;
+  date: number;
+  amountPaid: number;
+  currency: string;
+  status: string;
+  paymentIntent: string | null;
+  receiptPdfUrl: string | null;
+}
+
 export const getSubscriptionDetails = action({
   args: {},
-  handler: async (ctx) => {
+  handler: async (ctx): Promise<SubscriptionDetailsResult> => {
     const identity = await requireAuth(ctx);
 
     const user = await ctx.runQuery(internal.users.getUserByClerkId, {
@@ -41,7 +63,7 @@ export const getSubscriptionDetails = action({
     );
 
     if (!subscription) {
-      return { tier: user.tier, subscription: null };
+      return { tier: user.tier as string, subscription: null };
     }
 
     const stripe = getStripeClient();
@@ -70,10 +92,10 @@ export const getSubscriptionDetails = action({
       }
 
       return {
-        tier: user.tier,
+        tier: user.tier as string,
         subscription: {
           status: stripeSub.status,
-          currentPeriodEnd: subscription.currentPeriodEnd,
+          currentPeriodEnd: subscription.currentPeriodEnd as number,
           cancelAtPeriodEnd: stripeSub.cancel_at_period_end,
           paymentMethodSummary,
           nextBillingAmount,
@@ -88,7 +110,7 @@ export const getSubscriptionDetails = action({
 
 export const listInvoices = action({
   args: {},
-  handler: async (ctx) => {
+  handler: async (ctx): Promise<{ invoices: InvoiceItem[] }> => {
     const identity = await requireAuth(ctx);
 
     const user = await ctx.runQuery(internal.users.getUserByClerkId, {
@@ -116,7 +138,7 @@ export const listInvoices = action({
 
     try {
       const stripeInvoices = await stripe.invoices.list({
-        customer: subscription.stripeCustomerId,
+        customer: subscription.stripeCustomerId as string,
         limit: 20,
       });
 
@@ -138,8 +160,9 @@ export const listInvoices = action({
         }
       }
 
-      const invoices = stripeInvoices.data.map((inv) => {
+      const invoices: InvoiceItem[] = stripeInvoices.data.map((inv: Stripe.Invoice) => {
         const receipt = receiptMap.get(inv.id);
+        const pi = (inv as unknown as { payment_intent: string | { id: string } | null }).payment_intent;
         return {
           id: inv.id,
           date: inv.created * 1000,
@@ -147,9 +170,7 @@ export const listInvoices = action({
           currency: inv.currency || "ils",
           status: inv.status as string,
           paymentIntent:
-            typeof inv.payment_intent === "string"
-              ? inv.payment_intent
-              : inv.payment_intent?.id || null,
+            typeof pi === "string" ? pi : pi?.id || null,
           receiptPdfUrl: receipt?.sumitPdfUrl || null,
         };
       });
@@ -163,7 +184,7 @@ export const listInvoices = action({
 
 export const cancelSubscription = action({
   args: {},
-  handler: async (ctx) => {
+  handler: async (ctx): Promise<{ cancelDate: number }> => {
     const identity = await requireAuth(ctx);
 
     const user = await ctx.runQuery(internal.users.getUserByClerkId, {
@@ -213,7 +234,7 @@ export const cancelSubscription = action({
       metadata: { stripeSubscriptionId: subscription.stripeSubscriptionId },
     });
 
-    return { cancelDate: subscription.currentPeriodEnd };
+    return { cancelDate: subscription.currentPeriodEnd as number };
   },
 });
 
@@ -221,7 +242,7 @@ export const retryPayment = action({
   args: {
     invoiceId: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<{ success: boolean; status: string | null }> => {
     const identity = await requireAuth(ctx);
 
     const user = await ctx.runQuery(internal.users.getUserByClerkId, {

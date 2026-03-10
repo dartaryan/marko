@@ -26,7 +26,7 @@ vi.mock("../_generated/server", () => ({
   }),
 }));
 
-vi.mock("../stripe", () => ({
+vi.mock("../lib/stripe", () => ({
   getStripeClient: () => ({
     invoices: { retrieve: mockInvoicesRetrieve, pay: mockInvoicesPay },
   }),

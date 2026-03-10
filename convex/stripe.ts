@@ -5,25 +5,30 @@ import { action, internalAction } from "./_generated/server";
 import type { ActionCtx } from "./_generated/server";
 import { internal } from "./_generated/api";
 import { v, ConvexError } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { requireAuth } from "./lib/authorization";
+import { getStripeClient } from "./lib/stripe";
 
-export function getStripeClient(): Stripe {
-  const key = process.env.STRIPE_SECRET_KEY;
-  if (!key) {
-    throw new ConvexError({
-      code: "CONFIG_ERROR",
-      message: "שגיאת הגדרות שרת",
-      messageEn: "Server configuration error: missing STRIPE_SECRET_KEY",
-    });
-  }
-  return new Stripe(key, { apiVersion: "2026-02-25.clover" });
+// Re-export for consumers that import from this file
+export { getStripeClient } from "./lib/stripe";
+
+// Helper to safely access subscription.current_period_end across Stripe API versions
+function getSubscriptionPeriodEnd(sub: Stripe.Subscription): number {
+  return (sub as unknown as { current_period_end: number }).current_period_end;
+}
+
+// Helper to safely access invoice.subscription across Stripe API versions
+function getInvoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
+  const sub = (invoice as unknown as { subscription: string | { id: string } | null }).subscription;
+  if (!sub) return null;
+  return typeof sub === "string" ? sub : sub.id;
 }
 
 async function generateAndStoreReceipt(
   ctx: ActionCtx,
   args: {
-    userId: string;
-    subscriptionId: string | undefined;
+    userId: Id<"users">;
+    subscriptionId: Id<"subscriptions"> | undefined;
     stripeSessionId: string | undefined;
     stripeInvoiceId: string | undefined;
     amountCents: number;
@@ -81,10 +86,10 @@ async function generateAndStoreReceipt(
         subscriptionId,
         stripeSessionId,
         stripeInvoiceId,
-        sumitDocumentId: sumitResult.documentId,
-        sumitDocumentNumber: sumitResult.documentNumber,
-        sumitDocumentUrl: sumitResult.documentUrl,
-        sumitPdfUrl: sumitResult.pdfUrl,
+        sumitDocumentId: sumitResult.documentId as string,
+        sumitDocumentNumber: sumitResult.documentNumber as string,
+        sumitDocumentUrl: sumitResult.documentUrl as string,
+        sumitPdfUrl: sumitResult.pdfUrl as string,
         amount: amountIls,
         currency,
         status: "success",
@@ -159,7 +164,7 @@ async function generateAndStoreReceipt(
 
 export const createCheckoutSession = action({
   args: {},
-  handler: async (ctx) => {
+  handler: async (ctx): Promise<{ url: string }> => {
     const identity = await requireAuth(ctx);
 
     const user = await ctx.runQuery(internal.users.getUserByClerkId, {
@@ -222,7 +227,7 @@ export const createCheckoutSession = action({
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${appUrl}/editor?subscription=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}/editor?subscription=canceled`,
-      locale: "he",
+      locale: "he" as Stripe.Checkout.SessionCreateParams.Locale,
       currency: "ils",
       metadata: { convexUserId: user._id, clerkId: identity.subject },
     });
@@ -293,7 +298,7 @@ export const fulfillStripeWebhook = internalAction({
         );
 
         // Idempotency: skip creation if webhook was already processed
-        let convexSubId: string | undefined;
+        let convexSubId: Id<"subscriptions"> | undefined;
         const existingSub = await ctx.runQuery(
           internal.subscriptions.getSubscriptionByStripeId,
           { stripeSubscriptionId: subscription.id }
@@ -306,7 +311,7 @@ export const fulfillStripeWebhook = internalAction({
             stripeCustomerId: session.customer as string,
             stripeSubscriptionId: subscription.id,
             status: "active",
-            currentPeriodEnd: subscription.current_period_end * 1000,
+            currentPeriodEnd: getSubscriptionPeriodEnd(subscription) * 1000,
           });
         }
 
@@ -346,12 +351,8 @@ export const fulfillStripeWebhook = internalAction({
 
       case "invoice.paid": {
         const invoice = event.data.object as Stripe.Invoice;
-        if (!invoice.subscription) break;
-
-        const subscriptionId =
-          typeof invoice.subscription === "string"
-            ? invoice.subscription
-            : invoice.subscription.id;
+        const subscriptionId = getInvoiceSubscriptionId(invoice);
+        if (!subscriptionId) break;
 
         const subscription =
           await stripe.subscriptions.retrieve(subscriptionId);
@@ -361,7 +362,7 @@ export const fulfillStripeWebhook = internalAction({
           {
             stripeSubscriptionId: subscriptionId,
             status: "active",
-            currentPeriodEnd: subscription.current_period_end * 1000,
+            currentPeriodEnd: getSubscriptionPeriodEnd(subscription) * 1000,
           }
         );
 
@@ -393,12 +394,8 @@ export const fulfillStripeWebhook = internalAction({
 
       case "invoice.payment_failed": {
         const invoice = event.data.object as Stripe.Invoice;
-        if (!invoice.subscription) break;
-
-        const subscriptionId =
-          typeof invoice.subscription === "string"
-            ? invoice.subscription
-            : invoice.subscription.id;
+        const subscriptionId = getInvoiceSubscriptionId(invoice);
+        if (!subscriptionId) break;
 
         await ctx.runMutation(
           internal.subscriptions.updateSubscriptionStatus,
@@ -454,7 +451,7 @@ export const cancelSubscription = internalAction({
   args: {
     stripeSubscriptionId: v.string(),
   },
-  handler: async (ctx, args) => {
+  handler: async (_ctx, args) => {
     const stripe = getStripeClient();
     await stripe.subscriptions.cancel(args.stripeSubscriptionId);
   },
