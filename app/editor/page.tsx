@@ -212,7 +212,10 @@ export default function EditorPage() {
   }
 
   return (
-    <main className="flex h-screen flex-col pt-14">
+    <main
+      className="flex h-screen flex-col bg-background-subtle overflow-hidden"
+      style={{ paddingTop: 'var(--header-height)', transition: 'background-color 500ms ease' }}
+    >
       {isAiUnavailable && (
         <div
           role="alert"

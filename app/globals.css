@@ -574,14 +574,30 @@
 }
 
 .marko-panel {
-  border-radius: var(--radius-3xl);
+  border-radius: var(--radius-xl);
   box-shadow: var(--shadow-3);
   overflow: hidden;
   transition: box-shadow 0.3s ease;
 }
 
+@media (min-width: 768px) {
+  .marko-panel {
+    border-radius: var(--radius-2xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  .marko-panel {
+    border-radius: var(--radius-3xl);
+  }
+}
+
 .marko-panel:hover {
   box-shadow: var(--shadow-4);
+}
+
+.dark .marko-panel {
+  border: 1px solid var(--border);
 }
 
 .marko-panel::before {
