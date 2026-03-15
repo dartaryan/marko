@@ -23,13 +23,13 @@ export function PanelLayout({ editorPanel, previewPanel, viewMode }: PanelLayout
 
   return (
     <div
-      className="grid h-[calc(100vh-var(--header-height,3.5rem))] overflow-hidden"
+      className="grid h-[calc(100vh-var(--header-height,3.5rem))] gap-3 overflow-hidden p-3"
       style={{ gridTemplateColumns, transition }}
       aria-label="פאנל עורך ותצוגה מקדימה"
       suppressHydrationWarning
     >
       <div
-        className="flex flex-col overflow-hidden min-w-0"
+        className="marko-panel flex flex-col overflow-hidden min-w-0 bg-card"
         aria-hidden={viewMode === 'preview' || undefined}
         inert={viewMode === 'preview'}
         suppressHydrationWarning
@@ -37,7 +37,7 @@ export function PanelLayout({ editorPanel, previewPanel, viewMode }: PanelLayout
         {editorPanel}
       </div>
       <div
-        className="flex flex-col overflow-hidden min-w-0"
+        className="marko-panel flex flex-col overflow-hidden min-w-0 bg-card"
         aria-hidden={viewMode === 'editor' || undefined}
         inert={viewMode === 'editor'}
         suppressHydrationWarning

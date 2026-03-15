@@ -46,11 +46,12 @@ export function Header({
 }: HeaderProps) {
   return (
     <header
-      className="flex h-14 items-center justify-between border-b border-border px-4"
+      className="marko-header flex h-14 items-center justify-between px-4"
       aria-label="סרגל כלים של מארקו"
     >
       {/* Logo — start */}
-      <h1 className="text-base font-semibold" style={{ color: 'var(--color-h1)' }}>
+      <h1 className="flex items-center gap-2 text-base font-semibold text-[#ecfdf5]">
+        <span className="marko-logo-icon flex h-8 w-8 items-center justify-center text-sm font-bold text-emerald-900">מ</span>
         מארקו
       </h1>
 
@@ -77,8 +78,8 @@ export function Header({
           disabled={!onOpenColorPanel}
           aria-label="הגדרות צבע"
           title="הגדרות צבע"
-          className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground
-                     hover:bg-muted hover:text-foreground active:scale-[0.97] transition-colors
+          className="flex h-7 w-7 items-center justify-center rounded text-emerald-100
+                     hover:bg-white/15 hover:text-white active:scale-[0.97] transition-colors
                      disabled:opacity-50 disabled:pointer-events-none"
         >
           <Palette className="size-4" aria-hidden="true" />
@@ -90,8 +91,8 @@ export function Header({
           onClick={onLoadSample}
           aria-label="טען מסמך לדוגמה"
           title="טען מסמך לדוגמה"
-          className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground
-                     hover:bg-muted hover:text-foreground active:scale-[0.97] transition-colors"
+          className="flex h-7 w-7 items-center justify-center rounded text-emerald-100
+                     hover:bg-white/15 hover:text-white active:scale-[0.97] transition-colors"
         >
           <FileText className="size-4" aria-hidden="true" />
         </button>
@@ -100,8 +101,8 @@ export function Header({
           onClick={onClearEditor}
           aria-label="נקה עורך"
           title="נקה עורך"
-          className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground
-                     hover:bg-destructive/10 hover:text-destructive active:scale-[0.97] transition-colors"
+          className="flex h-7 w-7 items-center justify-center rounded text-emerald-100
+                     hover:bg-red-500/20 hover:text-red-300 active:scale-[0.97] transition-colors"
         >
           <Trash2 className="size-4" aria-hidden="true" />
         </button>
@@ -110,8 +111,8 @@ export function Header({
           onClick={onEnterPresentation}
           aria-label="מצב מצגת"
           title="מצב מצגת"
-          className="flex h-7 w-7 items-center justify-center rounded text-muted-foreground
-                     hover:bg-muted hover:text-foreground active:scale-[0.97] transition-colors"
+          className="flex h-7 w-7 items-center justify-center rounded text-emerald-100
+                     hover:bg-white/15 hover:text-white active:scale-[0.97] transition-colors"
         >
           <Expand className="size-4" aria-hidden="true" />
         </button>

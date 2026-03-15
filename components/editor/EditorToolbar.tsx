@@ -89,7 +89,7 @@ export function EditorToolbar({ textareaRef, onInsert, onAiClick }: EditorToolba
     <div
       role="toolbar"
       aria-label="סרגל עיצוב"
-      className="flex flex-wrap items-center gap-0.5 border-b border-border px-2 py-1"
+      className="marko-toolbar flex flex-wrap items-center gap-0.5 border-b border-border"
       onKeyDown={handleToolbarKeyDown}
     >
       {/* Group 1: Text formatting */}

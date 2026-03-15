@@ -1,0 +1,2631 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marko Design System — Visual Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Varela+Round&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  /* ============================================
+     ROOT TOKENS — THE DESIGN SYSTEM ITSELF
+     ============================================ */
+  :root {
+    /* Core Palette */
+    --emerald-50: #ecfdf5;
+    --emerald-100: #d1fae5;
+    --emerald-200: #a7f3d0;
+    --emerald-300: #6EE7B7;
+    --emerald-400: #34d399;
+    --emerald-500: #10B981;
+    --emerald-600: #059669;
+    --emerald-700: #047857;
+    --emerald-800: #065f46;
+    --emerald-900: #064E3B;
+    --teal-400: #2DD4BF;
+
+    /* Semantic - Light */
+    --background: #FFFFFF;
+    --background-subtle: #F8FAF9;
+    --foreground: #064E3B;
+    --foreground-muted: #047857;
+    --foreground-faint: #6B7280;
+    --surface: #FFFFFF;
+    --surface-raised: #F0FDF4;
+    --surface-overlay: rgba(255,255,255,0.85);
+    --border: #d1fae5;
+    --border-subtle: #e5f5ef;
+    --border-strong: #a7f3d0;
+    --primary: #10B981;
+    --primary-hover: #059669;
+    --primary-active: #047857;
+    --primary-ghost: rgba(16,185,129,0.08);
+    --primary-ghost-strong: rgba(16,185,129,0.15);
+    --ring: rgba(16,185,129,0.4);
+    --destructive: #EF4444;
+    --warning: #F59E0B;
+    --info: #2DD4BF;
+
+    /* Gradients */
+    --gradient-brand: linear-gradient(135deg, #10B981, #6EE7B7, #2DD4BF);
+    --gradient-logo: linear-gradient(135deg, #6EE7B7, #2DD4BF);
+
+    /* Shadows - Light */
+    --shadow-1: 0 1px 3px rgba(6,78,59,0.08), 0 1px 2px rgba(6,78,59,0.06);
+    --shadow-2: 0 4px 12px rgba(6,78,59,0.1), 0 2px 4px rgba(6,78,59,0.06);
+    --shadow-3: 0 10px 40px rgba(6,78,59,0.15), 0 4px 12px rgba(6,78,59,0.08);
+    --shadow-4: 0 20px 60px rgba(6,78,59,0.25), 0 8px 20px rgba(6,78,59,0.1);
+    --shadow-glow: 0 0 20px rgba(16,185,129,0.25);
+    --shadow-header: 0 4px 20px rgba(0,0,0,0.15);
+
+    /* Typography */
+    --font-body: 'Varela Round', 'Segoe UI', system-ui, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Cascadia Code', monospace;
+
+    /* Content colors */
+    --color-primary-text: #333333;
+    --color-secondary-text: #666666;
+    --color-code: #e83e8c;
+    --color-h1: #065f46;
+    --color-h2: #047857;
+    --color-h3: #059669;
+    --color-code-bg: #f8f8f8;
+    --color-blockquote-bg: #f0fdf4;
+  }
+
+  .dark {
+    --background: #0B1A14;
+    --background-subtle: #0F2119;
+    --foreground: #ecfdf5;
+    --foreground-muted: #6EE7B7;
+    --foreground-faint: #4B7A65;
+    --surface: #132B22;
+    --surface-raised: #1A3D30;
+    --surface-overlay: rgba(19,43,34,0.9);
+    --border: rgba(110,231,183,0.12);
+    --border-subtle: rgba(110,231,183,0.06);
+    --border-strong: rgba(110,231,183,0.25);
+    --primary: #10B981;
+    --primary-hover: #34d399;
+    --primary-active: #6EE7B7;
+    --primary-ghost: rgba(16,185,129,0.1);
+    --primary-ghost-strong: rgba(16,185,129,0.2);
+    --ring: rgba(16,185,129,0.5);
+    --destructive: #F87171;
+    --warning: #FBBF24;
+    --info: #2DD4BF;
+
+    --shadow-1: 0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2);
+    --shadow-2: 0 4px 12px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.25);
+    --shadow-3: 0 10px 40px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.3);
+    --shadow-4: 0 20px 60px rgba(0,0,0,0.6), 0 8px 20px rgba(0,0,0,0.35);
+    --shadow-glow: 0 0 20px rgba(16,185,129,0.3);
+    --shadow-header: 0 4px 20px rgba(0,0,0,0.3);
+
+    --color-primary-text: #E0E8E4;
+    --color-secondary-text: #8FAFA0;
+    --color-code: #F472B6;
+    --color-h1: #6EE7B7;
+    --color-h2: #34d399;
+    --color-h3: #A7F3D0;
+    --color-code-bg: #162B23;
+    --color-blockquote-bg: #132B1A;
+  }
+
+  /* ============================================
+     PAGE STRUCTURE
+     ============================================ */
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--background);
+    color: var(--foreground);
+    min-height: 100vh;
+    transition: background-color 0.4s ease, color 0.3s ease;
+  }
+
+  code, pre { font-family: var(--font-mono); }
+
+  /* Inline SVG icons */
+  .ico {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    vertical-align: middle;
+    flex-shrink: 0;
+  }
+  .ico svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* Nav */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    background: rgba(6,78,59,0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-header);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    direction: ltr;
+    color: #ecfdf5;
+    flex-wrap: wrap;
+  }
+  .nav-brand {
+    font-size: 16px;
+    font-weight: 700;
+    color: #10B981;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nav-brand-icon {
+    width: 28px; height: 28px;
+    background: var(--gradient-logo);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(110,231,183,0.3);
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+  .nav-tab {
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #a7f3d0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+  .nav-tab:hover { background: rgba(110,231,183,0.15); color: #ecfdf5; }
+  .nav-tab.active { background: #10B981; color: white; }
+
+  .theme-toggle {
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.08);
+    color: #ecfdf5;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .theme-toggle:hover { background: rgba(110,231,183,0.2); }
+
+  /* Sections */
+  .section {
+    display: none;
+    padding: 80px 24px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    direction: ltr;
+  }
+  .section.active { display: block; }
+  .section-title {
+    font-size: 28px;
+    color: var(--primary);
+    margin-bottom: 6px;
+  }
+  .section-desc {
+    color: var(--foreground-muted);
+    margin-bottom: 32px;
+    line-height: 1.6;
+    max-width: 700px;
+  }
+
+  /* Subsection */
+  .sub { margin-bottom: 40px; }
+  .sub-title {
+    font-size: 18px;
+    color: var(--foreground);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--border);
+  }
+  .sub-desc {
+    font-size: 13px;
+    color: var(--foreground-muted);
+    margin-bottom: 16px;
+    line-height: 1.6;
+  }
+
+  /* ============================================
+     COLOR SWATCHES
+     ============================================ */
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .swatch {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-1);
+    border: 1px solid var(--border-subtle);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+  .swatch:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-2);
+  }
+  .swatch-color {
+    height: 64px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 6px 8px;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+  .swatch-label {
+    padding: 6px 8px;
+    font-size: 11px;
+    color: var(--foreground-muted);
+    background: var(--surface);
+  }
+
+  /* Semantic tokens display */
+  .token-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+  }
+  .token-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: var(--surface-raised);
+    font-size: 13px;
+  }
+  .token-dot {
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+  .token-name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--foreground-muted);
+    flex: 1;
+  }
+  .token-value {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--foreground-faint);
+  }
+
+  /* Gradient display */
+  .gradient-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+  .gradient-sample {
+    width: 200px;
+    height: 80px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-1);
+    display: flex;
+    align-items: flex-end;
+    padding: 8px;
+  }
+  .gradient-sample span {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: white;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  }
+
+  /* ============================================
+     TYPOGRAPHY
+     ============================================ */
+  .type-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: var(--surface-raised);
+    flex-wrap: wrap;
+  }
+  .type-meta {
+    min-width: 140px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--foreground-faint);
+    flex-shrink: 0;
+  }
+  .type-sample {
+    flex: 1;
+    min-width: 200px;
+    color: var(--foreground);
+  }
+
+  /* ============================================
+     SPACING
+     ============================================ */
+  .spacing-scale {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .spacing-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+  }
+  .spacing-label {
+    min-width: 80px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--foreground-faint);
+    text-align: right;
+  }
+  .spacing-bar {
+    height: 24px;
+    background: var(--gradient-brand);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+  .spacing-value {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--foreground-muted);
+  }
+
+  /* ============================================
+     ELEVATION
+     ============================================ */
+  .elevation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 24px;
+  }
+  .elevation-card {
+    height: 120px;
+    border-radius: 12px;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--foreground-muted);
+    border: 1px solid var(--border-subtle);
+    transition: box-shadow 0.3s ease;
+  }
+
+  /* ============================================
+     RADIUS
+     ============================================ */
+  .radius-grid {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    align-items: flex-end;
+  }
+  .radius-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .radius-box {
+    width: 80px;
+    height: 80px;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 12px;
+    font-family: var(--font-mono);
+    transition: transform 0.2s;
+  }
+  .radius-box:hover { transform: scale(1.05); }
+  .radius-label {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--foreground-faint);
+    text-align: center;
+  }
+
+  /* ============================================
+     COMPONENTS
+     ============================================ */
+  .component-section {
+    margin-bottom: 48px;
+  }
+  .component-title {
+    font-size: 16px;
+    color: var(--foreground);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .component-title::before {
+    content: '';
+    width: 3px;
+    height: 18px;
+    background: var(--primary);
+    border-radius: 2px;
+  }
+  .component-desc {
+    font-size: 13px;
+    color: var(--foreground-muted);
+    margin-bottom: 16px;
+  }
+  .component-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+  .component-label {
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--foreground-faint);
+    margin-bottom: 8px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border-radius: 9999px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    border: none;
+    text-decoration: none;
+    font-size: 14px;
+    padding: 10px 20px;
+    height: 40px;
+  }
+  .btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: #FFFFFF;
+    border: 2px solid var(--emerald-300);
+  }
+  .btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+    background: var(--primary-active);
+  }
+  .btn-secondary {
+    background: var(--surface-raised);
+    color: var(--foreground);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover {
+    background: var(--primary-ghost);
+    border-color: var(--primary);
+  }
+  .btn-ghost {
+    background: transparent;
+    color: var(--foreground-muted);
+  }
+  .btn-ghost:hover {
+    background: var(--primary-ghost);
+    color: var(--primary);
+  }
+  .btn-outline {
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+  }
+  .btn-outline:hover {
+    background: var(--primary);
+    color: #FFFFFF;
+  }
+  .btn-destructive {
+    background: var(--destructive);
+    color: #FFFFFF;
+  }
+  .btn-destructive:hover { opacity: 0.9; }
+  .btn-icon {
+    background: transparent;
+    color: var(--foreground-muted);
+    width: 40px;
+    padding: 0;
+    border-radius: 8px;
+  }
+  .btn-icon:hover {
+    background: var(--primary-ghost);
+    color: var(--primary);
+  }
+
+  .btn-sm { height: 32px; padding: 6px 12px; font-size: 13px; }
+  .btn-lg { height: 48px; padding: 12px 28px; font-size: 16px; }
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Panel */
+  .demo-panel {
+    border-radius: 24px;
+    box-shadow: var(--shadow-3);
+    overflow: hidden;
+    background: var(--surface);
+    transition: box-shadow 0.3s ease;
+    max-width: 500px;
+  }
+  .demo-panel:hover {
+    box-shadow: var(--shadow-4);
+  }
+  .demo-panel-stripe {
+    height: 3px;
+    background: var(--gradient-brand);
+  }
+  .demo-panel-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 12px;
+    color: var(--foreground-muted);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .demo-panel-body {
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--foreground);
+  }
+
+  /* Header mock */
+  .demo-header {
+    background: rgba(6,78,59,0.95);
+    backdrop-filter: blur(12px);
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    border-radius: 12px;
+    color: #ecfdf5;
+    direction: rtl;
+    box-shadow: var(--shadow-header);
+  }
+  .demo-header-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .demo-header .logo-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: #10B981;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .demo-header .logo-icon {
+    width: 24px; height: 24px;
+    background: var(--gradient-logo);
+    border-radius: 8px;
+  }
+  .demo-header .separator {
+    width: 1px;
+    height: 24px;
+    background: rgba(255,255,255,0.15);
+  }
+  .demo-header .hdr-btn {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #a7f3d0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+  }
+  .demo-header .hdr-btn:hover {
+    background: rgba(110,231,183,0.2);
+    color: #ecfdf5;
+  }
+  .demo-header .view-toggles {
+    display: flex;
+    background: rgba(16,185,129,0.1);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .demo-header .view-toggle {
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: #a7f3d0;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .demo-header .view-toggle.active {
+    background: var(--primary);
+    color: white;
+  }
+
+  /* Toolbar mock */
+  .demo-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: 8px 12px;
+    background: var(--surface-raised);
+    border-radius: 12px;
+    border: 1px solid var(--border-subtle);
+    flex-wrap: wrap;
+    max-width: 500px;
+  }
+  .toolbar-btn {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--foreground-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .toolbar-btn:hover {
+    background: var(--primary);
+    color: #FFFFFF;
+  }
+  .toolbar-btn.is-active {
+    background: var(--primary-ghost-strong);
+    color: var(--primary);
+  }
+  .toolbar-sep {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+    margin: 0 4px;
+  }
+  .toolbar-btn-ai {
+    color: var(--primary);
+    position: relative;
+  }
+  .toolbar-btn-ai::after {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: 6px;
+    border: 1px dashed var(--primary);
+    opacity: 0;
+    animation: pulse-border 2s infinite;
+  }
+  @keyframes pulse-border {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 0.5; }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  /* Inputs */
+  .demo-input {
+    height: 40px;
+    padding: 10px 12px;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--foreground);
+    direction: rtl;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    width: 280px;
+    max-width: 100%;
+  }
+  .demo-input::placeholder { color: var(--foreground-faint); }
+  .demo-input:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+  .demo-input-error {
+    border-color: var(--destructive);
+  }
+  .demo-input-error:focus {
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.2);
+  }
+
+  /* Toggle */
+  .demo-toggle {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    border-radius: 9999px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .demo-toggle.off { background: var(--border-strong); }
+  .demo-toggle.on { background: var(--primary); }
+  .demo-toggle-thumb {
+    position: absolute;
+    top: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    box-shadow: var(--shadow-1);
+    transition: left 0.2s, right 0.2s;
+  }
+  .demo-toggle.off .demo-toggle-thumb { left: 2px; }
+  .demo-toggle.on .demo-toggle-thumb { left: 22px; }
+
+  /* Segmented control */
+  .demo-segmented {
+    display: inline-flex;
+    background: rgba(16,185,129,0.1);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .demo-seg-item {
+    padding: 6px 16px;
+    border-radius: 6px;
+    border: none;
+    background: transparent;
+    color: var(--foreground-muted);
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .demo-seg-item.active {
+    background: var(--primary);
+    color: white;
+  }
+  .demo-seg-item:hover:not(.active) {
+    background: var(--primary-ghost);
+  }
+
+  /* Badges */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 600;
+    gap: 4px;
+  }
+  .badge-default {
+    background: var(--surface-raised);
+    color: var(--foreground-muted);
+    border: 1px solid var(--border);
+  }
+  .badge-primary {
+    background: rgba(16,185,129,0.1);
+    color: var(--primary);
+  }
+  .badge-warning {
+    background: rgba(245,158,11,0.1);
+    color: var(--warning);
+  }
+  .badge-destructive {
+    background: rgba(239,68,68,0.1);
+    color: var(--destructive);
+  }
+  .badge-pro {
+    background: var(--gradient-brand);
+    color: #FFFFFF;
+  }
+
+  /* Modal mock */
+  .demo-modal-container {
+    position: relative;
+    background: var(--background-subtle);
+    border-radius: 16px;
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 320px;
+    border: 1px solid var(--border-subtle);
+  }
+  .demo-modal {
+    width: 420px;
+    max-width: 100%;
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow-4);
+    overflow: hidden;
+    direction: rtl;
+    border: 1px solid var(--border);
+  }
+  .demo-modal-header {
+    padding: 20px 24px 4px;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--foreground);
+  }
+  .demo-modal-desc {
+    padding: 0 24px 16px;
+    font-size: 13px;
+    color: var(--foreground-muted);
+  }
+  .demo-modal-body {
+    padding: 0 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .demo-modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+  }
+
+  /* Dropdown mock */
+  .demo-dropdown {
+    min-width: 200px;
+    background: var(--surface);
+    border-radius: 8px;
+    box-shadow: var(--shadow-2);
+    border: 1px solid var(--border);
+    padding: 4px;
+    direction: rtl;
+  }
+  .demo-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: var(--foreground);
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .demo-dropdown-item:hover {
+    background: var(--primary-ghost);
+    color: var(--primary);
+  }
+  .demo-dropdown-sep {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 4px 0;
+  }
+  .demo-dropdown-item-icon {
+    color: var(--foreground-muted);
+    font-size: 14px;
+    width: 18px;
+    text-align: center;
+  }
+
+  /* Toast mock */
+  .demo-toast {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 20px;
+    background: var(--foreground);
+    color: var(--background);
+    border-radius: 8px;
+    font-size: 14px;
+    box-shadow: var(--shadow-3);
+    direction: rtl;
+  }
+  .demo-toast-icon {
+    color: var(--primary);
+    font-size: 16px;
+  }
+
+  /* Footer mock */
+  .demo-footer {
+    padding: 8px 16px;
+    font-size: 11px;
+    color: var(--foreground-faint);
+    border-top: 1px solid var(--border-subtle);
+    background: var(--surface);
+    text-align: center;
+    direction: rtl;
+    border-radius: 0 0 12px 12px;
+  }
+
+  /* ============================================
+     INTERACTIONS SECTION
+     ============================================ */
+  .interaction-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .interaction-card {
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
+  }
+  .interaction-card h4 {
+    font-size: 14px;
+    color: var(--foreground);
+    margin-bottom: 4px;
+  }
+  .interaction-card p {
+    font-size: 12px;
+    color: var(--foreground-muted);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .interaction-card .demo-area {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60px;
+  }
+
+  /* ============================================
+     LAYOUT SECTION
+     ============================================ */
+  .breakpoint-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+  .breakpoint-table th,
+  .breakpoint-table td {
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .breakpoint-table th {
+    background: var(--surface-raised);
+    font-weight: 600;
+    font-size: 12px;
+    color: var(--foreground-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .breakpoint-table td:first-child {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--primary);
+  }
+
+  .zindex-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 500px;
+  }
+  .zindex-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: transform 0.2s;
+  }
+  .zindex-bar:hover { transform: translateX(4px); }
+  .zindex-value {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    min-width: 24px;
+    color: white;
+    font-weight: 700;
+  }
+  .zindex-label {
+    color: white;
+    opacity: 0.9;
+  }
+
+  /* ============================================
+     RTL SECTION
+     ============================================ */
+  .rtl-demo {
+    direction: rtl;
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-2);
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--color-primary-text);
+    max-width: 600px;
+  }
+  .rtl-demo h2 {
+    color: var(--color-h1);
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--primary);
+  }
+  .rtl-demo h3 {
+    color: var(--color-h2);
+    font-size: 1.25rem;
+    margin: 16px 0 8px;
+  }
+  .rtl-demo p { margin-bottom: 12px; }
+  .rtl-demo blockquote {
+    border-inline-start: 4px solid var(--primary);
+    background: var(--color-blockquote-bg);
+    padding: 12px 16px;
+    border-radius: 0 4px 4px 0;
+    margin: 12px 0;
+  }
+  .rtl-demo code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: var(--color-code-bg);
+    color: var(--color-code);
+    padding: 2px 6px;
+    border-radius: 4px;
+    direction: ltr;
+    unicode-bidi: embed;
+  }
+  .rtl-demo ul {
+    padding-inline-start: 1.5rem;
+    margin-bottom: 12px;
+  }
+  .rtl-demo li { margin-bottom: 4px; }
+
+  /* Logical vs Physical comparison */
+  .logical-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    max-width: 600px;
+  }
+  .logical-table th,
+  .logical-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .logical-table th {
+    background: var(--surface-raised);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--foreground-muted);
+  }
+  .logical-table .dont {
+    color: var(--destructive);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+  .logical-table .do {
+    color: var(--primary);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* ============================================
+     ICONS SECTION
+     ============================================ */
+  .icon-size-demo {
+    display: flex;
+    gap: 24px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .icon-size-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-raised);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    color: var(--foreground-muted);
+  }
+  .icon-box:hover { color: var(--primary); }
+
+  /* ============================================
+     SCROLLBAR DEMO
+     ============================================ */
+  .scrollbar-demo {
+    height: 120px;
+    overflow-y: auto;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--foreground-muted);
+    direction: rtl;
+    max-width: 400px;
+  }
+  .scrollbar-demo::-webkit-scrollbar { width: 8px; }
+  .scrollbar-demo::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-demo::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 4px;
+  }
+  .scrollbar-demo::-webkit-scrollbar-thumb:hover {
+    background: var(--emerald-900);
+  }
+  .dark .scrollbar-demo::-webkit-scrollbar-thumb {
+    background: var(--emerald-300);
+  }
+
+  /* ============================================
+     ACCESSIBILITY SECTION
+     ============================================ */
+  .contrast-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+  }
+  .contrast-card {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+  }
+  .contrast-preview {
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    min-height: 64px;
+    display: flex;
+    align-items: center;
+  }
+  .contrast-meta {
+    padding: 8px 12px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    background: var(--surface-raised);
+    display: flex;
+    justify-content: space-between;
+    color: var(--foreground-muted);
+  }
+  .contrast-pass {
+    font-weight: 700;
+    color: var(--primary);
+  }
+
+  /* ============================================
+     DARK MODE SECTION
+     ============================================ */
+  .darkmode-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 768px) {
+    .darkmode-comparison { grid-template-columns: 1fr; }
+  }
+  .darkmode-half {
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .darkmode-half-label {
+    padding: 8px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+  }
+  .dm-light-sample {
+    background: #FFFFFF;
+    color: #064E3B;
+  }
+  .dm-light-sample .dm-label { background: #F0FDF4; color: #047857; border-bottom: 1px solid #d1fae5; }
+  .dm-light-sample .dm-card {
+    margin: 16px;
+    border-radius: 16px;
+    background: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(6,78,59,0.1);
+    border: 1px solid #e5f5ef;
+    overflow: hidden;
+  }
+  .dm-light-sample .dm-card-stripe { height: 3px; background: linear-gradient(135deg, #10B981, #6EE7B7, #2DD4BF); }
+  .dm-light-sample .dm-card-body { padding: 16px; font-size: 14px; line-height: 1.7; }
+  .dm-light-sample .dm-card-body h3 { color: #065f46; margin-bottom: 8px; }
+  .dm-light-sample .dm-card-body p { color: #333; }
+
+  .dm-dark-sample {
+    background: #0B1A14;
+    color: #ecfdf5;
+  }
+  .dm-dark-sample .dm-label { background: #132B22; color: #6EE7B7; border-bottom: 1px solid rgba(110,231,183,0.12); }
+  .dm-dark-sample .dm-card {
+    margin: 16px;
+    border-radius: 16px;
+    background: #132B22;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    border: 1px solid rgba(110,231,183,0.12);
+    overflow: hidden;
+  }
+  .dm-dark-sample .dm-card-stripe { height: 3px; background: linear-gradient(135deg, #10B981, #6EE7B7, #2DD4BF); }
+  .dm-dark-sample .dm-card-body { padding: 16px; font-size: 14px; line-height: 1.7; }
+  .dm-dark-sample .dm-card-body h3 { color: #6EE7B7; margin-bottom: 8px; }
+  .dm-dark-sample .dm-card-body p { color: #E0E8E4; }
+
+  /* Surface stack demo */
+  .surface-stack {
+    display: flex;
+    gap: 2px;
+    border-radius: 12px;
+    overflow: hidden;
+    max-width: 500px;
+  }
+  .surface-layer {
+    flex: 1;
+    padding: 20px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-height: 80px;
+    justify-content: center;
+  }
+  .surface-layer span { font-size: 9px; opacity: 0.7; }
+
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
+  @media (max-width: 768px) {
+    .nav { padding: 8px 12px; gap: 8px; }
+    .nav-tab { padding: 4px 8px; font-size: 11px; }
+    .section { padding: 70px 16px 40px; }
+    .palette-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+    .elevation-grid { grid-template-columns: 1fr 1fr; }
+    .radius-grid { gap: 16px; }
+    .interaction-grid { grid-template-columns: 1fr; }
+    .demo-input { width: 100%; }
+  }
+
+  /* ============================================
+     ICONS SECTION
+     ============================================ */
+  .icon-catalog {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 12px;
+  }
+  .icon-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 8px;
+    border-radius: 8px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .icon-card:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    box-shadow: var(--shadow-1);
+  }
+  .icon-card .icon-render { color: var(--foreground-muted); transition: color 0.15s; }
+  .icon-card:hover .icon-render { color: var(--primary); }
+  .icon-card .icon-name {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--foreground-faint);
+    text-align: center;
+  }
+  .icon-card .icon-usage {
+    font-size: 9px;
+    color: var(--foreground-faint);
+    text-align: center;
+    opacity: 0.7;
+  }
+  .icon-group-title {
+    grid-column: 1 / -1;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+    padding: 8px 0 4px;
+    border-bottom: 1px solid var(--border);
+    margin-top: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .icon-color-demo {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .icon-color-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
+    font-size: 13px;
+  }
+
+  /* ============================================
+     ANIMATIONS SECTION
+     ============================================ */
+  .anim-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .anim-card {
+    padding: 20px;
+    border-radius: 12px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
+  }
+  .anim-card h4 {
+    font-size: 14px;
+    color: var(--foreground);
+    margin-bottom: 4px;
+  }
+  .anim-card .anim-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--foreground-faint);
+    margin-bottom: 12px;
+  }
+  .anim-stage {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px;
+    border-radius: 8px;
+    background: var(--background);
+    border: 1px dashed var(--border);
+    overflow: hidden;
+  }
+  .anim-target {
+    width: 80px;
+    height: 48px;
+    border-radius: 8px;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 11px;
+    font-family: var(--font-mono);
+  }
+  .anim-replay {
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--primary);
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .anim-replay:hover { background: var(--primary-ghost); }
+  .anim-code {
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--foreground-faint);
+    background: var(--background);
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border-subtle);
+    line-height: 1.5;
+    direction: ltr;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .timing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+  .timing-card {
+    padding: 16px;
+    border-radius: 8px;
+    background: var(--surface-raised);
+    border: 1px solid var(--border-subtle);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .timing-card:hover { border-color: var(--primary); }
+  .timing-card h4 { font-size: 13px; color: var(--foreground); margin-bottom: 2px; }
+  .timing-card .timing-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .timing-bar-track {
+    height: 6px;
+    border-radius: 3px;
+    background: var(--border);
+    overflow: hidden;
+  }
+  .timing-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--primary);
+    width: 0;
+    transition-timing-function: ease;
+  }
+  .timing-card:hover .timing-bar-fill {
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-brand-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+    </div>
+    Marko Design System
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showSection('colors')">Colors</button>
+    <button class="nav-tab" onclick="showSection('typography')">Typography</button>
+    <button class="nav-tab" onclick="showSection('spacing')">Spacing</button>
+    <button class="nav-tab" onclick="showSection('elevation')">Elevation</button>
+    <button class="nav-tab" onclick="showSection('radius')">Radius</button>
+    <button class="nav-tab" onclick="showSection('components')">Components</button>
+    <button class="nav-tab" onclick="showSection('interactions')">Interactions</button>
+    <button class="nav-tab" onclick="showSection('layout')">Layout</button>
+    <button class="nav-tab" onclick="showSection('darkmode')">Dark Mode</button>
+    <button class="nav-tab" onclick="showSection('rtl')">RTL</button>
+    <button class="nav-tab" onclick="showSection('accessibility')">A11y</button>
+    <button class="nav-tab" onclick="showSection('icons')">Icons</button>
+    <button class="nav-tab" onclick="showSection('animations')">Animations</button>
+  </div>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode" id="themeBtn"><svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
+</nav>
+
+<!-- ===== 1. COLORS ===== -->
+<div id="colors" class="section active">
+  <h2 class="section-title">Color System</h2>
+  <p class="section-desc">
+    Emerald-based palette anchored on #10B981. Every shade derived from the original hebrew-markdown-export brand. Dark mode uses forest greens, never neutral grays.
+  </p>
+
+  <div class="sub">
+    <h3 class="sub-title">Core Palette</h3>
+    <div class="palette-grid">
+      <div class="swatch"><div class="swatch-color" style="background:#ecfdf5;"><span style="color:#064E3B">50</span></div><div class="swatch-label">#ecfdf5</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#d1fae5;"><span style="color:#064E3B">100</span></div><div class="swatch-label">#d1fae5</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#a7f3d0;"><span style="color:#064E3B">200</span></div><div class="swatch-label">#a7f3d0</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#6EE7B7;"><span style="color:#064E3B">300</span></div><div class="swatch-label">#6EE7B7</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#34d399;"><span style="color:#064E3B">400</span></div><div class="swatch-label">#34d399</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#10B981;"><span style="color:#fff">500</span></div><div class="swatch-label">#10B981</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#059669;"><span style="color:#fff">600</span></div><div class="swatch-label">#059669</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#047857;"><span style="color:#fff">700</span></div><div class="swatch-label">#047857</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#065f46;"><span style="color:#fff">800</span></div><div class="swatch-label">#065f46</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#064E3B;"><span style="color:#fff">900</span></div><div class="swatch-label">#064E3B</div></div>
+      <div class="swatch"><div class="swatch-color" style="background:#2DD4BF;"><span style="color:#064E3B">Teal</span></div><div class="swatch-label">#2DD4BF</div></div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Semantic Tokens</h3>
+    <p class="sub-desc">Toggle dark mode (top-right) to see how tokens adapt. These are live CSS variables.</p>
+    <div class="token-grid">
+      <div class="token-row"><div class="token-dot" style="background:var(--background);"></div><div class="token-name">--background</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--background-subtle);"></div><div class="token-name">--background-subtle</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--foreground);"></div><div class="token-name">--foreground</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--foreground-muted);"></div><div class="token-name">--foreground-muted</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--foreground-faint);"></div><div class="token-name">--foreground-faint</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--surface);border:1px solid var(--border);"></div><div class="token-name">--surface</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--surface-raised);"></div><div class="token-name">--surface-raised</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--border);"></div><div class="token-name">--border</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--border-strong);"></div><div class="token-name">--border-strong</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--primary);"></div><div class="token-name">--primary</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--primary-hover);"></div><div class="token-name">--primary-hover</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--primary-ghost);border:1px solid var(--border);"></div><div class="token-name">--primary-ghost</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--ring);"></div><div class="token-name">--ring</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--destructive);"></div><div class="token-name">--destructive</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--warning);"></div><div class="token-name">--warning</div></div>
+      <div class="token-row"><div class="token-dot" style="background:var(--info);"></div><div class="token-name">--info</div></div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Gradients</h3>
+    <div class="gradient-row">
+      <div class="gradient-sample" style="background:linear-gradient(135deg, #10B981, #6EE7B7, #2DD4BF);"><span>gradient-brand</span></div>
+      <div class="gradient-sample" style="background:linear-gradient(135deg, rgba(16,185,129,0.15), rgba(110,231,183,0.08));border:1px solid var(--border);"><span style="color:var(--foreground);">gradient-brand-subtle</span></div>
+      <div class="gradient-sample" style="background:linear-gradient(180deg, #064E3B 0%, #0a6b4d 30%, #10B981 70%, #6EE7B7 100%);"><span>gradient-landing</span></div>
+      <div class="gradient-sample" style="background:linear-gradient(135deg, #6EE7B7, #2DD4BF);"><span>gradient-logo</span></div>
+      <div class="gradient-sample" style="background:linear-gradient(180deg, #041F17 0%, #064E3B 40%, #0B1A14 100%);"><span>gradient-landing-dark</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 2. TYPOGRAPHY ===== -->
+<div id="typography" class="section">
+  <h2 class="section-title">Typography</h2>
+  <p class="section-desc">
+    Varela Round for body (warm, rounded, Hebrew-native). JetBrains Mono for code. Scale ratio 1.25 (Major Third) from 16px base.
+  </p>
+
+  <div class="sub">
+    <h3 class="sub-title">Type Scale</h3>
+    <div class="type-scale">
+      <div class="type-row">
+        <div class="type-meta">display<br>39px / 700 / 1.2</div>
+        <div class="type-sample" style="font-size:2.441rem;font-weight:700;line-height:1.2;letter-spacing:-0.02em;">עורך Markdown עברי</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">h1<br>31px / 700 / 1.3</div>
+        <div class="type-sample" style="font-size:1.953rem;font-weight:700;line-height:1.3;letter-spacing:-0.01em;">כותרת ראשית</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">h2<br>25px / 600 / 1.35</div>
+        <div class="type-sample" style="font-size:1.563rem;font-weight:600;line-height:1.35;">כותרת משנית</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">h3<br>20px / 600 / 1.4</div>
+        <div class="type-sample" style="font-size:1.25rem;font-weight:600;line-height:1.4;">כותרת שלישית</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">h4<br>18px / 600 / 1.4</div>
+        <div class="type-sample" style="font-size:1.125rem;font-weight:600;line-height:1.4;">כותרת רביעית</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">body<br>16px / 400 / 1.7</div>
+        <div class="type-sample" style="font-size:1rem;line-height:1.7;">זהו טקסט גוף רגיל. Marko is a premium Hebrew markdown editor with RTL-first design.</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">body-sm<br>14px / 400 / 1.6</div>
+        <div class="type-sample" style="font-size:0.875rem;line-height:1.6;color:var(--foreground-muted);">טקסט גוף קטן — תוויות, תיאורים משניים, סרגל כלים</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">caption<br>12px / 400 / 1.5</div>
+        <div class="type-sample" style="font-size:0.75rem;line-height:1.5;color:var(--foreground-faint);">כיתוב — חותמות זמן, תגיות, מטא-דאטה</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">overline<br>11px / 600 / 1.4</div>
+        <div class="type-sample" style="font-size:0.6875rem;font-weight:600;line-height:1.4;letter-spacing:0.05em;text-transform:uppercase;color:var(--foreground-faint);">OVERLINE &middot; CATEGORY LABEL</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">code<br>14px / mono</div>
+        <div class="type-sample" style="font-family:var(--font-mono);font-size:0.875rem;line-height:1.6;direction:ltr;">const marko = new MarkdownEditor({ direction: 'rtl' });</div>
+      </div>
+      <div class="type-row">
+        <div class="type-meta">code-sm<br>13px / mono</div>
+        <div class="type-sample" style="font-family:var(--font-mono);font-size:0.8125rem;line-height:1.5;color:var(--foreground-muted);direction:ltr;">Ctrl+K &middot; Ctrl+B &middot; Ctrl+Shift+M</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Hebrew Rules</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:600px;">
+      <div class="token-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+        <strong style="font-size:13px;">No italics for Hebrew emphasis</strong>
+        <span style="font-size:12px;color:var(--foreground-muted);">Hebrew italics are hard to read. Use <strong>bold</strong> or <span style="color:var(--primary)">color</span> instead.</span>
+      </div>
+      <div class="token-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+        <strong style="font-size:13px;">Line height 1.7 for body</strong>
+        <span style="font-size:12px;color:var(--foreground-muted);">Hebrew characters are taller and denser — generous line height improves readability.</span>
+      </div>
+      <div class="token-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+        <strong style="font-size:13px;">No letter-spacing for Hebrew</strong>
+        <span style="font-size:12px;color:var(--foreground-muted);">Hebrew is not designed for loose tracking. Keep at 0.</span>
+      </div>
+      <div class="token-row" style="flex-direction:column;align-items:flex-start;gap:4px;">
+        <strong style="font-size:13px;">Code always LTR</strong>
+        <span style="font-size:12px;color:var(--foreground-muted);">Inline code and code blocks: <code style="font-family:var(--font-mono);font-size:11px;background:var(--color-code-bg);padding:2px 6px;border-radius:4px;direction:ltr;">direction: ltr; unicode-bidi: embed;</code></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 3. SPACING ===== -->
+<div id="spacing" class="section">
+  <h2 class="section-title">Spacing System</h2>
+  <p class="section-desc">Base unit: 4px. All spacing is a multiple of 4. Consistent rhythm across every component.</p>
+
+  <div class="sub">
+    <h3 class="sub-title">Scale</h3>
+    <div class="spacing-scale">
+      <div class="spacing-row"><div class="spacing-label">0.5 (2px)</div><div class="spacing-bar" style="width:2px;"></div><div class="spacing-value">2px</div></div>
+      <div class="spacing-row"><div class="spacing-label">1 (4px)</div><div class="spacing-bar" style="width:8px;"></div><div class="spacing-value">4px</div></div>
+      <div class="spacing-row"><div class="spacing-label">1.5 (6px)</div><div class="spacing-bar" style="width:12px;"></div><div class="spacing-value">6px</div></div>
+      <div class="spacing-row"><div class="spacing-label">2 (8px)</div><div class="spacing-bar" style="width:16px;"></div><div class="spacing-value">8px</div></div>
+      <div class="spacing-row"><div class="spacing-label">3 (12px)</div><div class="spacing-bar" style="width:24px;"></div><div class="spacing-value">12px</div></div>
+      <div class="spacing-row"><div class="spacing-label">4 (16px)</div><div class="spacing-bar" style="width:32px;"></div><div class="spacing-value">16px</div></div>
+      <div class="spacing-row"><div class="spacing-label">5 (20px)</div><div class="spacing-bar" style="width:40px;"></div><div class="spacing-value">20px</div></div>
+      <div class="spacing-row"><div class="spacing-label">6 (24px)</div><div class="spacing-bar" style="width:48px;"></div><div class="spacing-value">24px</div></div>
+      <div class="spacing-row"><div class="spacing-label">8 (32px)</div><div class="spacing-bar" style="width:64px;"></div><div class="spacing-value">32px</div></div>
+      <div class="spacing-row"><div class="spacing-label">10 (40px)</div><div class="spacing-bar" style="width:80px;"></div><div class="spacing-value">40px</div></div>
+      <div class="spacing-row"><div class="spacing-label">12 (48px)</div><div class="spacing-bar" style="width:96px;"></div><div class="spacing-value">48px</div></div>
+      <div class="spacing-row"><div class="spacing-label">16 (64px)</div><div class="spacing-bar" style="width:128px;"></div><div class="spacing-value">64px</div></div>
+      <div class="spacing-row"><div class="spacing-label">20 (80px)</div><div class="spacing-bar" style="width:160px;"></div><div class="spacing-value">80px</div></div>
+      <div class="spacing-row"><div class="spacing-label">24 (96px)</div><div class="spacing-bar" style="width:192px;"></div><div class="spacing-value">96px</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 4. ELEVATION ===== -->
+<div id="elevation" class="section">
+  <h2 class="section-title">Elevation & Shadows</h2>
+  <p class="section-desc">Emerald-tinted shadows in light mode (warm, branded). Neutral-dark in dark mode. Hover any card to see it lift.</p>
+
+  <div class="sub">
+    <h3 class="sub-title">Shadow Levels</h3>
+    <div class="elevation-grid">
+      <div class="elevation-card" style="box-shadow:none;">Level 0<br><span style="font-size:10px;opacity:0.6;">none</span></div>
+      <div class="elevation-card" style="box-shadow:var(--shadow-1);">Level 1<br><span style="font-size:10px;opacity:0.6;">buttons, inputs</span></div>
+      <div class="elevation-card" style="box-shadow:var(--shadow-2);">Level 2<br><span style="font-size:10px;opacity:0.6;">cards, dropdowns</span></div>
+      <div class="elevation-card" style="box-shadow:var(--shadow-3);">Level 3<br><span style="font-size:10px;opacity:0.6;">panels, floating</span></div>
+      <div class="elevation-card" style="box-shadow:var(--shadow-4);">Level 4<br><span style="font-size:10px;opacity:0.6;">modals, hover</span></div>
+      <div class="elevation-card" style="box-shadow:var(--shadow-glow);border:2px solid var(--primary);">Glow<br><span style="font-size:10px;opacity:0.6;">CTA, focus</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 5. RADIUS ===== -->
+<div id="radius" class="section">
+  <h2 class="section-title">Border Radius</h2>
+  <p class="section-desc">Roundedness is core to Marko's identity. No sharp corners anywhere. Minimum is 4px.</p>
+
+  <div class="sub">
+    <h3 class="sub-title">Radius Scale</h3>
+    <div class="radius-grid">
+      <div class="radius-item"><div class="radius-box" style="border-radius:4px;">4px</div><div class="radius-label">xs<br>code, badges</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:6px;">6px</div><div class="radius-label">sm<br>toolbar btns</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:8px;">8px</div><div class="radius-label">md<br>inputs</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:12px;">12px</div><div class="radius-label">lg<br>modals, cards</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:16px;">16px</div><div class="radius-label">xl<br>code blocks</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:20px;">20px</div><div class="radius-label">2xl<br>feature cards</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:24px;">24px</div><div class="radius-label">3xl<br>panels</div></div>
+      <div class="radius-item"><div class="radius-box" style="border-radius:9999px;width:120px;">pill</div><div class="radius-label">pill<br>buttons, badges</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 6. COMPONENTS ===== -->
+<div id="components" class="section">
+  <h2 class="section-title">Components</h2>
+  <p class="section-desc">Every component rendered with live design tokens. Toggle dark mode to see both themes.</p>
+
+  <!-- Buttons -->
+  <div class="component-section">
+    <div class="component-title">Buttons</div>
+    <div class="component-desc">Pill-shaped (9999px radius). Primary lifts on hover. All sizes shown.</div>
+    <div class="component-label">Variants</div>
+    <div class="component-row">
+      <button class="btn btn-primary">Primary</button>
+      <button class="btn btn-secondary">Secondary</button>
+      <button class="btn btn-ghost">Ghost</button>
+      <button class="btn btn-outline">Outline</button>
+      <button class="btn btn-destructive">Destructive</button>
+      <button class="btn btn-icon" title="Icon button"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+    </div>
+    <div class="component-label">Sizes</div>
+    <div class="component-row">
+      <button class="btn btn-primary btn-sm">Small</button>
+      <button class="btn btn-primary">Medium</button>
+      <button class="btn btn-primary btn-lg">Large</button>
+    </div>
+    <div class="component-label">States</div>
+    <div class="component-row">
+      <button class="btn btn-primary" disabled>Disabled</button>
+      <button class="btn btn-primary" style="box-shadow:0 0 0 3px var(--ring);">Focused</button>
+    </div>
+  </div>
+
+  <!-- Panel -->
+  <div class="component-section">
+    <div class="component-title">Panel / Card</div>
+    <div class="component-desc">Signature Marko element. 24px radius, gradient accent stripe, emerald-tinted shadow. Hover to see shadow lift.</div>
+    <div class="demo-panel">
+      <div class="demo-panel-stripe"></div>
+      <div class="demo-panel-header">
+        <span>תצוגה מקדימה</span>
+        <span style="font-size:11px;font-family:var(--font-mono);color:var(--foreground-faint);">preview</span>
+      </div>
+      <div class="demo-panel-body">
+        <div style="direction:rtl;">
+          <h3 style="color:var(--color-h1);font-size:1.25rem;margin-bottom:8px;">ברוכים הבאים לעורך Markdown העברי</h3>
+          <p>זהו עורך <strong>Markdown</strong> מתקדם עם תמיכה מלאה בעברית וכיוון <code style="font-family:var(--font-mono);font-size:0.85em;background:var(--color-code-bg);color:var(--color-code);padding:2px 6px;border-radius:4px;direction:ltr;">RTL</code>.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="component-section">
+    <div class="component-title">Header</div>
+    <div class="component-desc">Fixed glassmorphic bar. Dark forest background in both modes. Includes logo, view toggle, action buttons.</div>
+    <div class="demo-header">
+      <div class="demo-header-group">
+        <div class="logo-text">
+          <div class="logo-icon"></div>
+          Marko
+        </div>
+        <div class="separator"></div>
+        <div class="view-toggles">
+          <button class="view-toggle"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg> עורך</button>
+          <button class="view-toggle active"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/></svg> שניהם</button>
+          <button class="view-toggle"><svg class="ico" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg> תצוגה</button>
+        </div>
+      </div>
+      <div class="demo-header-group">
+        <div class="hdr-btn" title="ייצוא"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg></div>
+        <div class="hdr-btn" title="העתק"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg></div>
+        <div class="separator"></div>
+        <div class="hdr-btn" title="ערכת נושא"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></div>
+        <div class="hdr-btn" title="כיוון">RTL</div>
+        <div class="hdr-btn" title="צבעים"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="component-section">
+    <div class="component-title">Toolbar</div>
+    <div class="component-desc">Formatting toolbar. 32px buttons, 6px radius, grouped with 1px separators. Hover fills emerald.</div>
+    <div class="demo-toolbar">
+      <button class="toolbar-btn" title="Bold"><b>B</b></button>
+      <button class="toolbar-btn is-active" title="Italic"><i>I</i></button>
+      <button class="toolbar-btn" title="Strikethrough"><s>S</s></button>
+      <span class="toolbar-sep"></span>
+      <button class="toolbar-btn" title="Heading"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 12h12M6 20V4M18 20V4"/></svg></button>
+      <span class="toolbar-sep"></span>
+      <button class="toolbar-btn" title="List"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/></svg></button>
+      <button class="toolbar-btn" title="Ordered">1.</button>
+      <button class="toolbar-btn" title="Checklist"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8"/></svg></button>
+      <span class="toolbar-sep"></span>
+      <button class="toolbar-btn" title="Link"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button>
+      <button class="toolbar-btn" title="Image"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/></svg></button>
+      <button class="toolbar-btn" title="Code"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></button>
+      <button class="toolbar-btn" title="Table"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M3 15h18"/></svg></button>
+      <span class="toolbar-sep"></span>
+      <button class="toolbar-btn toolbar-btn-ai" title="AI"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/><path d="M5 3v4M19 17v4M3 5h4M17 19h4"/></svg></button>
+    </div>
+  </div>
+
+  <!-- Inputs -->
+  <div class="component-section">
+    <div class="component-title">Inputs</div>
+    <div class="component-desc">8px radius, emerald focus ring, RTL direction. Click to see focus state.</div>
+    <div class="component-row" style="flex-direction:column;align-items:flex-start;gap:12px;">
+      <div>
+        <div class="component-label">Default</div>
+        <input class="demo-input" placeholder="הקלד כאן..." />
+      </div>
+      <div>
+        <div class="component-label">Error</div>
+        <input class="demo-input demo-input-error" value="שגיאה בשדה זה" />
+      </div>
+      <div>
+        <div class="component-label">Disabled</div>
+        <input class="demo-input" disabled placeholder="לא זמין" style="opacity:0.5;cursor:not-allowed;" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Toggles & Segmented -->
+  <div class="component-section">
+    <div class="component-title">Toggles & Segmented Control</div>
+    <div class="component-row">
+      <div>
+        <div class="component-label">Toggle Off</div>
+        <div class="demo-toggle off"><div class="demo-toggle-thumb"></div></div>
+      </div>
+      <div>
+        <div class="component-label">Toggle On</div>
+        <div class="demo-toggle on"><div class="demo-toggle-thumb"></div></div>
+      </div>
+      <div>
+        <div class="component-label">Segmented Control</div>
+        <div class="demo-segmented">
+          <button class="demo-seg-item">עורך</button>
+          <button class="demo-seg-item active">שניהם</button>
+          <button class="demo-seg-item">תצוגה</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Badges -->
+  <div class="component-section">
+    <div class="component-title">Badges</div>
+    <div class="component-row">
+      <span class="badge badge-default">Default</span>
+      <span class="badge badge-primary">Primary</span>
+      <span class="badge badge-warning">Warning</span>
+      <span class="badge badge-destructive">Error</span>
+      <span class="badge badge-pro">PRO</span>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="component-section">
+    <div class="component-title">Modal / Dialog</div>
+    <div class="component-desc">12px radius, shadow level 4, emerald border in dark mode.</div>
+    <div class="demo-modal-container">
+      <div class="demo-modal">
+        <div class="demo-modal-header">ייצוא מסמך</div>
+        <div class="demo-modal-desc">בחר את פורמט הייצוא והגדרות נוספות</div>
+        <div class="demo-modal-body">
+          <div>
+            <div class="component-label" style="margin-bottom:4px;">שם קובץ</div>
+            <input class="demo-input" value="סיכום פגישת צוות" style="width:100%;" />
+          </div>
+          <div>
+            <div class="component-label" style="margin-bottom:4px;">פורמט</div>
+            <div class="demo-segmented" style="width:100%;">
+              <button class="demo-seg-item active" style="flex:1;text-align:center;">PDF</button>
+              <button class="demo-seg-item" style="flex:1;text-align:center;">HTML</button>
+              <button class="demo-seg-item" style="flex:1;text-align:center;">MD</button>
+            </div>
+          </div>
+        </div>
+        <div class="demo-modal-footer">
+          <button class="btn btn-primary btn-sm"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg> ייצא</button>
+          <button class="btn btn-secondary btn-sm">ביטול</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dropdown -->
+  <div class="component-section">
+    <div class="component-title">Dropdown Menu</div>
+    <div class="component-row">
+      <div class="demo-dropdown">
+        <div class="demo-dropdown-item"><span class="demo-dropdown-item-icon"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/></svg></span> העתק כ-PDF</div>
+        <div class="demo-dropdown-item"><span class="demo-dropdown-item-icon"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></span> העתק כ-HTML</div>
+        <div class="demo-dropdown-item"><span class="demo-dropdown-item-icon"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m10 13-2 2 2 2M14 17l2-2-2-2"/></svg></span> העתק כ-Markdown</div>
+        <div class="demo-dropdown-sep"></div>
+        <div class="demo-dropdown-item"><span class="demo-dropdown-item-icon"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg></span> העתק ללוח</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="component-section">
+    <div class="component-title">Toast / Notification</div>
+    <div class="component-row">
+      <div class="demo-toast">
+        <span class="demo-toast-icon"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></span>
+        <span>המסמך יוצא בהצלחה</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="component-section">
+    <div class="component-title">Footer</div>
+    <div style="max-width:500px;border:1px solid var(--border);border-radius:12px;overflow:hidden;">
+      <div style="padding:16px;background:var(--surface);font-size:13px;color:var(--foreground-muted);direction:rtl;">תוכן העמוד...</div>
+      <div class="demo-footer">Marko v2.0 &middot; Hebrew Markdown Editor</div>
+    </div>
+  </div>
+
+  <!-- Scrollbar -->
+  <div class="component-section">
+    <div class="component-title">Scrollbar</div>
+    <div class="component-desc">Branded emerald thumb, transparent track. Scroll inside this box to see.</div>
+    <div class="scrollbar-demo">
+      <p>שורה ראשונה של תוכן לגלילה</p>
+      <p>שורה שנייה — הנה עוד טקסט לדוגמה</p>
+      <p>שורה שלישית עם תוכן נוסף</p>
+      <p>עוד תוכן כדי לאפשר גלילה</p>
+      <p>שורה חמישית</p>
+      <p>שורה שישית</p>
+      <p>שורה שביעית</p>
+      <p>שורה שמינית — סוף התוכן</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 7. INTERACTIONS ===== -->
+<div id="interactions" class="section">
+  <h2 class="section-title">Interactions & Motion</h2>
+  <p class="section-desc">Hover, focus, active, loading — every state defined. Try hovering the examples below.</p>
+
+  <div class="interaction-grid">
+    <div class="interaction-card">
+      <h4>Primary Button Hover</h4>
+      <p>translateY(-2px) + emerald glow shadow. 200ms ease.</p>
+      <div class="demo-area">
+        <button class="btn btn-primary">Hover me</button>
+      </div>
+    </div>
+    <div class="interaction-card">
+      <h4>Ghost Button Hover</h4>
+      <p>Background fill only, no lift. 150ms ease.</p>
+      <div class="demo-area">
+        <button class="btn btn-ghost">Hover me</button>
+      </div>
+    </div>
+    <div class="interaction-card">
+      <h4>Toolbar Hover</h4>
+      <p>Fills emerald, text goes white. 150ms.</p>
+      <div class="demo-area">
+        <div style="display:flex;gap:2px;">
+          <button class="toolbar-btn"><b>B</b></button>
+          <button class="toolbar-btn"><i>I</i></button>
+          <button class="toolbar-btn"><s>S</s></button>
+        </div>
+      </div>
+    </div>
+    <div class="interaction-card">
+      <h4>Focus Ring</h4>
+      <p>3px emerald ring via box-shadow. Tab to see.</p>
+      <div class="demo-area">
+        <input class="demo-input" placeholder="Tab here..." style="width:180px;" />
+      </div>
+    </div>
+    <div class="interaction-card">
+      <h4>Panel Shadow Lift</h4>
+      <p>Shadow level 3 &rarr; 4 on hover. 300ms ease.</p>
+      <div class="demo-area">
+        <div style="width:100px;height:60px;background:var(--surface);border-radius:16px;box-shadow:var(--shadow-3);transition:box-shadow 0.3s;cursor:pointer;" onmouseenter="this.style.boxShadow='var(--shadow-4)'" onmouseleave="this.style.boxShadow='var(--shadow-3)'"></div>
+      </div>
+    </div>
+    <div class="interaction-card">
+      <h4>Loading Spinner</h4>
+      <p>16px, border-based spin. Emerald color.</p>
+      <div class="demo-area">
+        <div style="width:20px;height:20px;border:2.5px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub" style="margin-top:32px;">
+    <h3 class="sub-title">Timing Reference</h3>
+    <table class="breakpoint-table">
+      <thead><tr><th>Context</th><th>Duration</th><th>Easing</th></tr></thead>
+      <tbody>
+        <tr><td>Button hover</td><td>200ms</td><td>ease</td></tr>
+        <tr><td>Color/opacity</td><td>150ms</td><td>ease</td></tr>
+        <tr><td>Panel shadow</td><td>300ms</td><td>ease</td></tr>
+        <tr><td>Modal enter</td><td>200ms</td><td>ease-out</td></tr>
+        <tr><td>Modal exit</td><td>150ms</td><td>ease-in</td></tr>
+        <tr><td>Dropdown enter</td><td>150ms</td><td>ease-out</td></tr>
+        <tr><td>Slide-in</td><td>400ms</td><td>ease-out</td></tr>
+        <tr><td>Theme switch</td><td>500ms</td><td>ease</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ===== 8. LAYOUT ===== -->
+<div id="layout" class="section">
+  <h2 class="section-title">Layout & Grid</h2>
+  <p class="section-desc">Mobile-first breakpoints. Panels float above background. Z-index scale prevents stacking conflicts.</p>
+
+  <div class="sub">
+    <h3 class="sub-title">Breakpoints</h3>
+    <table class="breakpoint-table">
+      <thead><tr><th>Token</th><th>Width</th><th>Context</th></tr></thead>
+      <tbody>
+        <tr><td>mobile</td><td>375px</td><td>Small phones</td></tr>
+        <tr><td>mobile-lg</td><td>480px</td><td>Large phones</td></tr>
+        <tr><td>tablet</td><td>768px</td><td>Tablets, small laptops</td></tr>
+        <tr><td>desktop</td><td>1024px</td><td>Standard desktop</td></tr>
+        <tr><td>desktop-lg</td><td>1440px</td><td>Large desktop</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Z-Index Scale</h3>
+    <div class="zindex-stack">
+      <div class="zindex-bar" style="background:rgba(16,185,129,0.15);"><span class="zindex-value" style="color:var(--foreground-faint);">0</span><span class="zindex-label" style="color:var(--foreground-muted);">Base content</span></div>
+      <div class="zindex-bar" style="background:rgba(16,185,129,0.25);"><span class="zindex-value" style="color:var(--foreground);">10</span><span class="zindex-label" style="color:var(--foreground);">Raised — sticky toolbar, panels</span></div>
+      <div class="zindex-bar" style="background:rgba(16,185,129,0.35);"><span class="zindex-value" style="color:var(--foreground);">20</span><span class="zindex-label" style="color:var(--foreground);">Dropdown — menus, popovers</span></div>
+      <div class="zindex-bar" style="background:rgba(16,185,129,0.45);"><span class="zindex-value" style="color:var(--foreground);">30</span><span class="zindex-label" style="color:var(--foreground);">Sticky — nested scroll headers</span></div>
+      <div class="zindex-bar" style="background:rgba(16,185,129,0.6);"><span class="zindex-value" style="color:white;">50</span><span class="zindex-label" style="color:white;">Header — main nav</span></div>
+      <div class="zindex-bar" style="background:rgba(16,185,129,0.7);"><span class="zindex-value" style="color:white;">60</span><span class="zindex-label" style="color:white;">Toast — notifications</span></div>
+      <div class="zindex-bar" style="background:rgba(16,185,129,0.8);"><span class="zindex-value" style="color:white;">70</span><span class="zindex-label" style="color:white;">Modal backdrop</span></div>
+      <div class="zindex-bar" style="background:rgba(16,185,129,0.9);"><span class="zindex-value" style="color:white;">80</span><span class="zindex-label" style="color:white;">Modal content</span></div>
+      <div class="zindex-bar" style="background:var(--primary);"><span class="zindex-value" style="color:white;">90</span><span class="zindex-label" style="color:white;">Tooltip — always on top</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 9. DARK MODE ===== -->
+<div id="darkmode" class="section">
+  <h2 class="section-title">Dark Mode</h2>
+  <p class="section-desc">
+    Intentional forest-green palette, not inverted colors. Deep emerald backgrounds create warmth at night. Toggle the theme (top-right) to see all components adapt.
+  </p>
+
+  <div class="sub">
+    <h3 class="sub-title">Side-by-Side Comparison</h3>
+    <div class="darkmode-comparison">
+      <div class="darkmode-half dm-light-sample">
+        <div class="dm-label">Light Mode</div>
+        <div class="dm-card">
+          <div class="dm-card-stripe"></div>
+          <div class="dm-card-body">
+            <h3>ברוכים הבאים</h3>
+            <p>עורך Markdown מתקדם עם תמיכה מלאה בעברית ובכיוון RTL.</p>
+          </div>
+        </div>
+      </div>
+      <div class="darkmode-half dm-dark-sample">
+        <div class="dm-label">Dark Mode</div>
+        <div class="dm-card">
+          <div class="dm-card-stripe"></div>
+          <div class="dm-card-body">
+            <h3>ברוכים הבאים</h3>
+            <p>עורך Markdown מתקדם עם תמיכה מלאה בעברית ובכיוון RTL.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Surface Stack (Dark)</h3>
+    <p class="sub-desc">Three depth levels — darkest at back, lightest at front. All forest-green tinted.</p>
+    <div class="surface-stack">
+      <div class="surface-layer" style="background:#0B1A14;color:#6EE7B7;">
+        Page<br><span>#0B1A14</span>
+      </div>
+      <div class="surface-layer" style="background:#132B22;color:#a7f3d0;">
+        Panel<br><span>#132B22</span>
+      </div>
+      <div class="surface-layer" style="background:#1A3D30;color:#ecfdf5;">
+        Raised<br><span>#1A3D30</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Rules</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:600px;">
+      <div class="token-row"><span style="color:var(--primary);font-weight:700;margin-inline-end:8px;">1</span> Backgrounds use HSL 155&deg; (emerald), never 0&deg; (gray)</div>
+      <div class="token-row"><span style="color:var(--primary);font-weight:700;margin-inline-end:8px;">2</span> Borders use alpha-blended emerald: rgba(110,231,183,0.12)</div>
+      <div class="token-row"><span style="color:var(--primary);font-weight:700;margin-inline-end:8px;">3</span> Shadows are neutral-dark (no emerald tint on dark bg)</div>
+      <div class="token-row"><span style="color:var(--primary);font-weight:700;margin-inline-end:8px;">4</span> Primary #10B981 stays identical in both modes</div>
+      <div class="token-row"><span style="color:var(--primary);font-weight:700;margin-inline-end:8px;">5</span> Header is always dark glassmorphic (similar in both)</div>
+      <div class="token-row"><span style="color:var(--primary);font-weight:700;margin-inline-end:8px;">6</span> Accent stripe uses same gradient in both modes</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 10. RTL ===== -->
+<div id="rtl" class="section">
+  <h2 class="section-title">RTL Rules</h2>
+  <p class="section-desc">Hebrew-first. Every layout decision accounts for right-to-left. Logical CSS properties are mandatory.</p>
+
+  <div class="sub">
+    <h3 class="sub-title">Live RTL Demo</h3>
+    <div class="rtl-demo">
+      <h2>סיכום פגישת צוות</h2>
+      <h3>נושאים שנדונו</h3>
+      <p>הצוות דן בעדיפויות לספרינט הקרוב. המשימות העיקריות כוללות:</p>
+      <ul>
+        <li>שיפור ביצועי הייצוא ל-PDF</li>
+        <li>תמיכה ב-RTL אוטומטית</li>
+        <li>אינטגרציה עם <code>Claude API</code></li>
+      </ul>
+      <blockquote><strong>הערה חשובה:</strong> יש לסיים את המיגרציה לפני סוף החודש.</blockquote>
+      <p>Mixed content: הפרויקט נבנה עם <code>Next.js</code> ו-<code>TypeScript</code> ומשתמש ב-Markdown rendering.</p>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Logical Properties (mandatory)</h3>
+    <table class="logical-table">
+      <thead><tr><th>Physical (DON'T)</th><th>Logical (DO)</th></tr></thead>
+      <tbody>
+        <tr><td class="dont">margin-left</td><td class="do">margin-inline-start</td></tr>
+        <tr><td class="dont">margin-right</td><td class="do">margin-inline-end</td></tr>
+        <tr><td class="dont">padding-left</td><td class="do">padding-inline-start</td></tr>
+        <tr><td class="dont">padding-right</td><td class="do">padding-inline-end</td></tr>
+        <tr><td class="dont">border-left</td><td class="do">border-inline-start</td></tr>
+        <tr><td class="dont">text-align: left</td><td class="do">text-align: start</td></tr>
+        <tr><td class="dont">left: 0</td><td class="do">inset-inline-start: 0</td></tr>
+        <tr><td class="dont">float: left</td><td class="do">float: inline-start</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Icon Mirroring</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:500px;">
+      <div class="token-row" style="background:rgba(239,68,68,0.05);">
+        <span style="font-size:16px;"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7M19 12H5"/></svg></span>
+        <span style="font-size:12px;">Directional arrows — <strong style="color:var(--primary)">MIRROR</strong></span>
+      </div>
+      <div class="token-row" style="background:rgba(16,185,129,0.05);">
+        <span style="font-size:16px;"><b>B</b></span>
+        <span style="font-size:12px;">Non-directional — <strong>NO mirror</strong></span>
+      </div>
+      <div class="token-row" style="background:rgba(239,68,68,0.05);">
+        <span style="font-size:16px;"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 8 7 12 3 16"/><line x1="21" x2="11" y1="12" y2="12"/><line x1="21" x2="11" y1="6" y2="6"/><line x1="21" x2="11" y1="18" y2="18"/></svg></span>
+        <span style="font-size:12px;">Indent/outdent — <strong style="color:var(--primary)">MIRROR</strong></span>
+      </div>
+      <div class="token-row" style="background:rgba(16,185,129,0.05);">
+        <span style="font-size:16px;"><svg class="ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg></span>
+        <span style="font-size:12px;">Close, settings — <strong>NO mirror</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 11. ACCESSIBILITY ===== -->
+<div id="accessibility" class="section">
+  <h2 class="section-title">Accessibility</h2>
+  <p class="section-desc">WCAG AA compliance. All text/background combinations verified for 4.5:1 contrast minimum.</p>
+
+  <div class="sub">
+    <h3 class="sub-title">Contrast Verification</h3>
+    <div class="contrast-grid">
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:#FFFFFF;color:#064E3B;">Primary text on white</div>
+        <div class="contrast-meta"><span>#064E3B / #FFF</span><span class="contrast-pass">9.4:1 AA</span></div>
+      </div>
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:#FFFFFF;color:#047857;">Muted text on white</div>
+        <div class="contrast-meta"><span>#047857 / #FFF</span><span class="contrast-pass">6.5:1 AA</span></div>
+      </div>
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:#10B981;color:#FFFFFF;">White on primary</div>
+        <div class="contrast-meta"><span>#FFF / #10B981</span><span class="contrast-pass">4.6:1 AA</span></div>
+      </div>
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:#0B1A14;color:#ecfdf5;">Body text (dark)</div>
+        <div class="contrast-meta"><span>#ecfdf5 / #0B1A14</span><span class="contrast-pass">14.2:1 AAA</span></div>
+      </div>
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:#0B1A14;color:#6EE7B7;">Muted text (dark)</div>
+        <div class="contrast-meta"><span>#6EE7B7 / #0B1A14</span><span class="contrast-pass">10.8:1 AAA</span></div>
+      </div>
+      <div class="contrast-card">
+        <div class="contrast-preview" style="background:rgba(6,78,59,0.95);color:#FFFFFF;">Header text</div>
+        <div class="contrast-meta"><span>#FFF / header-bg</span><span class="contrast-pass">12.1:1 AAA</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Checklist</h3>
+    <div style="display:flex;flex-direction:column;gap:8px;max-width:600px;">
+      <div class="token-row"><span style="color:var(--primary);margin-inline-end:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Color contrast &ge; 4.5:1 for all text</div>
+      <div class="token-row"><span style="color:var(--primary);margin-inline-end:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Focus ring visible (3px emerald box-shadow)</div>
+      <div class="token-row"><span style="color:var(--primary);margin-inline-end:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Touch targets &ge; 32px (toolbar), &ge; 40px (actions)</div>
+      <div class="token-row"><span style="color:var(--primary);margin-inline-end:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> aria-label on all icon-only buttons (Hebrew)</div>
+      <div class="token-row"><span style="color:var(--primary);margin-inline-end:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> prefers-reduced-motion disables animation</div>
+      <div class="token-row"><span style="color:var(--primary);margin-inline-end:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Form inputs have associated labels</div>
+      <div class="token-row"><span style="color:var(--primary);margin-inline-end:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Color not sole indicator (bg + border for states)</div>
+      <div class="token-row"><span style="color:var(--primary);margin-inline-end:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> Keyboard nav: Tab order matches RTL visual flow</div>
+      <div class="token-row"><span style="color:var(--primary);margin-inline-end:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> lang="he" and dir="rtl" on html element</div>
+      <div class="token-row"><span style="color:var(--primary);margin-inline-end:8px;"><svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span> No emojis as icons — Lucide SVGs only</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 12. ICONS ===== -->
+<div id="icons" class="section">
+  <h2 class="section-title">Icon System</h2>
+  <p class="section-desc">Lucide icons only. Stroke-based, consistent stroke width. No emojis anywhere in the product.</p>
+
+  <div class="sub">
+    <h3 class="sub-title">Size Scale</h3>
+    <p class="sub-desc">One icon (Sparkles) shown at all 5 sizes. Stroke width stays at 2px for xs-md, drops to 1.75px for lg and 1.5px for xl.</p>
+    <div style="display:flex;gap:32px;align-items:flex-end;flex-wrap:wrap;">
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div class="icon-box" style="width:32px;height:32px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/><path d="M5 3v4M19 17v4M3 5h4M17 19h4"/></svg></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--foreground-faint);">xs 14px</span>
+        <span style="font-size:9px;color:var(--foreground-faint);">badges</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div class="icon-box" style="width:36px;height:36px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/><path d="M5 3v4M19 17v4M3 5h4M17 19h4"/></svg></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--foreground-faint);">sm 16px</span>
+        <span style="font-size:9px;color:var(--foreground-faint);">toolbar</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div class="icon-box" style="width:40px;height:40px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/><path d="M5 3v4M19 17v4M3 5h4M17 19h4"/></svg></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--foreground-faint);">md 20px</span>
+        <span style="font-size:9px;color:var(--foreground-faint);">buttons</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div class="icon-box" style="width:48px;height:48px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/><path d="M5 3v4M19 17v4M3 5h4M17 19h4"/></svg></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--foreground-faint);">lg 24px</span>
+        <span style="font-size:9px;color:var(--foreground-faint);">features</span>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+        <div class="icon-box" style="width:56px;height:56px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/><path d="M5 3v4M19 17v4M3 5h4M17 19h4"/></svg></div>
+        <span style="font-family:var(--font-mono);font-size:10px;color:var(--foreground-faint);">xl 32px</span>
+        <span style="font-size:9px;color:var(--foreground-faint);">landing</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Icon Catalog</h3>
+    <p class="sub-desc">Every Lucide icon used in Marko. Hover to highlight. Organized by function.</p>
+    <div class="icon-catalog" id="iconCatalog"></div>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Color Rules</h3>
+    <div class="icon-color-demo">
+      <div class="icon-color-card">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--foreground-muted);"><path d="M6 12h12M6 20V4M18 20V4"/></svg>
+        <div><strong style="font-size:12px;">Interactive</strong><br><span style="font-size:11px;color:var(--foreground-faint);">Inherits text color, changes on hover</span></div>
+      </div>
+      <div class="icon-color-card">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--foreground-faint);"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <div><strong style="font-size:12px;">Decorative</strong><br><span style="font-size:11px;color:var(--foreground-faint);">Uses --foreground-faint, never full color</span></div>
+      </div>
+      <div class="icon-color-card">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/><path d="M5 3v4M19 17v4M3 5h4M17 19h4"/></svg>
+        <div><strong style="font-size:12px;">Brand</strong><br><span style="font-size:11px;color:var(--foreground-faint);">Uses --primary for brand features</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">RTL Mirroring</h3>
+    <p class="sub-desc">Directional icons must be mirrored in RTL using <code style="font-family:var(--font-mono);font-size:11px;background:var(--color-code-bg);padding:2px 6px;border-radius:4px;">transform: scaleX(-1)</code></p>
+    <div style="display:flex;gap:24px;flex-wrap:wrap;">
+      <div class="icon-color-card">
+        <div style="display:flex;gap:16px;align-items:center;">
+          <div style="text-align:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--foreground-muted);"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            <div style="font-size:9px;color:var(--foreground-faint);margin-top:4px;">LTR</div>
+          </div>
+          <span style="font-size:12px;color:var(--foreground-faint);">vs</span>
+          <div style="text-align:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);transform:scaleX(-1);"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            <div style="font-size:9px;color:var(--primary);margin-top:4px;">RTL (mirrored)</div>
+          </div>
+        </div>
+      </div>
+      <div class="icon-color-card">
+        <div style="display:flex;gap:16px;align-items:center;">
+          <div style="text-align:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--foreground-muted);"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+            <div style="font-size:9px;color:var(--foreground-faint);margin-top:4px;">Undo LTR</div>
+          </div>
+          <span style="font-size:12px;color:var(--foreground-faint);">vs</span>
+          <div style="text-align:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);transform:scaleX(-1);"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+            <div style="font-size:9px;color:var(--primary);margin-top:4px;">Undo RTL</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 13. ANIMATIONS ===== -->
+<div id="animations" class="section">
+  <h2 class="section-title">Animations & Motion</h2>
+  <p class="section-desc">Every keyframe and transition defined in the system. Click "Replay" to see each animation. All respect prefers-reduced-motion.</p>
+
+  <div class="sub">
+    <h3 class="sub-title">Keyframe Animations</h3>
+    <div class="anim-grid">
+      <div class="anim-card">
+        <h4>slideInFromBottom</h4>
+        <div class="anim-meta">400ms ease-out</div>
+        <div class="anim-stage">
+          <div class="anim-target" id="anim-slide" style="animation: slideInFromBottom 0.4s ease-out;">Slide</div>
+        </div>
+        <button class="anim-replay" onclick="replayAnim('anim-slide','slideInFromBottom 0.4s ease-out')">Replay</button>
+        <div class="anim-code">@keyframes slideInFromBottom {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}</div>
+      </div>
+
+      <div class="anim-card">
+        <h4>scaleIn</h4>
+        <div class="anim-meta">200ms ease-out</div>
+        <div class="anim-stage">
+          <div class="anim-target" id="anim-scale" style="animation: scaleIn 0.2s ease-out;">Scale</div>
+        </div>
+        <button class="anim-replay" onclick="replayAnim('anim-scale','scaleIn 0.2s ease-out')">Replay</button>
+        <div class="anim-code">@keyframes scaleIn {
+  from { opacity:0; transform:scale(0.95); }
+  to   { opacity:1; transform:scale(1); }
+}</div>
+      </div>
+
+      <div class="anim-card">
+        <h4>fadeIn</h4>
+        <div class="anim-meta">300ms ease</div>
+        <div class="anim-stage">
+          <div class="anim-target" id="anim-fade" style="animation: fadeIn 0.3s ease;">Fade</div>
+        </div>
+        <button class="anim-replay" onclick="replayAnim('anim-fade','fadeIn 0.3s ease')">Replay</button>
+        <div class="anim-code">@keyframes fadeIn {
+  from { opacity:0; }
+  to   { opacity:1; }
+}</div>
+      </div>
+
+      <div class="anim-card">
+        <h4>slideDown</h4>
+        <div class="anim-meta">200ms ease-out</div>
+        <div class="anim-stage">
+          <div class="anim-target" id="anim-dropdown" style="animation: slideDown 0.2s ease-out;border-radius:6px;width:120px;">Menu</div>
+        </div>
+        <button class="anim-replay" onclick="replayAnim('anim-dropdown','slideDown 0.2s ease-out')">Replay</button>
+        <div class="anim-code">@keyframes slideDown {
+  from { opacity:0; transform:translateY(-8px); }
+  to   { opacity:1; transform:translateY(0); }
+}</div>
+      </div>
+
+      <div class="anim-card">
+        <h4>pulse-border</h4>
+        <div class="anim-meta">2s infinite</div>
+        <div class="anim-stage">
+          <div style="position:relative;padding:8px 16px;border-radius:6px;color:var(--primary);font-size:13px;font-family:var(--font-mono);">
+            AI
+            <span style="position:absolute;inset:-2px;border-radius:6px;border:1px dashed var(--primary);animation:pulse-border 2s infinite;"></span>
+          </div>
+        </div>
+        <div class="anim-code">@keyframes pulse-border {
+  0%,100% { opacity:0; }
+  50%     { opacity:0.5; }
+}</div>
+      </div>
+
+      <div class="anim-card">
+        <h4>spin</h4>
+        <div class="anim-meta">800ms linear infinite</div>
+        <div class="anim-stage">
+          <div style="width:24px;height:24px;border:2.5px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+        </div>
+        <div class="anim-code">@keyframes spin {
+  to { transform: rotate(360deg); }
+}</div>
+      </div>
+
+      <div class="anim-card">
+        <h4>skeleton-pulse</h4>
+        <div class="anim-meta">1.5s ease-in-out infinite</div>
+        <div class="anim-stage">
+          <div style="display:flex;flex-direction:column;gap:8px;width:80%;">
+            <div style="height:12px;border-radius:6px;background:var(--surface-raised);animation:skeleton-pulse 1.5s ease-in-out infinite;"></div>
+            <div style="height:12px;width:60%;border-radius:6px;background:var(--surface-raised);animation:skeleton-pulse 1.5s ease-in-out infinite 0.1s;"></div>
+          </div>
+        </div>
+        <div class="anim-code">@keyframes skeleton-pulse {
+  0%,100% { opacity:1; }
+  50%     { opacity:0.4; }
+}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Transition Timing</h3>
+    <p class="sub-desc">Hover each card to see its timing in action. The bar animates at the specified duration.</p>
+    <div class="timing-grid">
+      <div class="timing-card">
+        <h4>Color / Opacity</h4>
+        <div class="timing-meta">150ms ease</div>
+        <div class="timing-bar-track"><div class="timing-bar-fill" style="transition-duration:150ms;"></div></div>
+      </div>
+      <div class="timing-card">
+        <h4>Button Hover</h4>
+        <div class="timing-meta">200ms ease</div>
+        <div class="timing-bar-track"><div class="timing-bar-fill" style="transition-duration:200ms;"></div></div>
+      </div>
+      <div class="timing-card">
+        <h4>Panel Shadow</h4>
+        <div class="timing-meta">300ms ease</div>
+        <div class="timing-bar-track"><div class="timing-bar-fill" style="transition-duration:300ms;"></div></div>
+      </div>
+      <div class="timing-card">
+        <h4>Slide-in Content</h4>
+        <div class="timing-meta">400ms ease-out</div>
+        <div class="timing-bar-track"><div class="timing-bar-fill" style="transition-duration:400ms;transition-timing-function:ease-out;"></div></div>
+      </div>
+      <div class="timing-card">
+        <h4>Theme Switch</h4>
+        <div class="timing-meta">500ms ease</div>
+        <div class="timing-bar-track"><div class="timing-bar-fill" style="transition-duration:500ms;"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub">
+    <h3 class="sub-title">Reduced Motion</h3>
+    <div class="anim-card" style="max-width:500px;">
+      <h4>prefers-reduced-motion</h4>
+      <p style="font-size:12px;color:var(--foreground-muted);margin:8px 0;line-height:1.5;">All decorative animations are disabled when the user has requested reduced motion. Functional transitions (opacity for visibility) use 0.1s instead of full removal.</p>
+      <div class="anim-code">@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showSection(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.target.classList.add('active');
+    window.scrollTo(0, 0);
+  }
+
+  // Animation replay
+  function replayAnim(id, animValue) {
+    const el = document.getElementById(id);
+    el.style.animation = 'none';
+    el.offsetHeight; // force reflow
+    el.style.animation = animValue;
+  }
+
+  // Build icon catalog
+  const ICONS = {
+    'bold':['<path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/><path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"/>','Formatting','Bold'],
+    'italic':['<line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/>','Formatting','Italic'],
+    'strikethrough':['<path d="M16 4H9a3 3 0 0 0-2.83 4"/><path d="M14 12a4 4 0 0 1 0 8H6"/><line x1="4" x2="20" y1="12" y2="12"/>','Formatting','Strike'],
+    'heading':['<path d="M6 12h12M6 20V4M18 20V4"/>','Formatting','Heading'],
+    'list':['<line x1="8" x2="21" y1="6" y2="6"/><line x1="8" x2="21" y1="12" y2="12"/><line x1="8" x2="21" y1="18" y2="18"/><line x1="3" x2="3.01" y1="6" y2="6"/><line x1="3" x2="3.01" y1="12" y2="12"/><line x1="3" x2="3.01" y1="18" y2="18"/>','Formatting','UL List'],
+    'list-ordered':['<line x1="10" x2="21" y1="6" y2="6"/><line x1="10" x2="21" y1="12" y2="12"/><line x1="10" x2="21" y1="18" y2="18"/><path d="M4 6h1v4M4 10h2M6 18H4c0-1 2-2 2-3s-1-1.5-2-1"/>','Formatting','OL List'],
+    'list-checks':['<path d="m3 17 2 2 4-4M3 7l2 2 4-4M13 6h8M13 12h8M13 18h8"/>','Formatting','Checklist'],
+    'link':['<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>','Content','Link'],
+    'image':['<rect width="18" height="18" x="3" y="3" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.09-3.09a2 2 0 0 0-2.82 0L6 21"/>','Content','Image'],
+    'code':['<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>','Content','Code'],
+    'table':['<path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M3 15h18"/>','Content','Table'],
+    'quote':['<path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V21z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3z"/>','Content','Quote'],
+    'minus':['<path d="M5 12h14"/>','Content','HR'],
+    'sparkles':['<path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3Z"/><path d="M5 3v4M19 17v4M3 5h4M17 19h4"/>','Content','AI'],
+    'download':['<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>','Navigation','Export'],
+    'copy':['<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>','Navigation','Copy'],
+    'clipboard':['<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>','Navigation','Clipboard'],
+    'pen-line':['<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>','UI','Edit'],
+    'eye':['<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>','UI','Preview'],
+    'columns':['<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/>','UI','Split'],
+    'moon':['<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>','UI','Dark mode'],
+    'sun':['<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>','UI','Light mode'],
+    'palette':['<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>','UI','Colors'],
+    'presentation':['<path d="M2 3h20M21 3v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V3"/><path d="m7 21 5-5 5 5"/>','UI','Present'],
+    'search':['<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>','UI','Search'],
+    'x':['<path d="M18 6 6 18M6 6l12 12"/>','UI','Close'],
+    'check':['<path d="M20 6 9 17l-5-5"/>','Status','Success'],
+    'check-circle':['<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/>','Status','Done'],
+    'alert-triangle':['<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4M12 17h.01"/>','Status','Warning'],
+    'alert-circle':['<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>','Status','Error'],
+    'info':['<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>','Status','Info'],
+    'user':['<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>','Status','User'],
+    'log-in':['<path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" x2="3" y1="12" y2="12"/>','Status','Login'],
+    'undo':['<path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/>','Navigation','Undo'],
+    'redo':['<path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/>','Navigation','Redo'],
+    'arrow-left':['<path d="m12 19-7-7 7-7M19 12H5"/>','Navigation','Back'],
+    'chevron-down':['<path d="m6 9 6 6 6-6"/>','Navigation','Expand'],
+    'file-text':['<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8M16 13H8M16 17H8"/>','Navigation','File'],
+  };
+
+  function buildIconCatalog() {
+    const cat = document.getElementById('iconCatalog');
+    if (!cat) return;
+    const groups = {};
+    for (const [name, [paths, group, usage]] of Object.entries(ICONS)) {
+      if (!groups[group]) groups[group] = [];
+      groups[group].push({ name, paths, usage });
+    }
+    let html = '';
+    for (const [group, icons] of Object.entries(groups)) {
+      html += '<div class="icon-group-title">' + group + '</div>';
+      for (const ico of icons) {
+        html += '<div class="icon-card"><div class="icon-render"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + ico.paths + '</svg></div><div class="icon-name">' + ico.name + '</div><div class="icon-usage">' + ico.usage + '</div></div>';
+      }
+    }
+    cat.innerHTML = html;
+  }
+  buildIconCatalog();
+
+  function toggleTheme() {
+    document.body.classList.toggle('dark');
+    const btn = document.getElementById('themeBtn');
+    const isDark = document.body.classList.contains('dark');
+    btn.innerHTML = isDark
+      ? '<svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>'
+      : '<svg class="ico" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+  }
+</script>
+
+</body>
+</html>

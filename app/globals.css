@@ -48,40 +48,40 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 0.75rem;
 
-  /* shadcn/ui variables */
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* shadcn/ui variables — EMERALD IDENTITY */
+  --background: #FFFFFF;
+  --foreground: #064E3B;
+  --card: #FFFFFF;
+  --card-foreground: #064E3B;
+  --popover: #FFFFFF;
+  --popover-foreground: #064E3B;
+  --primary: #10B981;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F0FDF4;
+  --secondary-foreground: #064E3B;
+  --muted: #F0FDF4;
+  --muted-foreground: #047857;
+  --accent: #ecfdf5;
+  --accent-foreground: #064E3B;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: #d1fae5;
+  --input: #d1fae5;
+  --ring: #10B981;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #F0FDF4;
+  --sidebar-foreground: #064E3B;
+  --sidebar-primary: #10B981;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #ecfdf5;
+  --sidebar-accent-foreground: #064E3B;
+  --sidebar-border: #d1fae5;
+  --sidebar-ring: #10B981;
 
   /* 17-color Marko custom property system — "classic" theme */
   /* Text (4) */
@@ -115,37 +115,37 @@
 
 .dark,
 [data-theme="dark"] {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: #0f1f1a;
+  --foreground: #ecfdf5;
+  --card: #132520;
+  --card-foreground: #ecfdf5;
+  --popover: #132520;
+  --popover-foreground: #ecfdf5;
+  --primary: #10B981;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1a2e25;
+  --secondary-foreground: #ecfdf5;
+  --muted: #1a2e25;
+  --muted-foreground: #6EE7B7;
+  --accent: #1a2e25;
+  --accent-foreground: #ecfdf5;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --border: rgba(110, 231, 183, 0.15);
+  --input: rgba(110, 231, 183, 0.2);
+  --ring: #10B981;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar: #132520;
+  --sidebar-foreground: #ecfdf5;
+  --sidebar-primary: #10B981;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #1a2e25;
+  --sidebar-accent-foreground: #ecfdf5;
+  --sidebar-border: rgba(110, 231, 183, 0.15);
+  --sidebar-ring: #10B981;
 
   /* 17-color Marko custom property system — dark overrides */
   /* Text (4) */
@@ -396,3 +396,162 @@
 /* Font sizes in preview-content use rem units and won't cascade from font-size: 1.1em.
    A future story can introduce a --presentation-scale CSS variable to scale them uniformly.
    For now, the distraction-free full-screen view provides the "large format" experience. */
+
+/* ============================================
+   Phase B: Visual Effects & Layout
+   ============================================ */
+
+/* B1 — Landing page gradient background (NOT for editor) */
+.landing-gradient {
+  background: linear-gradient(180deg, #064E3B 0%, #0a6b4d 30%, #10B981 70%, #6EE7B7 100%);
+  min-height: 100vh;
+}
+
+/* B2 — Glassmorphic header */
+.marko-header {
+  background: rgba(6, 78, 59, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  color: #ecfdf5;
+}
+
+/* Header child elements inherit light text */
+.marko-header .text-muted-foreground {
+  color: #a7f3d0;
+}
+
+.marko-header .bg-border,
+.marko-header .bg-border {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.marko-logo-icon {
+  background: linear-gradient(135deg, #6EE7B7, #2DD4BF);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(110, 231, 183, 0.3);
+}
+
+/* B3 — Panel styling (editor & preview) */
+.marko-panel {
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(6, 78, 59, 0.15);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.marko-panel:hover {
+  box-shadow: 0 20px 60px rgba(6, 78, 59, 0.25);
+}
+
+.marko-panel::before {
+  content: '';
+  display: block;
+  height: 3px;
+  background: linear-gradient(90deg, #10B981, #6EE7B7, #2DD4BF);
+}
+
+.dark .marko-panel {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+}
+
+.dark .marko-panel:hover {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* B4 — Pill buttons with hover lift */
+.btn-marko {
+  border-radius: 25px;
+  padding: 0.6rem 1.25rem;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+}
+
+.btn-marko:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* B5 — Editor toolbar */
+.marko-toolbar {
+  background: var(--secondary);
+  padding: 0.75rem 1rem;
+}
+
+.marko-toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  min-width: 32px;
+  border-radius: 6px;
+  color: var(--muted-foreground);
+  transition: all 0.2s ease;
+}
+
+.marko-toolbar-btn:hover {
+  background: #10B981;
+  color: #ffffff;
+}
+
+.dark .marko-toolbar {
+  background: var(--secondary);
+}
+
+/* B6 — Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #10B981;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #064E3B;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #6EE7B7;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #2DD4BF;
+}
+
+/* B7 — Animations */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideInFromBottom 0.4s ease-out;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.2s ease-out;
+}

@@ -8,7 +8,7 @@ export const runtime = "edge";
 export default function LandingPage() {
   return (
     <>
-      <main className="min-h-screen">
+      <main className="landing-gradient min-h-screen">
         <Hero />
         <Features />
         <Demo />

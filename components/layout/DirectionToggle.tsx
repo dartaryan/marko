@@ -28,7 +28,7 @@ export function DirectionToggle({ value, onChange }: DirectionToggleProps) {
     <div
       role="radiogroup"
       aria-label="כיוון מסמך"
-      className="flex items-center rounded-md border border-border bg-muted p-0.5 gap-0.5"
+      className="flex items-center rounded-md border border-white/20 bg-white/10 p-0.5 gap-0.5"
       onKeyDown={handleKeyDown}
     >
       {DIRECTIONS.map((dir) => (
@@ -42,8 +42,8 @@ export function DirectionToggle({ value, onChange }: DirectionToggleProps) {
           onClick={() => onChange(dir.value)}
           className={`rounded px-2 py-0.5 text-xs font-medium transition-colors ${
             value === dir.value
-              ? 'bg-background text-foreground shadow-sm'
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-white/20 text-white shadow-sm'
+              : 'text-emerald-200 hover:text-white'
           }`}
         >
           {dir.label}

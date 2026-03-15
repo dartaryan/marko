@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Noto_Sans_Hebrew, JetBrains_Mono } from "next/font/google";
+import { Varela_Round, JetBrains_Mono } from "next/font/google";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import { Toaster } from '@/components/ui/sonner';
 import { SITE_URL } from "@/lib/constants";
 import "./globals.css";
 
-const notoSansHebrew = Noto_Sans_Hebrew({
+const varelaRound = Varela_Round({
+  weight: "400",
   subsets: ["hebrew", "latin"],
   display: "swap",
   variable: "--font-body",
@@ -70,7 +71,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: FOUC_SCRIPT }} />
       </head>
-      <body className={`${notoSansHebrew.variable} ${jetBrainsMono.variable} font-sans antialiased`}>
+      <body className={`${varelaRound.variable} ${jetBrainsMono.variable} font-sans antialiased`}>
         <ConvexClientProvider>{children}</ConvexClientProvider>
         <Toaster dir="rtl" position="bottom-center" duration={3000} />
       </body>
