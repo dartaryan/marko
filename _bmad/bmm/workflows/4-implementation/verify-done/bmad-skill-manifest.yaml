@@ -1,0 +1,4 @@
+workflow.md:
+  canonicalId: bmad-verify-done
+  type: workflow
+  description: "Scan for DONE stories, triage, verify via browser, and produce fix reports"

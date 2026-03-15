@@ -37,3 +37,8 @@ ux-designer.agent.yaml:
   canonicalId: bmad-ux-designer
   type: agent
   description: "UX Designer for user research, interaction design, and UI patterns"
+
+hawk.agent.yaml:
+  canonicalId: bmad-hawk
+  type: agent
+  description: "Visual QA & Aesthetic Inspector for visual bug detection, screenshot analysis, and design improvement proposals"
