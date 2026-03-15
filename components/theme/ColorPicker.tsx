@@ -25,23 +25,23 @@ export function ColorPicker({ label, value, onChange }: ColorPickerProps) {
 
   return (
     <div className="flex items-center justify-between gap-2">
-      <label htmlFor={id} className="flex-1 truncate text-sm text-foreground" dir="rtl">
+      <label htmlFor={id} className="flex-1 truncate text-[var(--foreground)]" dir="rtl" style={{ fontSize: 'var(--text-body-sm)' }}>
         {label}
       </label>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-1.5">
         <input
           id={id}
           type="color"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="h-7 w-7 cursor-pointer rounded border border-border bg-transparent p-0.5"
+          className="marko-color-swatch"
           aria-label={label}
         />
         <input
           type="text"
           value={rawHex}
           onChange={(e) => handleHexInput(e.target.value)}
-          className="w-20 rounded border border-border px-2 py-1 font-mono text-xs"
+          className="marko-hex-input"
           maxLength={7}
           aria-label={`${label} - ערך hex`}
           dir="ltr"

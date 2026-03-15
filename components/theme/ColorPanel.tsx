@@ -76,17 +76,22 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
     <Sheet open={isOpen} onOpenChange={onOpenChange}>
       <SheetContent
         side="right"
-        className="w-80 overflow-y-auto data-[state=open]:duration-200 data-[state=closed]:duration-200"
+        className="w-80 overflow-y-auto border-s border-[var(--border)]"
+        style={{
+          background: 'var(--surface)',
+          boxShadow: 'var(--shadow-3)',
+          direction: 'rtl',
+        }}
       >
         <SheetHeader>
-          <SheetTitle>הגדרות צבע</SheetTitle>
-          <SheetDescription>התאם את צבעי מסמך התצוגה המקדימה</SheetDescription>
+          <SheetTitle className="text-[var(--foreground)]" style={{ fontSize: 'var(--text-h4)', fontWeight: 700 }}>הגדרות צבע</SheetTitle>
+          <SheetDescription className="text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>התאם את צבעי מסמך התצוגה המקדימה</SheetDescription>
         </SheetHeader>
 
-        <div className="mt-4 space-y-6 pb-6">
+        <div className="mt-4 space-y-6 pb-6" style={{ padding: '0 16px 24px' }}>
           {/* Preset selection grid + custom presets + save form */}
           <div>
-            <h3 className="mb-2 text-sm font-semibold text-muted-foreground">נושא</h3>
+            <h3 className="mb-2 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>נושא</h3>
             <PresetGrid
               activePreset={activePreset}
               onPresetSelect={(name, presetTheme) => {
@@ -119,14 +124,14 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
                     ref={nameInputRef}
                     placeholder="שם הנושא..."
                     dir="rtl"
-                    className="flex-1 rounded border border-border px-2 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    className="marko-panel-input flex-1"
                     aria-label="שם הנושא החדש"
                   />
                   <button
                     type="button"
                     onClick={handleSavePreset}
                     disabled={!draftPresetName.trim()}
-                    className="rounded border border-border px-2 py-1 text-sm hover:bg-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="marko-panel-btn-sm"
                     aria-label="שמור נושא"
                   >
                     שמור
@@ -137,7 +142,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
                       setIsSavingPreset(false);
                       setDraftPresetName('');
                     }}
-                    className="rounded border border-border px-2 py-1 text-sm hover:bg-muted transition-colors"
+                    className="marko-panel-btn-sm"
                     aria-label="ביטול שמירת נושא"
                   >
                     ביטול
@@ -147,7 +152,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
                 <button
                   type="button"
                   onClick={() => setIsSavingPreset(true)}
-                  className="w-full rounded border border-border px-3 py-1.5 text-start text-sm text-muted-foreground hover:bg-muted transition-colors"
+                  className="marko-panel-btn-full"
                   aria-label="שמור צבעים נוכחיים כנושא מותאם אישית"
                 >
                   שמור נושא נוכחי...
@@ -158,7 +163,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
 
           {/* Image extraction */}
           <div>
-            <h3 className="mb-2 text-sm font-semibold text-muted-foreground">חילוץ מתמונה</h3>
+            <h3 className="mb-2 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>חילוץ מתמונה</h3>
             <ImageColorExtractor
               onApply={(extractedTheme) => {
                 onThemeChange(extractedTheme);
@@ -169,7 +174,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
 
           {SECTIONS.map((section) => (
             <div key={section.title}>
-              <h3 className="mb-2 text-sm font-semibold text-muted-foreground">
+              <h3 className="mb-2 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>
                 {section.title}
               </h3>
               <div className="space-y-2">
@@ -191,8 +196,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
               onThemeChange(DEFAULT_CLASSIC_THEME);
               setActivePreset('classic');
             }}
-            className="w-full rounded border border-border px-3 py-2 text-sm
-                       text-muted-foreground hover:bg-muted motion-safe:active:scale-[0.98] transition-colors transition-transform"
+            className="marko-panel-btn-reset"
           >
             איפוס לברירת מחדל
           </button>

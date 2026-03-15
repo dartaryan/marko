@@ -23,7 +23,7 @@ export function ColorPreviewModal({
 }: ColorPreviewModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onCancel(); }}>
-      <DialogContent className="max-w-sm" dir="rtl">
+      <DialogContent className="max-w-sm" dir="rtl" style={{ background: 'var(--surface)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border)' }}>
         <DialogHeader>
           <DialogTitle>תצוגה מקדימה של צבעים</DialogTitle>
         </DialogHeader>
@@ -33,8 +33,8 @@ export function ColorPreviewModal({
           {extractedColors.map((c, i) => (
             <div
               key={i}
-              className="h-8 w-8 rounded-full border-2 border-border"
-              style={{ background: rgbToHex(c) }}
+              className="h-7 w-7 rounded-full border-2 border-[var(--border)]"
+              style={{ boxShadow: 'var(--shadow-1)', background: rgbToHex(c) }}
               title={rgbToHex(c)}
             />
           ))}
@@ -97,7 +97,7 @@ export function ColorPreviewModal({
           <button
             type="button"
             onClick={onApply}
-            className="rounded border border-border px-3 py-1.5 text-sm hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="marko-panel-btn-primary"
             aria-label="החל צבעים על המסמך"
           >
             החל צבעים
@@ -105,7 +105,7 @@ export function ColorPreviewModal({
           <button
             type="button"
             onClick={onShuffle}
-            className="rounded border border-border px-3 py-1.5 text-sm hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="marko-panel-btn-sm"
             aria-label="ערבב מיפוי הצבעים"
           >
             ערבב
@@ -113,7 +113,7 @@ export function ColorPreviewModal({
           <button
             type="button"
             onClick={onCancel}
-            className="rounded border border-border px-3 py-1.5 text-sm hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="marko-panel-btn-sm"
             aria-label="ביטול חילוץ הצבעים"
           >
             ביטול

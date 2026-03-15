@@ -1,5 +1,6 @@
 'use client';
 import { useRef, useState } from 'react';
+import { ImagePlus } from 'lucide-react';
 import {
   getLuminance,
   mapExtractedColors,
@@ -95,25 +96,10 @@ export function ImageColorExtractor({ onApply }: ImageColorExtractorProps) {
         ref={uploadButtonRef}
         type="button"
         onClick={() => fileInputRef.current?.click()}
-        className="flex w-full items-center gap-2 rounded border border-border px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        className="marko-panel-btn-full"
         aria-label="העלה תמונה לחילוץ צבעים"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-          <circle cx="8.5" cy="8.5" r="1.5" />
-          <polyline points="21 15 16 10 5 21" />
-        </svg>
+        <ImagePlus className="size-4" aria-hidden="true" />
         העלה תמונה
       </button>
 

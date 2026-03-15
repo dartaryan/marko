@@ -51,7 +51,7 @@ export function PresetGrid({
   return (
     <div>
       {/* Built-in presets: 5-column radiogroup */}
-      <div ref={groupRef} className="grid grid-cols-5 gap-1.5" role="radiogroup" aria-label="נושאי צבע">
+      <div ref={groupRef} className="grid grid-cols-5 gap-2" role="radiogroup" aria-label="נושאי צבע">
         {COLOR_PRESETS.map((preset, index) => {
           const isActive = preset.name === activePreset;
           return (
@@ -65,13 +65,13 @@ export function PresetGrid({
               tabIndex={index === tabbableIndex ? 0 : -1}
               onClick={() => onPresetSelect(preset.name, preset.theme)}
               onKeyDown={(e) => handleKeyDown(e, index)}
-              style={{ background: getPresetGradient(preset.theme) }}
+              style={{ background: getPresetGradient(preset.theme), boxShadow: 'var(--shadow-1)' }}
               className={[
-                'h-9 w-full rounded transition-transform',
+                'marko-preset-circle',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
                 isActive
-                  ? 'ring-2 ring-primary ring-offset-1'
-                  : 'motion-safe:hover:scale-105',
+                  ? 'border-2 border-[var(--primary)]'
+                  : 'border-2 border-transparent motion-safe:hover:scale-110',
                 'motion-safe:active:scale-95',
               ].join(' ')}
             />
@@ -82,7 +82,7 @@ export function PresetGrid({
       {/* Custom presets: list rows with swatch, name, delete */}
       {customPresets.length > 0 && (
         <div className="mt-3" role="group" aria-label="נושאים מותאמים אישית">
-          <h4 className="mb-1.5 text-xs font-medium text-muted-foreground">נושאים שלי</h4>
+          <h4 className="mb-1.5 font-medium text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-caption)' }}>נושאים שלי</h4>
           <div className="space-y-1">
             {customPresets.map((preset, index) => (
               <div key={`${preset.name}-${index}`} className="flex items-center gap-2">
@@ -90,8 +90,8 @@ export function PresetGrid({
                 <button
                   type="button"
                   onClick={() => onCustomPresetSelect(preset.colors)}
-                  style={{ background: getPresetGradient(preset.colors) }}
-                  className="h-6 w-8 flex-shrink-0 rounded transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 motion-safe:hover:scale-105 motion-safe:active:scale-95"
+                  style={{ background: getPresetGradient(preset.colors), boxShadow: 'var(--shadow-1)' }}
+                  className="h-7 w-7 flex-shrink-0 rounded-full transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 motion-safe:hover:scale-110 motion-safe:active:scale-95"
                   aria-hidden="true"
                   tabIndex={-1}
                   title={preset.name}
@@ -100,7 +100,8 @@ export function PresetGrid({
                 <button
                   type="button"
                   onClick={() => onCustomPresetSelect(preset.colors)}
-                  className="flex-1 truncate text-start text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:underline"
+                  className="flex-1 truncate text-start text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors focus-visible:outline-none focus-visible:underline"
+                  style={{ fontSize: 'var(--text-body-sm)' }}
                   aria-label={`הפעל נושא ${preset.name}`}
                 >
                   {preset.name}
@@ -109,7 +110,7 @@ export function PresetGrid({
                 <button
                   type="button"
                   onClick={() => onDeleteCustomPreset(index)}
-                  className="flex-shrink-0 rounded p-0.5 text-muted-foreground hover:text-destructive transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  className="flex-shrink-0 rounded p-0.5 text-[var(--foreground-faint)] hover:text-[var(--destructive)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   aria-label={`מחק נושא ${preset.name}`}
                   title={`מחק ${preset.name}`}
                 >

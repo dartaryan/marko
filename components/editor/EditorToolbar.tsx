@@ -25,7 +25,7 @@ interface EditorToolbarProps {
 }
 
 function ToolbarSeparator() {
-  return <div className="mx-0.5 h-4 w-px bg-border" aria-hidden="true" />;
+  return <div className="mx-1 h-5 w-px bg-border" aria-hidden="true" />;
 }
 
 export function EditorToolbar({ textareaRef, onInsert, onAiClick }: EditorToolbarProps) {
@@ -89,18 +89,18 @@ export function EditorToolbar({ textareaRef, onInsert, onAiClick }: EditorToolba
     <div
       role="toolbar"
       aria-label="סרגל עיצוב"
-      className="marko-toolbar flex flex-wrap items-center gap-0.5 border-b border-border"
+      className="marko-toolbar flex flex-wrap items-center gap-0.5"
       onKeyDown={handleToolbarKeyDown}
     >
       {/* Group 1: Text formatting */}
       <FormatButton onClick={() => insert('bold')} ariaLabel="מודגש" title="מודגש">
-        <Bold className="size-3.5" />
+        <Bold className="size-4" />
       </FormatButton>
       <FormatButton onClick={() => insert('italic')} ariaLabel="נטוי" title="נטוי">
-        <Italic className="size-3.5" />
+        <Italic className="size-4" />
       </FormatButton>
       <FormatButton onClick={() => insert('strikethrough')} ariaLabel="קו חוצה" title="קו חוצה">
-        <Strikethrough className="size-3.5" />
+        <Strikethrough className="size-4" />
       </FormatButton>
 
       <ToolbarSeparator />
@@ -118,29 +118,29 @@ export function EditorToolbar({ textareaRef, onInsert, onAiClick }: EditorToolba
 
       {/* Group 3: Lists */}
       <FormatButton onClick={() => insert('ul')} ariaLabel="רשימה" title="רשימה">
-        <List className="size-3.5" />
+        <List className="size-4" />
       </FormatButton>
       <FormatButton onClick={() => insert('ol')} ariaLabel="רשימה ממוספרת" title="רשימה ממוספרת">
-        <ListOrdered className="size-3.5" />
+        <ListOrdered className="size-4" />
       </FormatButton>
       <FormatButton onClick={() => insert('task')} ariaLabel="רשימת משימות" title="רשימת משימות">
-        <ListChecks className="size-3.5" />
+        <ListChecks className="size-4" />
       </FormatButton>
 
       <ToolbarSeparator />
 
       {/* Group 4: Insert */}
       <FormatButton onClick={() => insert('link')} ariaLabel="קישור" title="קישור">
-        <Link className="size-3.5" />
+        <Link className="size-4" />
       </FormatButton>
       <FormatButton onClick={() => insert('image')} ariaLabel="תמונה" title="תמונה">
-        <ImageIcon className="size-3.5" />
+        <ImageIcon className="size-4" />
       </FormatButton>
       <FormatButton onClick={() => insert('table')} ariaLabel="טבלה" title="טבלה">
-        <Table2 className="size-3.5" />
+        <Table2 className="size-4" />
       </FormatButton>
       <FormatButton onClick={() => insert('hr')} ariaLabel="קו מפריד" title="קו מפריד">
-        <Minus className="size-3.5" />
+        <Minus className="size-4" />
       </FormatButton>
 
       <ToolbarSeparator />
@@ -171,8 +171,9 @@ export function EditorToolbar({ textareaRef, onInsert, onAiClick }: EditorToolba
         onClick={() => onAiClick?.()}
         ariaLabel="שאל את מארקו AI (Ctrl+K)"
         title="שאל את מארקו AI (Ctrl+K)"
+        className="marko-toolbar-btn--ai"
       >
-        <Sparkles className="size-3.5 text-green-500" />
+        <Sparkles className="size-4" />
       </FormatButton>
     </div>
   );

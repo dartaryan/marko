@@ -83,8 +83,7 @@ export function ToolbarDropdown({ triggerAriaLabel, triggerLabel, title, items, 
         title={title ?? triggerAriaLabel}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        className="marko-toolbar-btn flex h-8 items-center gap-0.5 rounded-md px-2 text-xs
-                   active:scale-[0.97]"
+        className="marko-toolbar-btn h-8 px-2 text-[13px] gap-1"
       >
         <span>{triggerLabel}</span>
         <ChevronDown className="size-3" aria-hidden="true" />
@@ -95,7 +94,7 @@ export function ToolbarDropdown({ triggerAriaLabel, triggerLabel, title, items, 
           role="menu"
           aria-label={triggerAriaLabel}
           className="absolute start-0 top-full z-50 mt-1 min-w-36 rounded-md border
-                     border-border bg-popover shadow-md"
+                     border-border bg-popover shadow-[var(--shadow-2)] animate-slide-down"
         >
           {items.map((item) => (
             <button
@@ -108,7 +107,7 @@ export function ToolbarDropdown({ triggerAriaLabel, triggerLabel, title, items, 
                 close();
               }}
               className="flex w-full items-center gap-2 px-3 py-1.5 text-start text-sm
-                         text-popover-foreground hover:bg-muted transition-colors"
+                         text-popover-foreground hover:bg-primary-ghost transition-colors"
             >
               <span>{item.label}</span>
               {item.labelEn && (

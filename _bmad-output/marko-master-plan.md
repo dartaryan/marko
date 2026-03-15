@@ -107,9 +107,9 @@ Rebuild ALL component styling from scratch following the design system. This is 
 | V2 | Header (glassmorphic, branded buttons) | `components/layout/Header.tsx` | `DONE` |
 | V3 | Editor/Preview panels (floating, elevated) | `components/layout/PanelLayout.tsx` | `DONE` |
 | V4 | Editor page background & layout | `app/editor/page.tsx` or layout | `DONE` |
-| V5 | Formatting toolbar (sized, grouped, styled) | `components/editor/EditorToolbar.tsx`, `FormatButton.tsx` | `TODO` |
+| V5 | Formatting toolbar (sized, grouped, styled) | `components/editor/EditorToolbar.tsx`, `FormatButton.tsx` | `DONE` |
 | V6 | Button variants (pill, sizes, hover) | `components/ui/button.tsx` | `DONE` |
-| V7 | Color panel (slide-out, premium feel) | `components/theme/ColorPanel.tsx` | `TODO` |
+| V7 | Color panel (slide-out, premium feel) | `components/theme/ColorPanel.tsx` | `DONE` |
 | V8 | Export modal (rounded, branded) | `components/export/ExportModal.tsx` | `TODO` |
 | V9 | Landing page — Hero | `components/landing/Hero.tsx` | `TODO` |
 | V10 | Landing page — Features cards | `components/landing/Features.tsx` | `TODO` |
