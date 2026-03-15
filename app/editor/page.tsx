@@ -212,7 +212,7 @@ export default function EditorPage() {
   }
 
   return (
-    <main className="flex h-screen flex-col">
+    <main className="flex h-screen flex-col pt-14">
       {isAiUnavailable && (
         <div
           role="alert"

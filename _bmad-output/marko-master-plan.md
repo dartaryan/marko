@@ -103,12 +103,12 @@ Rebuild ALL component styling from scratch following the design system. This is 
 
 | ID | Component | File(s) | Status |
 |----|-----------|---------|--------|
-| V1 | Global CSS tokens & base styles | `app/globals.css` | `TODO` |
-| V2 | Header (glassmorphic, branded buttons) | `components/layout/Header.tsx` | `TODO` |
+| V1 | Global CSS tokens & base styles | `app/globals.css` | `DONE` |
+| V2 | Header (glassmorphic, branded buttons) | `components/layout/Header.tsx` | `DONE` |
 | V3 | Editor/Preview panels (floating, elevated) | `components/layout/PanelLayout.tsx` | `TODO` |
 | V4 | Editor page background & layout | `app/editor/page.tsx` or layout | `TODO` |
 | V5 | Formatting toolbar (sized, grouped, styled) | `components/editor/EditorToolbar.tsx`, `FormatButton.tsx` | `TODO` |
-| V6 | Button variants (pill, sizes, hover) | `components/ui/button.tsx` | `TODO` |
+| V6 | Button variants (pill, sizes, hover) | `components/ui/button.tsx` | `DONE` |
 | V7 | Color panel (slide-out, premium feel) | `components/theme/ColorPanel.tsx` | `TODO` |
 | V8 | Export modal (rounded, branded) | `components/export/ExportModal.tsx` | `TODO` |
 | V9 | Landing page — Hero | `components/landing/Hero.tsx` | `TODO` |

@@ -38,37 +38,80 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-pill: 9999px;
+  --color-background-subtle: var(--background-subtle);
+  --color-foreground-muted: var(--foreground-muted);
+  --color-foreground-faint: var(--foreground-faint);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-strong: var(--border-strong);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-primary-ghost: var(--primary-ghost);
+  --color-primary-ghost-strong: var(--primary-ghost-strong);
+  --color-destructive-hover: var(--destructive-hover);
+  --color-warning: var(--warning);
+  --color-success: var(--success);
+  --color-info: var(--info);
 }
 
 :root {
-  --radius: 0.75rem;
+  /* Core Emerald Palette (Section 2.1) */
+  --color-emerald-50: #ecfdf5;
+  --color-emerald-100: #d1fae5;
+  --color-emerald-200: #a7f3d0;
+  --color-emerald-300: #6EE7B7;
+  --color-emerald-400: #34d399;
+  --color-emerald-500: #10B981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-800: #065f46;
+  --color-emerald-900: #064E3B;
+  --color-teal-400: #2DD4BF;
 
-  /* shadcn/ui variables — EMERALD IDENTITY */
+  /* shadcn/ui Semantic Tokens — Light Mode (Section 2.2) */
   --background: #FFFFFF;
+  --background-subtle: #F8FAF9;
   --foreground: #064E3B;
+  --foreground-muted: #047857;
+  --foreground-faint: #6B7280;
   --card: #FFFFFF;
   --card-foreground: #064E3B;
   --popover: #FFFFFF;
   --popover-foreground: #064E3B;
   --primary: #10B981;
   --primary-foreground: #FFFFFF;
+  --primary-hover: #059669;
+  --primary-active: #047857;
+  --primary-ghost: rgba(16, 185, 129, 0.08);
+  --primary-ghost-strong: rgba(16, 185, 129, 0.15);
   --secondary: #F0FDF4;
   --secondary-foreground: #064E3B;
   --muted: #F0FDF4;
   --muted-foreground: #047857;
   --accent: #ecfdf5;
   --accent-foreground: #064E3B;
-  --destructive: oklch(0.577 0.245 27.325);
+  --surface: #FFFFFF;
+  --surface-raised: #F0FDF4;
+  --surface-overlay: rgba(255, 255, 255, 0.85);
+  --destructive: #EF4444;
+  --destructive-hover: #DC2626;
+  --warning: #F59E0B;
+  --success: #10B981;
+  --info: #2DD4BF;
   --border: #d1fae5;
+  --border-subtle: #e5f5ef;
+  --border-strong: #a7f3d0;
   --input: #d1fae5;
-  --ring: #10B981;
+  --ring: rgba(16, 185, 129, 0.4);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -83,28 +126,92 @@
   --sidebar-border: #d1fae5;
   --sidebar-ring: #10B981;
 
+  /* Gradient Tokens (Section 2.3) */
+  --gradient-brand: linear-gradient(135deg, #10B981, #6EE7B7, #2DD4BF);
+  --gradient-brand-subtle: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(110,231,183,0.08));
+  --gradient-landing: linear-gradient(180deg, #064E3B 0%, #0a6b4d 30%, #10B981 70%, #6EE7B7 100%);
+  --gradient-landing-dark: linear-gradient(180deg, #041F17 0%, #064E3B 40%, #0B1A14 100%);
+  --gradient-logo: linear-gradient(135deg, #6EE7B7, #2DD4BF);
+  --gradient-glow: radial-gradient(circle at 50% 50%, rgba(16,185,129,0.15), transparent 70%);
+
+  /* Typography Tokens (Section 3) */
+  --font-body: 'Varela Round', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', monospace;
+  --text-display: 2.441rem;
+  --text-h1: 1.953rem;
+  --text-h2: 1.563rem;
+  --text-h3: 1.25rem;
+  --text-h4: 1.125rem;
+  --text-body: 1rem;
+  --text-body-sm: 0.875rem;
+  --text-caption: 0.75rem;
+  --text-overline: 0.6875rem;
+  --text-code: 0.875rem;
+  --text-code-sm: 0.8125rem;
+
+  /* Spacing Tokens (Section 4.1) — 4px base */
+  --space-0: 0px;
+  --space-0-5: 2px;
+  --space-1: 4px;
+  --space-1-5: 6px;
+  --space-2: 8px;
+  --space-2-5: 10px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --space-24: 96px;
+
+  /* Shadow Tokens — Light Mode (Section 5) */
+  --shadow-0: none;
+  --shadow-1: 0 1px 3px rgba(6, 78, 59, 0.08), 0 1px 2px rgba(6, 78, 59, 0.06);
+  --shadow-2: 0 4px 12px rgba(6, 78, 59, 0.1), 0 2px 4px rgba(6, 78, 59, 0.06);
+  --shadow-3: 0 10px 40px rgba(6, 78, 59, 0.15), 0 4px 12px rgba(6, 78, 59, 0.08);
+  --shadow-4: 0 20px 60px rgba(6, 78, 59, 0.25), 0 8px 20px rgba(6, 78, 59, 0.1);
+  --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.25);
+  --shadow-glow-strong: 0 0 40px rgba(16, 185, 129, 0.35);
+  --shadow-header: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --shadow-inset: inset 0 2px 4px rgba(6, 78, 59, 0.06);
+
+  /* Icon Size Tokens (Section 12.2) */
+  --icon-xs: 14px;
+  --icon-sm: 16px;
+  --icon-md: 20px;
+  --icon-lg: 24px;
+  --icon-xl: 32px;
+
+  /* Z-Index Scale (Section 9.6) */
+  --z-base: 0;
+  --z-raised: 10;
+  --z-dropdown: 20;
+  --z-sticky: 30;
+  --z-fixed: 40;
+  --z-header: 50;
+  --z-toast: 60;
+  --z-modal-backdrop: 70;
+  --z-modal: 80;
+  --z-tooltip: 90;
+
   /* 17-color Marko custom property system — "classic" theme */
-  /* Text (4) */
   --color-primary-text: #333333;
   --color-secondary-text: #666666;
   --color-link: #10B981;
   --color-code: #e83e8c;
-
-  /* Headings (5) */
   --color-h1: #065f46;
   --color-h1-border: #10B981;
   --color-h2: #047857;
   --color-h2-border: #34d399;
   --color-h3: #059669;
-
-  /* Backgrounds (5) */
   --color-preview-bg: #ffffff;
   --color-code-bg: #f8f8f8;
   --color-blockquote-bg: #f0fdf4;
   --color-table-header: #ecfdf5;
   --color-table-alt: #f8fafb;
-
-  /* Accents (3) */
   --color-blockquote-border: #10B981;
   --color-hr: #d1d5db;
   --color-table-border: #d1d5db;
@@ -115,63 +222,80 @@
 
 .dark,
 [data-theme="dark"] {
-  --background: #0f1f1a;
+  /* Semantic Tokens — Dark Mode (Section 2.2) */
+  --background: #0B1A14;
+  --background-subtle: #0F2119;
   --foreground: #ecfdf5;
-  --card: #132520;
+  --foreground-muted: #6EE7B7;
+  --foreground-faint: #4B7A65;
+  --card: #132B22;
   --card-foreground: #ecfdf5;
-  --popover: #132520;
+  --popover: #132B22;
   --popover-foreground: #ecfdf5;
   --primary: #10B981;
   --primary-foreground: #FFFFFF;
-  --secondary: #1a2e25;
+  --primary-hover: #34d399;
+  --primary-active: #6EE7B7;
+  --primary-ghost: rgba(16, 185, 129, 0.1);
+  --primary-ghost-strong: rgba(16, 185, 129, 0.2);
+  --secondary: #1a3d30;
   --secondary-foreground: #ecfdf5;
-  --muted: #1a2e25;
+  --muted: #1a3d30;
   --muted-foreground: #6EE7B7;
-  --accent: #1a2e25;
+  --accent: #1a3d30;
   --accent-foreground: #ecfdf5;
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: rgba(110, 231, 183, 0.15);
+  --surface: #132B22;
+  --surface-raised: #1A3D30;
+  --surface-overlay: rgba(19, 43, 34, 0.9);
+  --destructive: #F87171;
+  --destructive-hover: #EF4444;
+  --warning: #FBBF24;
+  --success: #34d399;
+  --info: #2DD4BF;
+  --border: rgba(110, 231, 183, 0.12);
+  --border-subtle: rgba(110, 231, 183, 0.06);
+  --border-strong: rgba(110, 231, 183, 0.25);
   --input: rgba(110, 231, 183, 0.2);
-  --ring: #10B981;
+  --ring: rgba(16, 185, 129, 0.5);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: #132520;
+  --sidebar: #132B22;
   --sidebar-foreground: #ecfdf5;
   --sidebar-primary: #10B981;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #1a2e25;
+  --sidebar-accent: #1a3d30;
   --sidebar-accent-foreground: #ecfdf5;
-  --sidebar-border: rgba(110, 231, 183, 0.15);
+  --sidebar-border: rgba(110, 231, 183, 0.12);
   --sidebar-ring: #10B981;
 
-  /* 17-color Marko custom property system — dark overrides */
-  /* Text (4) */
-  --color-primary-text: #e0e0e0;
-  --color-secondary-text: #a0a0a0;
-  --color-link: #34d399;
-  --color-code: #f472b6;
+  /* Shadow Tokens — Dark Mode (Section 5.1) */
+  --shadow-1: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-2: 0 4px 12px rgba(0, 0, 0, 0.4), 0 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-3: 0 10px 40px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-4: 0 20px 60px rgba(0, 0, 0, 0.6), 0 8px 20px rgba(0, 0, 0, 0.35);
+  --shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.2);
 
-  /* Headings (5) */
-  --color-h1: #6ee7b7;
+  /* 17-color system — Dark Mode (Section 10.4) */
+  --color-primary-text: #E0E8E4;
+  --color-secondary-text: #8FAFA0;
+  --color-link: #34d399;
+  --color-code: #F472B6;
+  --color-h1: #6EE7B7;
   --color-h1-border: #10B981;
   --color-h2: #34d399;
   --color-h2-border: #059669;
-  --color-h3: #a7f3d0;
-
-  /* Backgrounds (5) */
-  --color-preview-bg: #1a1a2e;
-  --color-code-bg: #2d2d3f;
-  --color-blockquote-bg: #1a2e1a;
-  --color-table-header: #1a2e2e;
-  --color-table-alt: #1e1e2e;
-
-  /* Accents (3) */
+  --color-h3: #A7F3D0;
+  --color-preview-bg: #0F1F19;
+  --color-code-bg: #162B23;
+  --color-blockquote-bg: #132B1A;
+  --color-table-header: #1A3D2E;
+  --color-table-alt: #142921;
   --color-blockquote-border: #10B981;
-  --color-hr: #4b5563;
-  --color-table-border: #4b5563;
+  --color-hr: rgba(110, 231, 183, 0.2);
+  --color-table-border: rgba(110, 231, 183, 0.15);
 }
 
 @layer base {
@@ -193,7 +317,7 @@
   background-color: var(--color-preview-bg);
   font-family: var(--font-body, var(--font-sans));
   line-height: 1.7;
-  direction: rtl; /* document-level RTL; Story 4 will add per-sentence detection */
+  direction: rtl;
 }
 
 .preview-content h1 {
@@ -251,19 +375,19 @@
   color: var(--color-code);
   background-color: var(--color-code-bg);
   padding: 0.125rem 0.375rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-xs);
   font-family: var(--font-mono);
   font-size: 0.875em;
-  direction: ltr; /* inline code always LTR */
+  direction: ltr;
   unicode-bidi: embed;
 }
 
 .preview-content pre {
   background-color: var(--color-code-bg);
-  border-radius: 0.5rem;
+  border-radius: var(--radius-md);
   overflow-x: auto;
   margin-bottom: 1rem;
-  direction: ltr; /* code blocks always LTR */
+  direction: ltr;
 }
 
 .preview-content pre code {
@@ -280,7 +404,7 @@
   border-inline-start: 4px solid var(--color-blockquote-border);
   padding: 0.75rem 1rem;
   margin: 1rem 0;
-  border-radius: 0 0.25rem 0.25rem 0;
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
 }
 
 .preview-content blockquote p:last-child {
@@ -328,10 +452,9 @@
 .preview-content img {
   max-width: 100%;
   height: auto;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-xs);
 }
 
-/* Highlight.js github-dark overrides to blend with preview-content background */
 .preview-content .hljs {
   background: var(--color-code-bg) !important;
 }
@@ -345,20 +468,20 @@
   margin: 1.25rem 0;
   display: flex;
   justify-content: center;
-  direction: ltr; /* Mermaid SVG diagrams are always LTR */
+  direction: ltr;
   overflow-x: auto;
 }
 
 .mermaid-wrapper svg {
   max-width: 100%;
   height: auto;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-md);
 }
 
 .mermaid-error {
   background-color: var(--color-blockquote-bg);
   border-inline-start: 4px solid var(--color-blockquote-border);
-  border-radius: 0 0.25rem 0.25rem 0;
+  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
   padding: 0.75rem 1rem;
   margin: 1rem 0;
   direction: rtl;
@@ -367,20 +490,20 @@
 .mermaid-error-title {
   color: var(--color-h1);
   font-weight: 600;
-  font-size: 0.875rem;
+  font-size: var(--text-body-sm);
   margin-bottom: 0.5rem;
 }
 
 .mermaid-error-source {
   font-family: var(--font-mono);
-  font-size: 0.8125rem;
+  font-size: var(--text-code-sm);
   color: var(--color-secondary-text);
   background-color: var(--color-code-bg);
   padding: 0.5rem;
-  border-radius: 0.25rem;
+  border-radius: var(--radius-xs);
   overflow-x: auto;
   white-space: pre;
-  direction: ltr; /* Source code is always LTR */
+  direction: ltr;
 }
 
 /* ============================================
@@ -393,89 +516,97 @@
   padding: 4rem 1.5rem;
 }
 
-/* Font sizes in preview-content use rem units and won't cascade from font-size: 1.1em.
-   A future story can introduce a --presentation-scale CSS variable to scale them uniformly.
-   For now, the distraction-free full-screen view provides the "large format" experience. */
-
 /* ============================================
    Phase B: Visual Effects & Layout
+   (updated to reference design system tokens)
    ============================================ */
 
-/* B1 — Landing page gradient background (NOT for editor) */
 .landing-gradient {
-  background: linear-gradient(180deg, #064E3B 0%, #0a6b4d 30%, #10B981 70%, #6EE7B7 100%);
+  background: var(--gradient-landing);
   min-height: 100vh;
 }
 
-/* B2 — Glassmorphic header */
+.dark .landing-gradient {
+  background: var(--gradient-landing-dark);
+}
+
 .marko-header {
+  position: fixed;
+  top: 0;
+  inset-inline: 0;
+  z-index: var(--z-header);
   background: rgba(6, 78, 59, 0.95);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  color: #ecfdf5;
+  backdrop-filter: blur(12px) saturate(1.2);
+  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  box-shadow: var(--shadow-header);
+  color: var(--color-emerald-50);
+  direction: rtl;
 }
 
-/* Header child elements inherit light text */
+.dark .marko-header {
+  background: rgba(11, 26, 20, 0.95);
+}
+
 .marko-header .text-muted-foreground {
-  color: #a7f3d0;
+  color: var(--color-emerald-200);
 }
 
-.marko-header .bg-border,
 .marko-header .bg-border {
   background-color: rgba(255, 255, 255, 0.15);
 }
 
-.marko-logo-icon {
-  background: linear-gradient(135deg, #6EE7B7, #2DD4BF);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(110, 231, 183, 0.3);
+.marko-header .marko-toolbar-btn {
+  color: #ecfdf5;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
 }
 
-/* B3 — Panel styling (editor & preview) */
+.marko-header .marko-toolbar-btn:hover {
+  background: rgba(110, 231, 183, 0.2);
+  color: #FFFFFF;
+}
+
+.marko-logo-icon {
+  background: var(--gradient-logo);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
+}
+
 .marko-panel {
-  border-radius: 24px;
-  box-shadow: 0 10px 40px rgba(6, 78, 59, 0.15);
+  border-radius: var(--radius-3xl);
+  box-shadow: var(--shadow-3);
   overflow: hidden;
   transition: box-shadow 0.3s ease;
 }
 
 .marko-panel:hover {
-  box-shadow: 0 20px 60px rgba(6, 78, 59, 0.25);
+  box-shadow: var(--shadow-4);
 }
 
 .marko-panel::before {
   content: '';
   display: block;
   height: 3px;
-  background: linear-gradient(90deg, #10B981, #6EE7B7, #2DD4BF);
+  background: var(--gradient-brand);
 }
 
-.dark .marko-panel {
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-}
-
-.dark .marko-panel:hover {
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-}
-
-/* B4 — Pill buttons with hover lift */
 .btn-marko {
-  border-radius: 25px;
-  padding: 0.6rem 1.25rem;
-  font-size: 0.9rem;
-  transition: all 0.3s ease;
+  border-radius: var(--radius-pill);
+  padding: var(--space-2-5) var(--space-5);
+  font-size: var(--text-body-sm);
+  transition: all 0.2s ease;
 }
 
 .btn-marko:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: var(--shadow-glow);
 }
 
-/* B5 — Editor toolbar */
 .marko-toolbar {
-  background: var(--secondary);
-  padding: 0.75rem 1rem;
+  background: var(--surface-raised);
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
 }
 
 .marko-toolbar-btn {
@@ -484,21 +615,17 @@
   justify-content: center;
   min-height: 32px;
   min-width: 32px;
-  border-radius: 6px;
-  color: var(--muted-foreground);
-  transition: all 0.2s ease;
+  border-radius: var(--radius-sm);
+  color: var(--foreground-muted);
+  transition: all 0.15s ease;
 }
 
 .marko-toolbar-btn:hover {
-  background: #10B981;
-  color: #ffffff;
+  background: var(--primary);
+  color: #FFFFFF;
 }
 
-.dark .marko-toolbar {
-  background: var(--secondary);
-}
-
-/* B6 — Custom scrollbar */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -509,49 +636,88 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #10B981;
-  border-radius: 4px;
+  background: var(--color-emerald-500);
+  border-radius: var(--radius-xs);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #064E3B;
+  background: var(--color-emerald-900);
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #6EE7B7;
+  background: var(--color-emerald-300);
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #2DD4BF;
+  background: var(--color-teal-400);
 }
 
-/* B7 — Animations */
+/* ============================================
+   Keyframe Animations (Section 8.7)
+   ============================================ */
+
 @keyframes slideInFromBottom {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-border {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
 }
 
 .animate-slide-in {
   animation: slideInFromBottom 0.4s ease-out;
 }
 
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
 .animate-scale-in {
   animation: scaleIn 0.2s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.2s ease-out;
+}
+
+/* Focus ring on dark backgrounds (header context) */
+.dark-context :focus-visible {
+  box-shadow: 0 0 0 3px rgba(110, 231, 183, 0.5);
+}
+
+/* Reduced motion (Section 8.6) */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
