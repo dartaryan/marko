@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { useAction } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useState } from "react";
@@ -35,7 +36,7 @@ export function UpgradePrompt({
   };
 
   return (
-    <div dir="rtl" className={className}>
+    <div dir="rtl" className={cn("flex items-center", className)}>
       <Button
         onClick={handleUpgrade}
         disabled={isLoading}

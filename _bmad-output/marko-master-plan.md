@@ -110,14 +110,14 @@ Rebuild ALL component styling from scratch following the design system. This is 
 | V5 | Formatting toolbar (sized, grouped, styled) | `components/editor/EditorToolbar.tsx`, `FormatButton.tsx` | `DONE` |
 | V6 | Button variants (pill, sizes, hover) | `components/ui/button.tsx` | `DONE` |
 | V7 | Color panel (slide-out, premium feel) | `components/theme/ColorPanel.tsx` | `DONE` |
-| V8 | Export modal (rounded, branded) | `components/export/ExportModal.tsx` | `TODO` |
-| V9 | Landing page — Hero | `components/landing/Hero.tsx` | `TODO` |
-| V10 | Landing page — Features cards | `components/landing/Features.tsx` | `TODO` |
-| V11 | Landing page — Demo section | `components/landing/Demo.tsx` | `TODO` |
-| V12 | Footer (editor + landing) | `components/layout/Footer.tsx` | `TODO` |
-| V13 | Dark mode — full theme validation | All components | `TODO` |
-| V14 | Mobile responsive — all breakpoints | All components | `TODO` |
-| V15 | Auth components styling | `components/auth/*.tsx` | `TODO` |
+| V8 | Export modal (rounded, branded) | `components/export/ExportModal.tsx` | `DONE` |
+| V9 | Landing page — Hero | `components/landing/Hero.tsx` | `DONE` |
+| V10 | Landing page — Features cards | `components/landing/Features.tsx` | `DONE` |
+| V11 | Landing page — Demo section | `components/landing/Demo.tsx` | `DONE` |
+| V12 | Footer (editor + landing) | `components/layout/Footer.tsx` | `DONE` |
+| V13 | Dark mode — full theme validation | All components | `DONE` |
+| V14 | Mobile responsive — all breakpoints | All components | `DONE` |
+| V15 | Auth components styling | `components/auth/*.tsx` | `DONE` |
 
 ---
 

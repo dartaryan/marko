@@ -13,7 +13,7 @@ export const EditorTextarea = forwardRef<HTMLTextAreaElement, EditorTextareaProp
     return (
       <textarea
         ref={ref}
-        className="h-full w-full resize-none bg-background p-4 font-mono text-sm text-foreground
+        className="h-full w-full resize-none bg-surface p-4 font-mono text-sm text-foreground
                    placeholder:text-muted-foreground focus:outline-none"
         dir={dir}
         lang="he"

@@ -8,6 +8,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { getFirstHeading } from '@/lib/export/filename-utils';
 import type { ExportType } from '@/types/editor';
 
@@ -73,7 +74,6 @@ export function ExportModal({
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === 'Enter') handleExport();
-    // Escape handled natively by Radix UI Dialog
   }
 
   const ext = EXT_MAP[exportType];
@@ -81,13 +81,16 @@ export function ExportModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-sm">
-        <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
+      <DialogContent
+        dir="rtl"
+        className="max-w-[480px] gap-0 bg-surface p-0 shadow-[var(--shadow-4)]"
+      >
+        <DialogHeader className="px-6 pt-5 pb-3">
+          <DialogTitle className="text-lg font-bold">{title}</DialogTitle>
           <DialogDescription>הכנס שם קובץ לייצוא המסמך</DialogDescription>
         </DialogHeader>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2 px-6 pb-5">
           <input
             ref={inputRef}
             type="text"
@@ -97,34 +100,33 @@ export function ExportModal({
             dir="auto"
             placeholder="שם הקובץ"
             aria-label="שם הקובץ לייצוא"
-            className="flex-1 rounded border border-border px-2 py-1.5 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex-1 h-10 rounded-md bg-background border border-border px-3 py-2.5 text-sm text-foreground placeholder:text-foreground-faint focus:border-primary focus:outline-none focus:ring-[3px] focus:ring-[var(--ring)] transition-colors"
           />
           <span
-            className="flex-shrink-0 text-sm text-muted-foreground"
+            className="flex-shrink-0 text-sm text-foreground-muted"
             aria-label={`סיומת הקובץ: ${ext}`}
           >
             {ext}
           </span>
         </div>
 
-        <DialogFooter>
-          <button
-            type="button"
+        <DialogFooter className="px-6 py-4 border-t border-border">
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={() => onOpenChange(false)}
-            className="rounded border border-border px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted transition-colors"
             aria-label="ביטול ייצוא"
           >
             ביטול
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
+            size="sm"
             onClick={handleExport}
             disabled={!filename.trim()}
-            className="rounded bg-primary px-3 py-1.5 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             aria-label="אשר ייצוא"
           >
             ייצא
-          </button>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

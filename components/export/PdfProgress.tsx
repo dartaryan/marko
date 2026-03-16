@@ -1,5 +1,5 @@
 'use client';
-import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertCircle, X } from 'lucide-react';
 
 interface PdfProgressProps {
   state: 'generating' | 'success' | 'error';
@@ -24,7 +24,7 @@ export function PdfProgress({ state, onRetry, onClose, onPrint }: PdfProgressPro
       )}
       {state === 'success' && (
         <>
-          <CheckCircle2 className="size-4 text-green-600" aria-hidden="true" />
+          <CheckCircle2 className="size-4 text-success" aria-hidden="true" />
           <span className="text-sm">!PDF נוצר בהצלחה</span>
         </>
       )}
@@ -56,7 +56,7 @@ export function PdfProgress({ state, onRetry, onClose, onPrint }: PdfProgressPro
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
             aria-label="סגור"
           >
-            ✕
+            <X className="size-3" aria-hidden="true" />
           </button>
         </>
       )}

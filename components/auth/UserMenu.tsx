@@ -20,10 +20,14 @@ export function UserMenu({ tier }: UserMenuProps) {
       <UserButton
         appearance={{
           variables: {
-            colorPrimary: "hsl(var(--primary))",
+            colorPrimary: "#10B981",
+            borderRadius: "12px",
           },
           elements: {
-            avatarBox: "size-7",
+            avatarBox: "size-7 rounded-full",
+            card: "rounded-[12px] shadow-[0_10px_40px_rgba(6,78,59,0.15),0_4px_12px_rgba(6,78,59,0.08)] border border-[var(--border)]",
+            userButtonPopoverActionButton:
+              "rounded-[4px] hover:bg-[var(--primary-ghost)]",
           },
         }}
       >
@@ -44,7 +48,7 @@ export function UserMenu({ tier }: UserMenuProps) {
       </UserButton>
       {tier === "paid" && (
         <span
-          className="absolute -bottom-0.5 -end-0.5 size-2.5 rounded-full bg-yellow-500 border-2 border-background"
+          className="absolute -bottom-0.5 -end-0.5 size-2.5 rounded-full bg-[var(--color-emerald-500)] border-2 border-[var(--background)] shadow-[0_0_6px_rgba(16,185,129,0.4)]"
           role="img"
           aria-label="מנוי פרימיום"
           data-testid="paid-badge"

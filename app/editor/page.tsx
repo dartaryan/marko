@@ -26,6 +26,7 @@ import { copyForWord, copyHtml, copyText } from '@/lib/export/word-copy';
 import type { ExportType, CopyType } from '@/types/editor';
 import type { AiActionType } from '@/types/ai';
 import { PanelLayout } from '@/components/layout/PanelLayout';
+import { Footer } from '@/components/layout/Footer';
 import { EditorPanel } from '@/components/editor/EditorPanel';
 import { PreviewPanel } from '@/components/preview/PreviewPanel';
 import { PresentationView } from '@/components/preview/PresentationView';
@@ -303,6 +304,7 @@ export default function EditorPage() {
         onAccept={handleDisclosureAccept}
         onCancel={handleDisclosureCancel}
       />
+      <Footer />
     </main>
   );
 }

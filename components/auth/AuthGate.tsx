@@ -10,7 +10,7 @@ export function AuthGate() {
   if (isLoading) {
     return (
       <div
-        className="size-7 animate-pulse rounded-full bg-muted"
+        className="size-7 animate-pulse rounded-full bg-[rgba(110,231,183,0.15)]"
         data-testid="auth-loading"
       />
     );

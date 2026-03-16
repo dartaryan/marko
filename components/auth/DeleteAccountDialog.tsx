@@ -53,17 +53,23 @@ export function DeleteAccountDialog({
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
-      <AlertDialogContent data-testid="delete-account-dialog">
+      <AlertDialogContent
+        dir="rtl"
+        data-testid="delete-account-dialog"
+        className="bg-surface shadow-[var(--shadow-4)] dark:border-[var(--border)]"
+      >
         <AlertDialogHeader>
-          <AlertDialogTitle>מחיקת חשבון</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogTitle className="text-[18px] font-bold text-foreground">
+            מחיקת חשבון
+          </AlertDialogTitle>
+          <AlertDialogDescription className="text-[14px] text-foreground-muted">
             פעולה זו תמחק את החשבון שלך ואת כל הנתונים לצמיתות. לא ניתן לבטל
             פעולה זו.
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <div className="grid gap-2">
-          <label htmlFor="delete-confirm" className="text-sm text-muted-foreground">
-            הקלד <span className="font-semibold text-foreground">{CONFIRMATION_WORD}</span> לאישור:
+        <div className="grid gap-4">
+          <label htmlFor="delete-confirm" className="text-[14px] text-foreground-muted">
+            הקלד <span className="font-semibold text-destructive">{CONFIRMATION_WORD}</span> לאישור:
           </label>
           <Input
             id="delete-confirm"
@@ -72,9 +78,10 @@ export function DeleteAccountDialog({
             onChange={(e) => setConfirmText(e.target.value)}
             dir="rtl"
             disabled={isDeleting}
+            className="border-border-strong focus-visible:border-destructive focus-visible:ring-[3px] focus-visible:ring-destructive/20"
           />
         </div>
-        <AlertDialogFooter>
+        <AlertDialogFooter className="border-t border-border-subtle pt-4">
           <AlertDialogCancel disabled={isDeleting}>ביטול</AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
