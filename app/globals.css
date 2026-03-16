@@ -79,7 +79,7 @@
 
   /* shadcn/ui Semantic Tokens — Light Mode (Section 2.2) */
   --background: #FFFFFF;
-  --background-subtle: #F8FAF9;
+  --background-subtle: #EEF9F3;
   --foreground: #064E3B;
   --foreground-muted: #047857;
   --foreground-faint: #6B7280;
@@ -581,6 +581,14 @@
   background: var(--gradient-logo);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-2);
+}
+
+.marko-panel-grid {
+  background: linear-gradient(180deg, #e6f7f0 0%, #F0FDF4 50%, #F8FAF9 100%);
+}
+
+.dark .marko-panel-grid {
+  background: var(--background-subtle);
 }
 
 .marko-panel {

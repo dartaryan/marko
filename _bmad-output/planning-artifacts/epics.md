@@ -1,12 +1,23 @@
 ---
-stepsCompleted: ['step-01-validate-prerequisites', 'step-02-design-epics', 'step-03-create-stories', 'step-04-final-validation']
+stepsCompleted: ['step-01-validate-prerequisites', 'step-02-design-epics', 'step-03-create-stories', 'step-04-final-validation', 'course-correction-2026-03-16']
 inputDocuments:
   - '_bmad-output/planning-artifacts/prd.md'
   - '_bmad-output/planning-artifacts/architecture.md'
   - '_bmad-output/planning-artifacts/ux-design-specification.md'
+  - '_bmad-output/benakiva-feedback-round1.md'
 ---
 
 # Marko - Epic Breakdown
+
+## Course Correction Notice (2026-03-16)
+
+> **Sprint Change Proposal:** `_bmad-output/planning-artifacts/sprint-change-proposal-2026-03-16.md`
+> **Feedback Spec:** `_bmad-output/benakiva-feedback-round1.md`
+>
+> **Superseded stories:** S1.4 (→E12), S2.1 (→E13), S2.2 (→E13), S2.3 (→E13), S7.1 (→S7.1r), S7.2 (→S7.3r)
+> **Modified stories:** S1.6 (direction toggle removed from header), S6.2 (4 AI entry points)
+> **New epics:** E10 (RTL), E11 (BULK/Visual), E12 (Header/Nav), E13 (Themes), E14 (User Pages), E15 (Doc Management)
+> **Rewritten epic:** E7 (Landing Page) — old stories replaced by S7.1r, S7.2r, S7.3r
 
 ## Overview
 
@@ -386,11 +397,13 @@ So that I can create flowcharts, sequence diagrams, and other visuals within my 
 **And** invalid Mermaid syntax shows a clear error message in the preview (not a crash)
 **And** Mermaid.js is bundled via npm (not CDN)
 
-### Story 1.4: Formatting Toolbar
+### Story 1.4: Formatting Toolbar — SUPERSEDED by E12 (Header & Navigation Redesign)
 
-As a user,
+> **Note:** This story is replaced by E12/S12.1 (Header layout) which includes the toolbar as part of the complete header reorganization. See feedback item U1 in `_bmad-output/benakiva-feedback-round1.md`.
+
+~~As a user,
 I want a toolbar with formatting buttons for common Markdown syntax,
-So that I can quickly insert formatting without memorizing Markdown syntax.
+So that I can quickly insert formatting without memorizing Markdown syntax.~~
 
 **Acceptance Criteria:**
 
@@ -478,11 +491,13 @@ So that I experience a seamless transition without losing any of my customizatio
 
 Users can personalize their document appearance with 17 color properties, choose from built-in presets, save custom themes, extract palettes from images, and toggle dark/light mode -- all persisted across sessions.
 
-### Story 2.1: Color System & Color Panel
+### Story 2.1: Color System & Color Panel — SUPERSEDED by E13 (Theme System Redesign)
 
-As a user,
+> **Note:** This story is replaced by E13/S13.1–S13.3 which implements 8 curated themes, a redesigned panel with visual cards, and accent customization. See feedback items D5 and U2 in `_bmad-output/benakiva-feedback-round1.md`.
+
+~~As a user,
 I want to customize 17 color properties of my document preview through an interactive color panel,
-So that I can personalize the look and feel of my documents.
+So that I can personalize the look and feel of my documents.~~
 
 **Acceptance Criteria:**
 
@@ -496,11 +511,13 @@ So that I can personalize the look and feel of my documents.
 **And** the color panel has proper focus trapping and is accessible via keyboard
 **And** the panel uses a shadcn Sheet component with slide-out animation (<300ms)
 
-### Story 2.2: Built-in Theme Presets
+### Story 2.2: Built-in Theme Presets — SUPERSEDED by E13/S13.1
 
-As a user,
+> **Note:** Replaced by 8 curated themes in E13/S13.1. See feedback item D5.
+
+~~As a user,
 I want to choose from built-in color theme presets,
-So that I can quickly apply a polished look without manually adjusting each color.
+So that I can quickly apply a polished look without manually adjusting each color.~~
 
 **Acceptance Criteria:**
 
@@ -512,11 +529,13 @@ So that I can quickly apply a polished look without manually adjusting each colo
 **And** preset buttons have Hebrew tooltips with the preset name
 **And** the selected preset is persisted to localStorage
 
-### Story 2.3: Custom Preset Save & Load
+### Story 2.3: Custom Preset Save & Load — SUPERSEDED by E13/S13.3
 
-As a user,
+> **Note:** Replaced by accent customizer + advanced mode in E13/S13.3. See feedback items D5 and U2.
+
+~~As a user,
 I want to save my current color customizations as a named preset and load them later,
-So that I can reuse my favorite themes across sessions.
+So that I can reuse my favorite themes across sessions.~~
 
 **Acceptance Criteria:**
 
@@ -857,11 +876,13 @@ So that I understand the value proposition without feeling pressured.
 
 Marko has a crawlable, SEO-optimized landing page targeting Hebrew Markdown keywords, with structured data, meta tags, sitemap, and robots.txt.
 
-### Story 7.1: SSR Landing Page with Hebrew Content
+### Story 7.1: SSR Landing Page — SUPERSEDED by E7/S7.1r (Landing Redesign)
 
-As a potential user searching for a Hebrew Markdown tool,
+> **Note:** This story is replaced by S7.1r which implements a complete landing page redesign with hero mockup, tabbed demos, and warm emerald brand. See feedback item D7.
+
+~~As a potential user searching for a Hebrew Markdown tool,
 I want to find Marko via Google and land on a clear, fast page that explains what it does,
-So that I can decide to try the tool.
+So that I can decide to try the tool.~~
 
 **Acceptance Criteria:**
 
@@ -875,11 +896,13 @@ So that I can decide to try the tool.
 **And** the page achieves Lighthouse score of 90+ across Performance, Accessibility, Best Practices, and SEO
 **And** the landing page uses RTL layout with Tailwind logical properties
 
-### Story 7.2: Structured Data, Meta Tags & SEO Assets
+### Story 7.2: Structured Data & SEO — SUPERSEDED by E7/S7.3r
 
-As a search engine crawler,
+> **Note:** SEO requirements folded into S7.3r which preserves structured data and meta tags within the landing redesign.
+
+~~As a search engine crawler,
 I want proper structured data, meta tags, sitemap, and robots.txt on the landing page,
-So that Marko is correctly indexed and appears in relevant search results.
+So that Marko is correctly indexed and appears in relevant search results.~~
 
 **Acceptance Criteria:**
 
@@ -1022,3 +1045,691 @@ So that I have full control over my billing.
 **And** the user retains paid access until the period expires
 **And** after expiry, the user's tier reverts to "free" in Convex
 **And** a Hebrew confirmation message explains when access will end
+
+---
+
+## New Epics (Course Correction — 2026-03-16)
+
+> **Source:** BenAkiva Feedback Round 1 (`_bmad-output/benakiva-feedback-round1.md`)
+> **Sprint Change Proposal:** `_bmad-output/planning-artifacts/sprint-change-proposal-2026-03-16.md`
+> **Each story's detailed spec is in the feedback document under its item ID (D1-D7, B1-B2, N1-N7, U1-U4)**
+
+## Epic 10: RTL & Accessibility Foundation
+
+Full RTL audit with CSS logical properties migration. Every component must use directional-agnostic CSS. Icon mirroring rules. Code content LTR exceptions. Modal/dialog button placement follows RTL conventions.
+
+**Source items:** B2 (RTL audit), B1 (Color panel direction)
+**Priority:** P0 — must complete before any component-specific work
+**Phase:** WS3-P0
+
+### Story 10.1: Root RTL Setup & Global CSS Logical Properties
+
+As a Hebrew user,
+I want all UI elements to correctly respect RTL layout without any left-aligned text that should be right-aligned,
+So that the application feels native and professional in Hebrew.
+
+**Acceptance Criteria:**
+
+**Given** the root HTML element
+**When** the page loads
+**Then** `<html dir="rtl" lang="he">` is set in `app/layout.tsx`
+
+**Given** the global CSS file (`app/globals.css`)
+**When** audited for physical direction properties
+**Then** ALL `text-align: left` are replaced with `text-align: start`
+**And** ALL `text-align: right` are replaced with `text-align: end`
+**And** ALL `margin-left` are replaced with `margin-inline-start`
+**And** ALL `margin-right` are replaced with `margin-inline-end`
+**And** ALL `padding-left` are replaced with `padding-inline-start`
+**And** ALL `padding-right` are replaced with `padding-inline-end`
+**And** ALL `left:` in positioning contexts are replaced with `inset-inline-start:`
+**And** ALL `right:` in positioning contexts are replaced with `inset-inline-end:`
+**And** ALL `border-left` are replaced with `border-inline-start`
+**And** ALL `border-right` are replaced with `border-inline-end`
+**And** no physical direction properties remain in `globals.css` (except code block exceptions)
+
+### Story 10.2: Component-Level RTL Audit
+
+As a Hebrew user,
+I want every panel, modal, dropdown, and tooltip to open and align correctly in RTL mode,
+So that I never see misaligned or backwards UI elements.
+
+**Acceptance Criteria:**
+
+**Given** the ColorPanel component
+**When** it opens
+**Then** it slides from the **right** side (`side="right"`)
+**And** the close (X) button is at **top-left**
+**And** all labels are right-aligned, hex inputs have `dir="ltr"`
+
+**Given** the ExportModal component
+**When** it opens
+**Then** primary action buttons (Save/Export) are on the **left** side
+**And** secondary action (Cancel) is on the **right** side
+**And** close (X) is at **top-left**
+
+**Given** any component with directional icons (arrows, undo/redo, indent, send, sidebar toggle)
+**When** displayed in RTL mode
+**Then** they are mirrored with `transform: scaleX(-1)`
+**And** non-directional icons (X, bold, italic, search, gear, plus, trash) are NOT mirrored
+
+**Given** code blocks, inline code, URLs, hex values, keyboard shortcuts, file paths
+**When** rendered in the preview
+**Then** they always use `direction: ltr; text-align: left`
+**And** code blocks have `unicode-bidi: embed` to prevent Hebrew contamination
+
+**Given** form inputs for email, URL, or hex colors
+**When** displayed
+**Then** they use `direction: ltr; text-align: match-parent`
+**And** user text fields use `dir="auto"` for automatic direction detection
+
+**Components to audit:** ColorPanel.tsx, ExportModal.tsx, ToolbarDropdown.tsx, AiCommandPalette.tsx, all landing components, all auth components, all tooltips
+
+### Story 10.3: RTL Verification & Edge Cases
+
+As a developer,
+I want a verification pass confirming all RTL rules are correctly applied,
+So that no edge cases were missed in the audit.
+
+**Acceptance Criteria:**
+
+**Given** all components have been updated
+**When** visually inspected in RTL mode
+**Then** modal/dialog buttons follow: primary→left, secondary→right, X→top-left
+**And** numbers always render LTR
+**And** `dir="auto"` is set on all user-facing text input fields
+**And** no visual regressions exist at 375px, 768px, 1024px, 1440px viewports
+
+---
+
+## Epic 11: Visual Identity — BULK & Polish
+
+Global CSS pass to give Marko heavier visual weight. Solid button fills, thicker borders, larger fonts, generous spacing, rich editor background, emerald shadows. Footer removal. Icon enrichment.
+
+**Source items:** D1, D3, D4, D6, N7
+**Priority:** P0 (D3 BULK) + P1 (D1, D4, D6) + P2 (N7)
+**Phase:** WS3-P0 (S11.1) + WS3-P1 (S11.2, S11.3)
+
+### Story 11.1: BULK Pass — Global CSS Weight Increase
+
+As a user,
+I want Marko to feel substantial and warm — heavier borders, solid buttons, generous spacing,
+So that the interface feels premium and tactile rather than thin and generic.
+
+**Acceptance Criteria:**
+
+**Given** all button components
+**When** rendered
+**Then** buttons use solid fills as default (not outlined/ghost)
+**And** standard buttons have min-height **40px**, primary actions **44px**
+**And** all buttons have `border-radius: 9999px` (pill shape)
+**And** padding is minimum **10px 20px**
+
+**Given** all panels, cards, and inputs
+**When** rendered
+**Then** borders are **2px** (increased from 1px)
+**And** `border-color: var(--border)` is used (not transparent)
+
+**Given** body text
+**When** rendered
+**Then** font size is **1.0625rem** (17px, increased from 16px)
+**And** all UI labels are increased by 1px
+**And** Varela Round has `letter-spacing: -0.01em`
+
+**Given** all interactive elements
+**When** rendered
+**Then** minimum touch target is **44px x 44px** (WCAG AAA)
+
+**Given** panel accent stripes
+**When** rendered
+**Then** stripe width is **4px** (increased from 3px)
+
+**Given** elevation shadows
+**When** rendered
+**Then** shadow spread is increased by **25%** across all levels
+**And** shadows have an emerald tint
+
+**Given** panel interiors
+**When** rendered on desktop
+**Then** internal padding is **20px** (increased from 16px)
+**And** mobile internal padding is **16px**
+
+### Story 11.2: Editor Page Background & Panel Spacing
+
+As a user,
+I want the editor page to have a rich emerald gradient background with panels floating like paper on a premium desk,
+So that the editing experience feels immersive and polished.
+
+**Acceptance Criteria:**
+
+**Given** the editor page in light mode
+**When** rendered
+**Then** the background uses `linear-gradient(135deg, #064E3B 0%, #065F46 40%, #047857 100%)`
+**And** a subtle noise/grain texture overlay is visible (SVG pattern, ~0.02 opacity)
+
+**Given** the editor page in dark mode
+**When** rendered
+**Then** the background uses `linear-gradient(135deg, #041F17 0%, #0B1A14 50%, #0F2A1E 100%)`
+
+**Given** desktop viewport (≥1024px)
+**When** panels are rendered
+**Then** outer padding is **24px** all sides, gap between panels is **24px**
+**And** panels have `border-radius: 24px`
+
+**Given** tablet viewport (768-1023px)
+**When** panels are rendered
+**Then** outer padding is **16px**, gap is **16px**, panels have `border-radius: 16px`
+
+**Given** mobile viewport (<768px)
+**When** panels are rendered
+**Then** outer padding is **8px**, gap is **8px**, panels have `border-radius: 12px`
+
+**Given** the emerald background
+**When** visible in the gaps between panels
+**Then** it creates a "floating paper" effect
+
+**Given** presentation mode is active
+**Then** panels are full-screen, no margins, no border-radius
+
+### Story 11.3: Remove Footer & Icon Enrichment
+
+As a user,
+I want a cleaner interface without a footer, and more icons throughout the UI for warmth,
+So that the app feels modern and visually expressive.
+
+**Acceptance Criteria:**
+
+**Given** the Footer component
+**When** the code is reviewed
+**Then** `components/layout/Footer.tsx` is deleted
+**And** all footer references are removed from `app/editor/page.tsx` and layout files
+**And** landing page ends with a final CTA section instead of a footer
+
+**Given** header buttons on desktop
+**When** rendered
+**Then** they show icon + text labels (e.g., "📤 ייצוא", "📋 העתק")
+**And** mobile shows icon-only
+
+**Given** color panel section headers
+**When** rendered
+**Then** they have icons (🎨 for themes, 🖌 for customize, 🖼 for image extractor)
+
+**Given** user menu dropdown items
+**When** rendered
+**Then** every item has an icon on the right side (RTL start)
+
+**Given** all icons
+**When** rendered
+**Then** minimum size is `--icon-md` (20px) for all interactive elements
+
+---
+
+## Epic 12: Header & Navigation Redesign
+
+Complete header rebuild with 7 zones: Brand, View Modes, AI Star, Output, Tools, Overflow, User. AI button is the visually largest and most prominent element. Overflow menu absorbs infrequently used actions. User menu provides access to all pages.
+
+**Source items:** U1 (header reorg), U3 (BiDi simplification), U4 (navigation), D2 (header size)
+**Priority:** P0 (U1), P1 (D2), P2 (U3), P3 (U4)
+**Phase:** WS3-P1 (S12.1, S12.2) + WS3-P2 (S12.3, S12.4)
+
+### Story 12.1: Header Layout — 7 Zones & AI Star Button
+
+As a user,
+I want the header organized into clear functional zones with the AI button as the most prominent feature,
+So that I can find what I need quickly and the AI capability is immediately obvious.
+
+**Acceptance Criteria:**
+
+**Given** the header on desktop (≥1440px)
+**When** rendered in RTL (right-to-left)
+**Then** it displays 7 zones in this order:
+- **Brand** (far right): Logo mark + "מארקו" text. Logo 32px. Click → landing page
+- **View modes**: Editor / שניהם / תצוגה — 3-way pill-shaped toggle, emerald active state, 40px height
+- **AI (star)**: "✨ עוזר AI" — **44px height**, emerald gradient fill, sparkles icon, pill shape, subtle animated border glow. Visually largest and most distinct button. Glow intensifies on hover
+- **Output**: "📤 ייצוא ▾" dropdown + "📋 העתק ▾" dropdown — icon+text, 40px height
+- **Tools**: 🎨 Color theme + 🌓 Dark/light toggle — icon-only, 40x40px
+- **Overflow**: "···" three-dot button → dropdown — 40x40px
+- **User** (far left): Avatar circle or "התחבר" text — 40x40px
+
+**And** header height is **64px**
+**And** all icons use `--icon-md` (20px)
+**And** all interactive elements have min-height 40px, padding 8px 12px, border-radius 9999px
+**And** glassmorphism: `backdrop-filter: blur(16px) saturate(1.4)`, background opacity 0.97
+**And** all header buttons use solid fills on hover (emerald-tinted)
+**And** 8px gaps within groups, 16px gaps between groups, thin vertical separators between zones
+
+### Story 12.2: Header Responsive Behavior
+
+As a mobile/tablet user,
+I want the header to adapt gracefully to smaller screens,
+So that essential actions remain accessible without clutter.
+
+**Acceptance Criteria:**
+
+**Given** viewport 1024–1439px
+**When** the header renders
+**Then** Export/Copy collapse into a single "📤 ▾" dropdown. Tools zone is icon-only
+
+**Given** viewport 768–1023px
+**When** the header renders
+**Then** only Brand + AI + single output dropdown + overflow + user are visible
+**And** view toggle moves into overflow menu
+
+**Given** viewport <768px
+**When** the header renders
+**Then** only Brand (logo only) + AI button + overflow + user are visible
+**And** view toggle appears above editor panels (not in header)
+**And** a bottom toolbar strip appears above keyboard for formatting
+
+### Story 12.3: Overflow Menu & BiDi Simplification
+
+As a user,
+I want infrequently used actions tucked into an overflow menu, and text direction control simplified,
+So that the header stays clean and I can still access everything when needed.
+
+**Acceptance Criteria:**
+
+**Given** the overflow "···" button is clicked
+**When** the dropdown opens
+**Then** it shows: Sample document, Clear editor, Presentation mode, "כיוון טקסט" direction submenu
+**And** direction submenu shows: אוטומטי ✓ | ימין לשמאל | שמאל לימין
+
+**Given** the DirectionToggle component
+**When** evaluated
+**Then** it is removed from the header entirely
+**And** default behavior is BiDi auto-detect (already implemented)
+
+**Given** the editor panel
+**When** rendered
+**Then** a tiny direction indicator in the bottom-right shows current effective direction ("RTL" or "BiDi")
+**And** clicking it cycles through direction options
+
+### Story 12.4: User Menu & Navigation
+
+As a user,
+I want the logo to return me to the landing page and the user menu to provide access to all pages,
+So that navigation is intuitive and complete.
+
+**Acceptance Criteria:**
+
+**Given** the user clicks the logo/brand in the header
+**When** navigating
+**Then** it always navigates to `/` with `?home=true` (bypasses skip-landing redirect)
+
+**Given** a logged-in user clicks their avatar
+**When** the dropdown opens
+**Then** it shows: 📄 המסמכים שלי, ⚙ הגדרות, 📞 צור קשר, 🐛 דווח על בעיה, separator, 🚪 התנתק
+**And** each item has an icon on the right side (RTL start)
+
+**Given** an anonymous user clicks the user area
+**When** the dropdown opens
+**Then** it shows: ⚙ הגדרות, 📞 צור קשר, 🐛 דווח על בעיה, separator, 🔑 התחבר
+
+**Given** mobile viewport
+**When** navigation is needed
+**Then** all items move into a hamburger/drawer menu
+
+---
+
+## Epic 13: Theme System Redesign
+
+Replace 15 generic color presets with 8 curated, professional themes. Theme panel shows visual preview cards. One-click apply with VS Code-style arrow-key live preview. Accent customizer for personalization. Advanced mode for power users.
+
+**Source items:** D5 (curated themes), U2 (color panel redesign)
+**Priority:** P1 (D5), P2 (U2)
+**Phase:** WS3-P1 (S13.1) + WS3-P2 (S13.2, S13.3)
+
+### Story 13.1: Theme Data Model & 8 Launch Themes
+
+As a developer,
+I want a theme data structure with 8 curated themes defined,
+So that the theme panel and preview can render them.
+
+**Acceptance Criteria:**
+
+**Given** the theme system in `lib/colors/`
+**When** the data model is defined
+**Then** each theme has: id, name (English), hebrewName, tier (free/premium), and color values for all document properties (background, headings, accents, body text, code bg, blockquote, link, etc.)
+
+**Given** the 8 launch themes
+**When** loaded
+**Then** they include:
+1. **Green Meadow** (שדה ירוק) — #FAFAF5 bg, #064E3B headings, #10B981 accent — **Free, default**
+2. **Sea of Galilee** (ים כנרת) — #F2F8F7 bg, #0D4F5A headings, #14B8A6 accent — **Free**
+3. **Minimal Gray** (אפור מינימלי) — #FAFAFA bg, #1F2937 headings, #6B7280 accent — **Free**
+4. **Old Parchment** (קלף ישן) — #F5ECD7 bg, #78350F headings, #D97706 accent — Premium
+5. **Negev Night** (לילה בנגב) — #1A1B2E bg, #FCD34D headings, #F59E0B accent — Premium
+6. **Soft Rose** (ורד רך) — #FFF5F0 bg, #9F1239 headings, #F43F5E accent — Premium
+7. **Lavender Dream** (חלום לבנדר) — #F5F3FF bg, #5B21B6 headings, #8B5CF6 accent — Premium
+8. **Ocean Deep** (עומק האוקיינוס) — #EFF6FF bg, #1E3A5F headings, #3B82F6 accent — Premium
+
+**And** free themes are usable without login
+**And** premium themes show a preview but upsell on apply
+
+### Story 13.2: Color Panel Redesign — Theme Gallery
+
+As a user,
+I want to see visual theme previews and apply them with one click,
+So that choosing a theme is intuitive and delightful.
+
+**Acceptance Criteria:**
+
+**Given** the color panel is opened
+**When** it appears
+**Then** it slides from the **right** side (RTL-correct)
+**And** close (X) button is at **top-left**
+**And** header shows "🎨 ערכות נושא" (Themes)
+
+**Given** the theme gallery section
+**When** rendered
+**Then** themes display in a **2-column scrollable grid** of visual cards (~140px wide)
+**And** each card shows a **mini Hebrew document mockup** (heading + paragraph + code block) rendered in the theme's colors
+**And** clicking a card applies the theme instantly
+**And** arrow keys navigate between cards with instant live preview
+**And** Enter commits the selection, Escape cancels (VS Code pattern)
+**And** premium themes show a subtle lock icon + "Premium" badge
+**And** premium themes preview works, upsell appears on apply attempt
+
+### Story 13.3: Accent Customizer & Advanced Mode
+
+As a user who wants to personalize beyond the curated themes,
+I want an accent color picker and access to individual color overrides,
+So that I can fine-tune my document appearance.
+
+**Acceptance Criteria:**
+
+**Given** the "התאמה אישית" (Customize) section below the theme grid
+**When** expanded
+**Then** an HSL color wheel is shown for selecting one accent color
+**And** the system auto-generates complementary tints/shades from the accent
+**And** a live **WCAG contrast ratio** indicator shows (minimum 4.5:1 for body text, warning if violated)
+
+**Given** the "מתקדם" (Advanced) toggle
+**When** expanded
+**Then** 16 individual color pickers are revealed (the current detailed controls)
+**And** the image color extractor is available here (moved from default view)
+**And** this section is hidden by default
+
+**Given** the "חזור לברירת מחדל" (Reset to Default) button
+**When** clicked
+**Then** all colors reset to the current theme's default values
+
+**And** all text in the panel is right-aligned
+**And** all labels are in Hebrew
+**And** hex color inputs use `dir="ltr"`
+
+---
+
+## Epic 14: User Experience Pages
+
+New pages for settings, contact, and bug reporting. Skip-landing redirect for returning visitors. All pages accessible from user menu.
+
+**Source items:** N4 (skip landing), N5 (settings), N6 (contact/bug report)
+**Priority:** P2 (N4), P3 (N5, N6)
+**Phase:** WS3-P2 (S14.1) + WS3-P3 (S14.2, S14.3)
+
+### Story 14.1: Skip Landing for Returning Visitors
+
+As a returning user,
+I want to go directly to the editor without seeing the landing page every time,
+So that I can start working immediately.
+
+**Acceptance Criteria:**
+
+**Given** a first-time visitor navigates to `/`
+**When** the page loads
+**Then** the landing page is shown
+**And** `localStorage.setItem('marko_seen_landing', 'true')` is set
+
+**Given** a returning visitor navigates to `/`
+**When** the page loads
+**Then** the flag is detected and the user is redirected to `/editor`
+**And** redirect uses `router.push` or middleware
+
+**Given** a user clicks the logo in the header
+**When** navigating
+**Then** it navigates to `/?home=true` which temporarily bypasses the redirect
+
+**Given** private browsing or cleared localStorage
+**When** the user visits `/`
+**Then** the landing page is shown again (this is expected)
+
+### Story 14.2: Settings Page
+
+As a user,
+I want a settings page where I can configure my preferences,
+So that Marko remembers how I like to work.
+
+**Acceptance Criteria:**
+
+**Given** the `/settings` page
+**When** rendered
+**Then** it shows 3 sections:
+
+**Section 1: עריכה (Editing)**
+- Default text direction: BiDi (auto) | RTL | LTR — radio group, default BiDi
+- Auto-save: on/off toggle, default on
+
+**Section 2: מראה (Appearance)**
+- Default color theme — same theme picker grid as color panel
+- Dark/light mode preference — System | Light | Dark
+- Font size: Small | Medium | Large
+
+**Section 3: חשבון (Account)** — only for logged-in users
+- Email, name (from Clerk)
+- Subscription status (free/premium)
+- Usage: "3 of 5 AI actions used this month"
+
+**And** anonymous users: settings persist to localStorage
+**And** logged-in users: settings sync to Convex `userSettings` table
+**And** settings load on app init via React context
+**And** page is accessible from user menu → "הגדרות"
+
+### Story 14.3: Contact & Bug Report Pages
+
+As a user,
+I want to contact the team or report a bug directly from the app,
+So that I can get help or report issues without leaving Marko.
+
+**Acceptance Criteria:**
+
+**Given** the `/contact` page
+**When** the form is submitted with name, email, and message (all required)
+**Then** a GitHub Issue is created with label `contact` via GitHub API
+**And** a success toast shows "ההודעה נשלחה בהצלחה ✓"
+
+**Given** the `/report-bug` page
+**When** the form is submitted
+**Then** a GitHub Issue is created with label `bug` containing:
+- תיאור הבעיה (Description) — required textarea
+- צעדים לשחזור (Steps to reproduce) — optional textarea
+- מה ציפית שיקרה (Expected) — optional text
+- צילום מסך (Screenshot) — optional file upload
+**And** auto-collected metadata (browser, OS, screen size, URL, dark/light mode, theme, editor content length) is attached
+**And** the GitHub API uses `GITHUB_TOKEN` env var for `POST /repos/{owner}/{repo}/issues`
+
+**And** both pages are accessible from user menu → "צור קשר" / "דווח על בעיה"
+
+---
+
+## Epic 15: Document Management
+
+Collapsible sidebar panel for managing multiple documents. Auto-save with debounce. Document list with title, snippet, date. IndexedDB for anonymous users, Convex cloud sync for logged-in users.
+
+**Source items:** N3 (document management)
+**Priority:** P3
+**Phase:** WS3-P3
+
+### Story 15.1: Document Sidebar UI
+
+As a user,
+I want a sidebar panel showing my saved documents with titles and previews,
+So that I can switch between documents easily.
+
+**Acceptance Criteria:**
+
+**Given** the document sidebar
+**When** toggled open
+**Then** it appears as a 260px collapsible panel
+**And** hidden by default to maximize editor space
+**And** toggled via `Ctrl+\` keyboard shortcut or icon button in header
+**And** in RTL mode: sidebar appears on the **right side**
+**And** slides in/out with smooth animation
+
+**Given** a document list row
+**When** rendered
+**Then** it shows:
+- **Title** (bold) — extracted from first H1 heading, or first line, or "מסמך חדש"
+- **Preview snippet** (~60 chars, markdown stripped) — muted text
+- **Relative date** — "היום", "אתמול", "לפני 3 ימים"
+- **Pin icon** (optional) — pinned docs float to top
+
+**Given** the search bar at the top of the sidebar
+**When** text is entered
+**Then** documents are instantly filtered by title + content with match highlighting
+
+**Given** a document in the list
+**When** right-clicked or swiped
+**Then** a context menu shows: Pin, Delete, Duplicate
+**And** Delete requires confirmation ("למחוק את '...'?")
+
+### Story 15.2: Auto-Save & Document CRUD
+
+As a user,
+I want my documents to save automatically and switching between them to be seamless,
+So that I never lose work.
+
+**Acceptance Criteria:**
+
+**Given** the user is typing
+**When** 500ms passes since the last keystroke
+**Then** the document auto-saves
+
+**Given** the save process
+**When** in progress
+**Then** a status indicator shows "שומר..." → "נשמר ✓" (fades after 2s)
+**And** save data includes: content, title (extracted), color theme ID, direction setting, last modified timestamp
+
+**Given** anonymous users
+**When** saving
+**Then** documents save to IndexedDB locally
+
+**Given** the user clicks "New Document"
+**When** a new document opens
+**Then** cursor is at line 1 with placeholder "התחל לכתוב..."
+**And** first line becomes the title automatically
+**And** the previous document is auto-saved before switching
+
+### Story 15.3: Convex Backend for Documents
+
+As a logged-in user,
+I want my documents to sync to the cloud,
+So that I can access them from any device.
+
+**Acceptance Criteria:**
+
+**Given** the Convex schema
+**When** defined
+**Then** a `documents` table exists with: userId, content, title, themeId, direction, createdAt, updatedAt, isPinned
+
+**Given** the Convex mutations
+**When** implemented
+**Then** `saveDocument`, `deleteDocument`, `updateDocument`, `pinDocument` are available
+
+**Given** the Convex queries
+**When** implemented
+**Then** `listUserDocuments` returns docs sorted by pinned → updatedAt desc
+**And** `searchDocuments` supports full-text search
+
+**Given** a logged-in user
+**When** they edit a document
+**Then** changes sync to Convex in addition to IndexedDB
+
+---
+
+## Epic 7 (Rewritten): Landing Page Redesign
+
+Complete redesign of the landing page with warm emerald branding, hero section with animated editor mockup, tabbed demos, and prominent CTAs. Framer Motion animations. SEO preserved.
+
+**Source items:** D7 (landing redesign), N1 (animations), N2 (logo — BLOCKED)
+**Priority:** P3
+**Phase:** WS3-P3
+
+### Story 7.1r: Landing Page Structure & Content
+
+As a potential user,
+I want a warm, engaging landing page that immediately shows what Marko does,
+So that I'm motivated to try the editor.
+
+**Acceptance Criteria:**
+
+**Given** the landing page
+**When** rendered
+**Then** it uses warm, light-themed design (emerald brand, not dark)
+**And** hero section has: headline (3-6 Hebrew words, right-aligned) + animated editor mockup
+**And** below fold: 3-4 tabbed demos (Write | Format | AI | Export) — lazy-loaded on interaction
+**And** primary CTA "התחל בחינם" appears in hero + mid-page + bottom (emerald green button)
+**And** secondary CTA "צפה בהדגמה" appears in hero
+**And** page ends with a CTA section (no footer)
+
+**Given** a returning user (auth cookie detected)
+**When** CTAs render
+**Then** primary CTA changes to "פתח את מארקו" (Open Marko)
+
+**Given** mobile viewport
+**When** the page loads
+**Then** FCP < 3s, LCP < 5s, all below-fold media lazy-loaded
+**And** Lighthouse Performance 90+ on mobile
+
+### Story 7.2r: Landing Animations — Framer Motion
+
+As a potential user,
+I want smooth, engaging animations on the landing page,
+So that the product feels polished and alive.
+
+**Acceptance Criteria:**
+
+**Given** the project
+**When** framer-motion is configured
+**Then** `<LazyMotion features={domAnimation} strict>` wraps the app in `app/layout.tsx`
+**And** `m` components are used, not `motion` (for tree-shaking)
+
+**Given** the hero section editor mockup
+**When** visible
+**Then** it shows a mini Hebrew document cycling through 4-5 color themes
+**And** themes change every **3.5 seconds** with smooth color transition (1.2s easeInOut)
+**And** theme dots below the mockup indicate current theme
+**And** clicking a dot pauses auto-cycling and selects that theme
+
+**Given** `prefers-reduced-motion` is set
+**When** the page loads
+**Then** auto-cycling is disabled, static mockup is shown
+
+**Given** below-fold sections
+**When** scrolled into view
+**Then** they fade in + slide from right (RTL-aware) using `whileInView`
+**And** animation sections are wrapped with `next/dynamic({ ssr: false })`
+**And** tabbed demo content lazy-loads on tab interaction
+
+**Given** the animation JS bundle
+**When** loaded
+**Then** it is < **35 KB** loaded async
+**And** all animations run at **60 FPS**
+
+### Story 7.3r: SEO Preservation
+
+As a search engine,
+I want the redesigned landing page to maintain all SEO signals,
+So that Marko continues to rank for Hebrew Markdown searches.
+
+**Acceptance Criteria:**
+
+**Given** the landing page
+**When** crawled
+**Then** JSON-LD structured data (SoftwareApplication schema) is present
+**And** Open Graph meta tags are set for social sharing
+**And** `<title>` and `<meta name="description">` target Hebrew keywords
+**And** `/sitemap.xml` lists all public routes
+**And** `/robots.txt` allows landing page crawling, blocks editor route
+**And** the page uses SSR (server-side rendering) for content
+**And** edge runtime is used for fast TTFB

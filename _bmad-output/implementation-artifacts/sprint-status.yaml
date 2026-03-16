@@ -1,5 +1,6 @@
 # generated: 2026-03-06
-# project: hebrew-markdown-export
+# last_updated: 2026-03-17
+# project: marko
 # project_key: NOKEY
 # tracking_system: file-system
 # story_location: _bmad-output/implementation-artifacts
@@ -21,6 +22,7 @@
 #   - in-progress: Developer actively working on implementation
 #   - review: Ready for code review (via Dev's code-review workflow)
 #   - done: Story completed
+#   - superseded: Story replaced by new story from course correction (not actionable)
 #
 # Retrospective Status:
 #   - optional: Can be completed but not required
@@ -32,36 +34,59 @@
 # - Stories can be worked in parallel if team capacity allows
 # - SM typically creates next story after previous one is 'done' to incorporate learnings
 # - Dev moves story to 'review', then runs code-review (fresh context, different LLM recommended)
+#
+# COURSE CORRECTION (2026-03-16):
+# ================================
+# Sprint Change Proposal: _bmad-output/planning-artifacts/sprint-change-proposal-2026-03-16.md
+# Feedback Spec: _bmad-output/benakiva-feedback-round1.md
+#
+# New Epics: E10 (RTL), E11 (BULK), E12 (Header), E13 (Themes), E14 (User Pages), E15 (Doc Mgmt)
+# Rewritten: E7 (Landing Page) — S7.1r, S7.2r, S7.3r replace old S7.1, S7.2
+# Superseded: S1.4 -> E12, S2.1/S2.2/S2.3 -> E13, S7.1/S7.2 -> E7 rewrite
+# Modified: S6.2 needs revision for 4 AI entry points
+#
+# EXECUTION ORDER (priority phases):
+# WS3-P0: E10 (S10.1, S10.2, S10.3) + E11/S11.1 — RTL + BULK foundation
+# WS3-P1: E12/S12.1-12.2 + E11/S11.2-11.3 + E13/S13.1 — Header + visual + theme data
+# WS3-P2: E13/S13.2-13.3 + E12/S12.3-12.4 + E14/S14.1 + S6.2r — Theme panel + nav + AI
+# WS3-P3: E14/S14.2-14.3 + E15 + E7r — Features + landing
+# WS3C: API connections (parallel track)
 
 generated: 2026-03-06
-project: hebrew-markdown-export
+last_updated: 2026-03-17
+project: marko
 project_key: NOKEY
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts
 
 development_status:
+
+  # ============================================================
+  # ORIGINAL EPICS (E1-E9) — from initial sprint planning
+  # ============================================================
+
   # Epic 1: Project Foundation & Core Editor
-  epic-1: in-progress
+  epic-1: done
   1-1-project-initialization-and-root-layout: done
   1-2-editor-and-preview-layout-with-markdown-rendering: done
   1-3-mermaid-diagram-rendering: done
-  1-4-formatting-toolbar: done
+  1-4-formatting-toolbar: superseded  # SUPERSEDED by E12 (Header & Navigation Redesign)
   1-5-view-modes-and-presentation-mode: done
-  1-6-editor-utilities-and-direction-override: done
+  1-6-editor-utilities-and-direction-override: done  # Modified: direction toggle moves to overflow (U3)
   1-7-v1-localstorage-migration: done
   epic-1-retrospective: optional
 
   # Epic 2: Visual Customization & Theming
-  epic-2: in-progress
-  2-1-color-system-and-color-panel: done
-  2-2-built-in-theme-presets: done
-  2-3-custom-preset-save-and-load: done
-  2-4-image-color-extraction: done
+  epic-2: done
+  2-1-color-system-and-color-panel: superseded  # SUPERSEDED by E13 (Theme System Redesign)
+  2-2-built-in-theme-presets: superseded  # SUPERSEDED by E13/S13.1
+  2-3-custom-preset-save-and-load: superseded  # SUPERSEDED by E13/S13.3
+  2-4-image-color-extraction: done  # Moves to E13 Advanced section
   2-5-dark-light-mode-toggle: done
   epic-2-retrospective: optional
 
   # Epic 3: Document Export & Sharing
-  epic-3: in-progress
+  epic-3: done
   3-1-export-modal-and-filename-selection: done
   3-2-pdf-export-with-colors-and-rtl: done
   3-3-html-and-markdown-export: done
@@ -69,13 +94,13 @@ development_status:
   epic-3-retrospective: optional
 
   # Epic 4: Hebrew Bilingual Intelligence
-  epic-4: in-progress
+  epic-4: done
   4-1-per-sentence-bidi-detection-engine: done
   4-2-bidi-integration-with-rendering-pipeline: done
   epic-4-retrospective: optional
 
   # Epic 5: User Authentication & Account Management
-  epic-5: in-progress
+  epic-5: done
   5-1-clerk-authentication-integration-and-user-sync: done
   5-2-anonymous-and-authenticated-editor-experience: done
   5-3-three-tier-authorization-and-account-deletion: done
@@ -84,28 +109,96 @@ development_status:
   # Epic 6: AI Document Actions
   epic-6: in-progress
   6-1-ai-proxy-backend-and-model-routing: done
-  6-2-ai-actions-ui-and-document-interactions: done
+  6-2-ai-actions-ui-and-document-interactions: done  # Needs REVISION: 4 AI entry points (see WS3-P2)
   6-3-ai-privacy-disclosure: done
   6-4-ai-usage-limits-and-upgrade-prompts: done
+  6-2r-ai-actions-ui-revision-4-entry-points: backlog  # NEW: revises S6.2 per U1 feedback
   epic-6-retrospective: optional
 
-  # Epic 7: SEO Landing Page & Discovery
+  # Epic 7: SEO Landing Page & Discovery — REWRITTEN
   epic-7: in-progress
-  7-1-ssr-landing-page-with-hebrew-content: done
-  7-2-structured-data-meta-tags-and-seo-assets: done
+  7-1-ssr-landing-page-with-hebrew-content: superseded  # SUPERSEDED by S7.1r
+  7-2-structured-data-meta-tags-and-seo-assets: superseded  # SUPERSEDED by S7.3r
+  # New stories (from D7 + N1 landing redesign):
+  7-1r-landing-page-structure-and-content: backlog  # WS3-P3
+  7-2r-landing-animations-framer-motion: backlog  # WS3-P3, depends on S7.1r
+  7-3r-seo-preservation: backlog  # WS3-P3, depends on S7.1r
   epic-7-retrospective: optional
 
   # Epic 8: Analytics & Operator Tools
-  epic-8: in-progress
+  epic-8: done
   8-1-analytics-event-pipeline: done
   8-2-ai-cost-tracking-and-monitoring: done
   8-3-abuse-detection-and-account-flagging: done
   epic-8-retrospective: optional
 
   # Epic 9: Payments & Subscription (Phase 2)
-  epic-9: in-progress
+  epic-9: done
   9-1-payment-provider-integration-and-subscription-flow: done
   9-2-opus-access-and-force-opus-toggle: done
   9-3-israeli-tax-compliance-and-sumit-receipts: done
   9-4-subscription-management: done
   epic-9-retrospective: optional
+
+  # ============================================================
+  # NEW EPICS (E10-E15) — from Course Correction 2026-03-16
+  # Source: _bmad-output/benakiva-feedback-round1.md
+  # ============================================================
+
+  # Epic 10: RTL & Accessibility Foundation [WS3-P0]
+  # Source: B2 (RTL audit), B1 (color panel direction)
+  # Priority: P0 — DO FIRST, touches every component
+  epic-10: in-progress
+  10-1-root-rtl-setup-and-global-css-logical-properties: ready-for-dev  # WS3-P0
+  10-2-component-level-rtl-audit: backlog  # WS3-P0, depends on S10.1
+  10-3-rtl-verification-and-edge-cases: backlog  # WS3-P0, depends on S10.2
+  epic-10-retrospective: optional
+
+  # Epic 11: Visual Identity — BULK & Polish [WS3-P0 + WS3-P1]
+  # Source: D1, D3, D4, D6, N7
+  # Priority: P0 (S11.1 BULK) + P1 (S11.2 background, S11.3 footer/icons)
+  epic-11: backlog
+  11-1-bulk-pass-global-css-weight-increase: backlog  # WS3-P0, parallel with E10
+  11-2-editor-page-background-and-panel-spacing: backlog  # WS3-P1
+  11-3-remove-footer-and-icon-enrichment: backlog  # WS3-P1
+  epic-11-retrospective: optional
+
+  # Epic 12: Header & Navigation Redesign [WS3-P1 + WS3-P2]
+  # Source: U1, U3, U4, D2
+  # Priority: P0 (U1 header) + P2 (U3 BiDi, U4 nav)
+  # Dependencies: E10 complete + E11/S11.1 complete before S12.1
+  epic-12: backlog
+  12-1-header-layout-7-zones-and-ai-star-button: backlog  # WS3-P1, LARGE story
+  12-2-header-responsive-behavior: backlog  # WS3-P1, depends on S12.1
+  12-3-overflow-menu-and-bidi-simplification: backlog  # WS3-P2
+  12-4-user-menu-and-navigation: backlog  # WS3-P2
+  epic-12-retrospective: optional
+
+  # Epic 13: Theme System Redesign [WS3-P1 + WS3-P2]
+  # Source: D5 (curated themes), U2 (color panel redesign)
+  # Priority: P1 (D5 themes) + P2 (U2 panel redesign)
+  # Dependencies: S13.1 before S13.2 (need theme data before panel)
+  epic-13: backlog
+  13-1-theme-data-model-and-8-launch-themes: backlog  # WS3-P1
+  13-2-color-panel-redesign-theme-gallery: backlog  # WS3-P2, depends on S13.1
+  13-3-accent-customizer-and-advanced-mode: backlog  # WS3-P2, depends on S13.2
+  epic-13-retrospective: optional
+
+  # Epic 14: User Experience Pages [WS3-P2 + WS3-P3]
+  # Source: N4 (skip landing), N5 (settings), N6 (contact/bug report)
+  # Priority: P2 (N4) + P3 (N5, N6)
+  epic-14: backlog
+  14-1-skip-landing-for-returning-visitors: backlog  # WS3-P2
+  14-2-settings-page: backlog  # WS3-P3
+  14-3-contact-and-bug-report-pages: backlog  # WS3-P3
+  epic-14-retrospective: optional
+
+  # Epic 15: Document Management [WS3-P3]
+  # Source: N3
+  # Priority: P3
+  # Dependencies: S15.1 (UI) -> S15.2 (save) -> S15.3 (Convex backend)
+  epic-15: backlog
+  15-1-document-sidebar-ui: backlog  # WS3-P3
+  15-2-auto-save-and-document-crud: backlog  # WS3-P3, depends on S15.1
+  15-3-convex-backend-for-documents: backlog  # WS3-P3, depends on S15.2
+  epic-15-retrospective: optional
