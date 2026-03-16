@@ -155,6 +155,7 @@ export function AiCommandPalette({
                 <span>ניתוח מעמיק</span>
               </label>
               <span
+                dir="ltr"
                 className={cn(
                   "text-xs",
                   opusRemaining === null || opusRemaining <= 0 ? "text-muted-foreground" : "text-foreground"

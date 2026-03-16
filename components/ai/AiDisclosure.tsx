@@ -45,15 +45,6 @@ export function AiDisclosure({ open, onAccept, onCancel }: AiDisclosureProps) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="gap-2">
-          <AlertDialogAction
-            onClick={(e) => {
-              e.preventDefault();
-              onAccept();
-            }}
-            aria-label="הבנתי, המשך"
-          >
-            הבנתי, המשך
-          </AlertDialogAction>
           <AlertDialogCancel
             onClick={(e) => {
               e.preventDefault();
@@ -63,6 +54,15 @@ export function AiDisclosure({ open, onAccept, onCancel }: AiDisclosureProps) {
           >
             ביטול
           </AlertDialogCancel>
+          <AlertDialogAction
+            onClick={(e) => {
+              e.preventDefault();
+              onAccept();
+            }}
+            aria-label="הבנתי, המשך"
+          >
+            הבנתי, המשך
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -129,15 +129,6 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
                   />
                   <button
                     type="button"
-                    onClick={handleSavePreset}
-                    disabled={!draftPresetName.trim()}
-                    className="marko-panel-btn-sm"
-                    aria-label="שמור נושא"
-                  >
-                    שמור
-                  </button>
-                  <button
-                    type="button"
                     onClick={() => {
                       setIsSavingPreset(false);
                       setDraftPresetName('');
@@ -146,6 +137,15 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
                     aria-label="ביטול שמירת נושא"
                   >
                     ביטול
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSavePreset}
+                    disabled={!draftPresetName.trim()}
+                    className="marko-panel-btn-sm"
+                    aria-label="שמור נושא"
+                  >
+                    שמור
                   </button>
                 </div>
               ) : (
