@@ -12,9 +12,9 @@ export async function generatePdf(element: HTMLElement, filename: string): Promi
   element.prepend(style);
 
   const opt = {
-    margin: [15, 15, 15, 15], // mm: top, right, bottom, left
+    margin: [15, 15, 15, 15] as [number, number, number, number], // mm: top, right, bottom, left
     filename: `${filename}.pdf`,
-    image: { type: 'jpeg', quality: 0.95 },
+    image: { type: 'jpeg' as const, quality: 0.95 },
     html2canvas: {
       scale: 2, // 2x resolution for crisp text
       useCORS: true, // Allow cross-origin images
@@ -22,11 +22,11 @@ export async function generatePdf(element: HTMLElement, filename: string): Promi
       letterRendering: true,
     },
     jsPDF: {
-      unit: 'mm',
-      format: 'a4',
-      orientation: 'portrait',
+      unit: 'mm' as const,
+      format: 'a4' as const,
+      orientation: 'portrait' as const,
     },
-    pagebreak: { mode: ['css', 'legacy'] },
+    pagebreak: { mode: ['css', 'legacy'] as const },
   };
 
   try {

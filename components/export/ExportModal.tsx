@@ -85,7 +85,7 @@ export function ExportModal({
         dir="rtl"
         className="max-w-[480px] gap-0 bg-surface p-0 shadow-[var(--shadow-4)]"
       >
-        <DialogHeader className="px-6 pt-5 pb-3">
+        <DialogHeader className="px-6 pt-5 pb-0">
           <DialogTitle className="text-lg font-bold">{title}</DialogTitle>
           <DialogDescription>הכנס שם קובץ לייצוא המסמך</DialogDescription>
         </DialogHeader>
@@ -100,7 +100,7 @@ export function ExportModal({
             dir="auto"
             placeholder="שם הקובץ"
             aria-label="שם הקובץ לייצוא"
-            className="flex-1 h-10 rounded-md bg-background border border-border px-3 py-2.5 text-sm text-foreground placeholder:text-foreground-faint focus:border-primary focus:outline-none focus:ring-[3px] focus:ring-[var(--ring)] transition-colors"
+            className="flex-1 h-10 rounded-[8px] bg-background border border-border px-3 py-2.5 text-sm text-foreground placeholder:text-foreground-faint focus:border-primary focus:outline-none focus:ring-[3px] focus:ring-[var(--ring)] transition-colors"
           />
           <span
             className="flex-shrink-0 text-sm text-foreground-muted"

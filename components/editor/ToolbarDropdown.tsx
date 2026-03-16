@@ -93,8 +93,8 @@ export function ToolbarDropdown({ triggerAriaLabel, triggerLabel, title, items, 
         <div
           role="menu"
           aria-label={triggerAriaLabel}
-          className="absolute start-0 top-full z-50 mt-1 min-w-36 rounded-md border
-                     border-border bg-popover shadow-[var(--shadow-2)] animate-slide-down"
+          className="absolute start-0 top-full z-[var(--z-dropdown)] mt-1 min-w-[180px] rounded-[8px] border
+                     border-border bg-popover p-1 shadow-[var(--shadow-2)] animate-slide-down"
         >
           {items.map((item) => (
             <button
@@ -106,8 +106,8 @@ export function ToolbarDropdown({ triggerAriaLabel, triggerLabel, title, items, 
                 onSelect(item.value);
                 close();
               }}
-              className="flex w-full items-center gap-2 px-3 py-1.5 text-start text-sm
-                         text-popover-foreground hover:bg-primary-ghost transition-colors"
+              className="flex w-full items-center gap-2 rounded-[4px] px-3 py-2 text-start text-sm
+                         text-popover-foreground hover:bg-primary-ghost hover:text-primary transition-colors"
             >
               <span>{item.label}</span>
               {item.labelEn && (

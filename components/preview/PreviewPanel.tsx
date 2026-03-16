@@ -15,8 +15,8 @@ export function PreviewPanel({ content, dir = 'rtl', contentRef }: PreviewPanelP
       className="flex flex-col flex-1 min-h-0"
       aria-label="תצוגה מקדימה"
     >
-      <div className="flex h-9 items-center border-b border-border px-4">
-        <span className="text-sm font-medium text-muted-foreground">תצוגה מקדימה</span>
+      <div className="flex items-center border-b border-border-subtle" style={{ padding: '12px 16px' }}>
+        <span style={{ fontSize: 'var(--text-caption)', fontWeight: 600, letterSpacing: '0.05em', color: 'var(--foreground-muted)', textTransform: 'uppercase' }}>תצוגה מקדימה</span>
       </div>
       <div
         className="flex-1 overflow-hidden"

@@ -1,7 +1,7 @@
 # Marko Master Plan
 
 > **Living document.** Updated as work progresses. All agents reference this as the single source of truth.
-> **Last updated:** 2026-03-15
+> **Last updated:** 2026-03-16
 > **Owner:** BenAkiva
 
 ---
@@ -35,31 +35,40 @@ Take the original hebrew-markdown-export editor — a warm, handcrafted, emerald
 - RTL/LTR/BiDi direction toggle
 - Sample document loading
 
-### What's Been Done in Renovation
+### What's Been Done So Far
 - [x] **Phase A** — Font replaced (Varela Round), emerald palette applied to CSS tokens
 - [x] **Phase B** — Landing gradient, glassmorphic header, panel accent stripes, scrollbar, animations added
-- [ ] ~~Phase C~~ — **CANCELLED** (replaced by this plan)
-- [ ] ~~Phase D~~ — **CANCELLED** (replaced by this plan)
+- [x] **WS2 V1–V15** — Full visual rebuild pass completed (all 15 tasks)
+- [ ] ~~Phase C/D~~ — **CANCELLED** (replaced by this plan)
+
+### Honest Assessment (Hawk QA, 2026-03-16)
+The visual rebuild (WS2) was completed mechanically — CSS patches on shadcn defaults without a coherent design vision. The result is:
+- **Incoherent** — components speak different visual languages, no unified system
+- **Not premium** — still feels like a generic SaaS template, not the elevated brand BenAkiva wants
+- **Not the original's soul** — the warmth, depth, and personality of the original site is missing
+
+**Decision: Full reset.** WS1 (Design System) must be redone from scratch by UI/UX Pro Max, and WS2 must be re-executed based on the new design system.
 
 ### Key Problems Right Now
-1. **No unified design language** — CSS patches on top of shadcn defaults create visual incoherence
-2. **Editor page is flat** — panels don't float, background is plain white, no depth
-3. **Header buttons are generic** — shadcn RadioGroup, tiny outline buttons, no brand personality
-4. **Mobile editor is broken** — layout completely unusable at 375px
+1. **Design system is insufficient** — current `marko-design-system.md` produced mechanical results, needs complete redo by UI/UX Pro Max
+2. **Visual rebuild needs redo** — all V1-V15 tasks must be re-implemented with the new design system
+3. **Editor page lacks depth** — panels don't float, no spatial hierarchy, feels flat
+4. **Mobile editor broken** — layout unusable at 375px
 5. **APIs not connected** — AI, auth, payments all have code but no real credentials
 6. **Missing features** — Presentation mode, v1 migration, several PRD features not implemented
+7. **No unified look & feel** — the "expensive, fast, comfortable" premium feel is absent
 
 ---
 
 ## Workstreams
 
 ### WS1: Design Language Creation
-**Status:** `DONE`
+**Status:** `DONE` — design system is comprehensive (1285 lines, all sections covered)
 **Agent:** `/ui-ux-pro-max`
-**Depends on:** Nothing — do this FIRST
+**Depends on:** Nothing
 **Output:** `_bmad-output/marko-design-system.md`
 
-Create a complete, authoritative design system derived from the original site's brand DNA but elevated to premium quality.
+The design system is solid and does NOT need redoing. The problem was that WS2 (implementation) only followed ~33% of the spec. Key elements like panel border-radius, shadows, header glassmorphism, and logo styling were specified correctly in the system but not implemented by the dev agent.
 
 **The spec must include:**
 
@@ -91,33 +100,39 @@ Create a complete, authoritative design system derived from the original site's 
 
 ---
 
-### WS2: Visual Rebuild
-**Status:** `IN PROGRESS`
+### WS2: Visual Rebuild (Round 2)
+**Status:** `TODO` — Round 1 only implemented ~33% of the design system spec
 **Agent:** `/bmad-dev` or `/bmad-quick-dev-new-preview`
-**Depends on:** WS1 (design system must exist first)
+**Depends on:** WS1 (design system exists at `_bmad-output/marko-design-system.md`)
 **Input:** `_bmad-output/marko-design-system.md`
 
-Rebuild ALL component styling from scratch following the design system. This is NOT patching — it's replacing shadcn defaults with the Marko design language.
+Round 1 (V1-V15, commits `36f0e3d` through `9ef1395`) was completed but the dev agent failed to follow the design system faithfully. Key missing elements identified by Hawk QA:
+- Header: no background, no backdrop-filter, no z-index, logo icon unstyled
+- Panels: no 24px border-radius, no shadow-3, no accent stripe (THE signature element)
+- Buttons: pill shape (9999px) not applied
+- Overall: classes like `marko-header` and `marko-panel` exist but are missing critical CSS properties
+
+**Dev agent instructions:** Read `_bmad-output/marko-design-system.md` in full before touching any code. For EVERY component, compare the current code against the design system spec line by line. Fix every gap. No shortcuts. No "close enough."
 
 #### Tasks
 
 | ID | Component | File(s) | Status |
 |----|-----------|---------|--------|
-| V1 | Global CSS tokens & base styles | `app/globals.css` | `DONE` |
-| V2 | Header (glassmorphic, branded buttons) | `components/layout/Header.tsx` | `DONE` |
-| V3 | Editor/Preview panels (floating, elevated) | `components/layout/PanelLayout.tsx` | `DONE` |
-| V4 | Editor page background & layout | `app/editor/page.tsx` or layout | `DONE` |
-| V5 | Formatting toolbar (sized, grouped, styled) | `components/editor/EditorToolbar.tsx`, `FormatButton.tsx` | `DONE` |
-| V6 | Button variants (pill, sizes, hover) | `components/ui/button.tsx` | `DONE` |
-| V7 | Color panel (slide-out, premium feel) | `components/theme/ColorPanel.tsx` | `DONE` |
-| V8 | Export modal (rounded, branded) | `components/export/ExportModal.tsx` | `DONE` |
-| V9 | Landing page — Hero | `components/landing/Hero.tsx` | `DONE` |
-| V10 | Landing page — Features cards | `components/landing/Features.tsx` | `DONE` |
-| V11 | Landing page — Demo section | `components/landing/Demo.tsx` | `DONE` |
-| V12 | Footer (editor + landing) | `components/layout/Footer.tsx` | `DONE` |
-| V13 | Dark mode — full theme validation | All components | `DONE` |
-| V14 | Mobile responsive — all breakpoints | All components | `DONE` |
-| V15 | Auth components styling | `components/auth/*.tsx` | `DONE` |
+| V1 | Global CSS tokens & base styles | `app/globals.css` | `TODO` |
+| V2 | Header (glassmorphic, branded buttons) | `components/layout/Header.tsx` | `TODO` |
+| V3 | Editor/Preview panels (floating, elevated) | `components/layout/PanelLayout.tsx` | `TODO` |
+| V4 | Editor page background & layout | `app/editor/page.tsx` or layout | `TODO` |
+| V5 | Formatting toolbar (sized, grouped, styled) | `components/editor/EditorToolbar.tsx`, `FormatButton.tsx` | `TODO` |
+| V6 | Button variants (pill, sizes, hover) | `components/ui/button.tsx` | `TODO` |
+| V7 | Color panel (slide-out, premium feel) | `components/theme/ColorPanel.tsx` | `TODO` |
+| V8 | Export modal (rounded, branded) | `components/export/ExportModal.tsx` | `TODO` |
+| V9 | Landing page — Hero | `components/landing/Hero.tsx` | `TODO` |
+| V10 | Landing page — Features cards | `components/landing/Features.tsx` | `TODO` |
+| V11 | Landing page — Demo section | `components/landing/Demo.tsx` | `TODO` |
+| V12 | Footer (editor + landing) | `components/layout/Footer.tsx` | `TODO` |
+| V13 | Dark mode — full theme validation | All components | `TODO` |
+| V14 | Mobile responsive — all breakpoints | All components | `TODO` |
+| V15 | Auth components styling | `components/auth/*.tsx` | `TODO` |
 
 ---
 
@@ -227,9 +242,8 @@ WS1 (Design System)
 - Reference the PRD at `_bmad-output/planning-artifacts/prd.md` for detailed functional requirements
 
 ### For UI/UX Pro Max
-- Read the Brand Constraints section in WS1
-- Study the original site live and via screenshots
-- Output the design system to `_bmad-output/marko-design-system.md`
+- WS1 is DONE — design system already exists at `_bmad-output/marko-design-system.md`
+- If called again, review and improve the existing system rather than starting from scratch
 
 ### For Hawk (QA)
 - Run verification at each gate
@@ -248,6 +262,62 @@ WS1 (Design System)
 | UX Design | `_bmad-output/planning-artifacts/ux-design-directions.html` | Personas, journeys, emotional design |
 | Original Site | https://dartaryan.github.io/hebrew-markdown-export/ | Brand reference |
 | Original Repo | https://github.com/dartaryan/hebrew-markdown-export/ | Code reference |
-| Design System | `_bmad-output/marko-design-system.md` | **TO BE CREATED by WS1** |
+| Design System | `_bmad-output/marko-design-system.md` | Authoritative — 1285 lines, all sections |
 | Hawk Screenshots | `_bmad-output/hawk-screenshots/` | Visual QA evidence |
 | Old Renovation Plan | `_bmad-output/marko-visual-renovation-plan.md` | **SUPERSEDED by this document** |
+
+---
+
+## Agent Prompts
+
+Copy-paste these prompts to kick off each workstream.
+
+### Prompt: WS2 — Dev Agent (Visual Rebuild Round 2)
+
+> Read `_bmad-output/marko-master-plan.md` — you are executing **WS2: Visual Rebuild (Round 2)**.
+>
+> **CRITICAL CONTEXT:** Round 1 was completed but Hawk QA found that only ~33% of the design system was actually implemented. The design system is correct and comprehensive — the implementation just didn't follow it. Your job is to fix every gap.
+>
+> Read the design system at `_bmad-output/marko-design-system.md` **in full** before touching any code. This is your bible. Every CSS change, every Tailwind class, every component style must follow this system exactly. No improvising. No shadcn defaults unless the system says so.
+>
+> **Known failures from Round 1 (fix these first):**
+> - Header (`components/layout/Header.tsx`): missing `rgba(6,78,59,0.95)` background, `backdrop-filter: blur(12px) saturate(1.2)`, `z-index: 50`. Logo icon missing gradient bg, 12px radius, shadow-2.
+> - Panels (`components/layout/PanelLayout.tsx`): missing `border-radius: 24px`, `box-shadow: var(--shadow-3)`, 3px gradient accent stripe at top.
+> - Buttons: pill shape (`border-radius: 9999px`) not applied.
+> - Many other component specs likely also not followed.
+>
+> Execute tasks V1 through V15 in order. For EACH task:
+> 1. Read the design system section for that component
+> 2. Read the current code
+> 3. Compare line-by-line — every property the spec defines must appear in the code
+> 4. Fix every gap
+> 5. Run `pnpm dev` to confirm it builds
+>
+> After completing all tasks, run `pnpm dev` and confirm the app loads on both `/` and `/editor`.
+
+### Prompt: WS3A — Dev Agent (Presentation Mode)
+
+> Read `_bmad-output/marko-master-plan.md` — you are implementing **WS3A: Enhanced Presentation Mode**.
+>
+> Read the full spec in the master plan under section 3A. Also read the design system at `_bmad-output/marko-design-system.md` for visual styling rules.
+>
+> Implement the presentation mode feature:
+> 1. Create a `PresentationView` component that renders markdown content as slides
+> 2. Slides are split by `---` (horizontal rule) page breaks
+> 3. Full-screen horizontal view, one slide at a time, no scrolling within slides
+> 4. Navigation arrows at bottom, keyboard support (arrows, space, escape)
+> 5. Headings auto-center, slide counter, subtle transitions
+> 6. Wire up the existing "מצב מצגת" button in the toolbar to activate it
+> 7. Style everything per the design system
+>
+> Read each file before editing. Run `pnpm dev` when done.
+
+### Prompt: Hawk QA (After Any Workstream)
+
+> Read `_bmad-output/marko-master-plan.md` and check which gate applies.
+>
+> Open the browser, navigate to `http://localhost:3000` and `http://localhost:3000/editor`.
+> Take screenshots at 1440px, 768px, and 375px viewports, both light and dark mode.
+> Compare against the design system at `_bmad-output/marko-design-system.md`.
+> Report bugs with severity, exact location, and suggested fix.
+> Update the master plan status after verification.

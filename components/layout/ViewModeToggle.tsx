@@ -36,7 +36,7 @@ export function ViewModeToggle({ value, onChange }: ViewModeToggleProps) {
     <div
       role="radiogroup"
       aria-label="מצב תצוגה"
-      className="flex items-center rounded-[6px] bg-[rgba(16,185,129,0.1)] p-0.5 gap-0.5"
+      className="flex items-center rounded-[8px] bg-[rgba(16,185,129,0.1)] p-[3px] gap-0.5"
       onKeyDown={handleKeyDown}
     >
       {MODES.map((mode, i) => (
@@ -51,7 +51,7 @@ export function ViewModeToggle({ value, onChange }: ViewModeToggleProps) {
           tabIndex={value === mode.value ? 0 : -1}
           onClick={() => onChange(mode.value)}
           suppressHydrationWarning
-          className={`rounded-[4px] px-[10px] py-[4px] text-xs font-medium transition-colors ${
+          className={`rounded-[6px] px-3 py-1 text-[13px] font-medium transition-all duration-200 ${
             value === mode.value
               ? 'bg-[var(--primary)] text-white shadow-sm'
               : 'text-[#a7f3d0] hover:text-white'

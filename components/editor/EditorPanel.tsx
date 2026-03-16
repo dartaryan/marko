@@ -33,11 +33,11 @@ export function EditorPanel({ content, onChange, dir = 'rtl', onAiClick }: Edito
 
   return (
     <section
-      className="flex flex-col flex-1 min-h-0 border-e border-border"
+      className="flex flex-col flex-1 min-h-0"
       aria-label="עורך מארקדאון"
     >
-      <div className="flex h-9 items-center border-b border-border px-4">
-        <span className="text-sm font-medium text-muted-foreground">עורך</span>
+      <div className="flex items-center border-b border-border-subtle" style={{ padding: '12px 16px' }}>
+        <span style={{ fontSize: 'var(--text-caption)', fontWeight: 600, letterSpacing: '0.05em', color: 'var(--foreground-muted)', textTransform: 'uppercase' }}>עורך</span>
       </div>
       <EditorToolbar textareaRef={textareaRef} onInsert={insertTextAtCursor} onAiClick={onAiClick} />
       <div className="flex-1 overflow-hidden">
