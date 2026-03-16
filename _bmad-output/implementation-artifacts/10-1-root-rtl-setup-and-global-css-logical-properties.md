@@ -1,6 +1,6 @@
 # Story 10.1: Root RTL Setup & Global CSS Logical Properties
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -29,34 +29,34 @@ So that the application feels native and professional in Hebrew.
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Verify root RTL setup (AC: #1)
-  - [ ] 1.1 Confirm `<html dir="rtl" lang="he">` in `app/layout.tsx` (line 70) — already set, verify unchanged
-  - [ ] 1.2 Confirm Toaster has `dir="rtl"` (line 76) — already set
-  - [ ] 1.3 Confirm font subsets include Hebrew (Varela Round lines 8-13)
+- [x] Task 1: Verify root RTL setup (AC: #1)
+  - [x] 1.1 Confirm `<html dir="rtl" lang="he">` in `app/layout.tsx` (line 70) — already set, verify unchanged
+  - [x] 1.2 Confirm Toaster has `dir="rtl"` (line 76) — already set
+  - [x] 1.3 Confirm font subsets include Hebrew (Varela Round lines 8-13)
 
-- [ ] Task 2: Audit `app/globals.css` for physical direction properties (AC: #2)
-  - [ ] 2.1 Search for all `text-align: left` and `text-align: right` — replace with `start`/`end` (except code blocks)
-  - [ ] 2.2 Search for all `margin-left`/`margin-right` — replace with `margin-inline-start`/`margin-inline-end`
-  - [ ] 2.3 Search for all `padding-left`/`padding-right` — replace with `padding-inline-start`/`padding-inline-end`
-  - [ ] 2.4 Search for all `left:`/`right:` in positioning contexts — replace with `inset-inline-start:`/`inset-inline-end:`
-  - [ ] 2.5 Search for all `border-left`/`border-right` — replace with `border-inline-start`/`border-inline-end`
-  - [ ] 2.6 Search for `float: left`/`float: right` — replace with `float: inline-start`/`float: inline-end`
-  - [ ] 2.7 Final sweep: grep for any remaining `left`, `right` physical property usage in globals.css
+- [x] Task 2: Audit `app/globals.css` for physical direction properties (AC: #2)
+  - [x] 2.1 Search for all `text-align: left` and `text-align: right` — replace with `start`/`end` (except code blocks)
+  - [x] 2.2 Search for all `margin-left`/`margin-right` — replace with `margin-inline-start`/`margin-inline-end`
+  - [x] 2.3 Search for all `padding-left`/`padding-right` — replace with `padding-inline-start`/`padding-inline-end`
+  - [x] 2.4 Search for all `left:`/`right:` in positioning contexts — replace with `inset-inline-start:`/`inset-inline-end:`
+  - [x] 2.5 Search for all `border-left`/`border-right` — replace with `border-inline-start`/`border-inline-end`
+  - [x] 2.6 Search for `float: left`/`float: right` — replace with `float: inline-start`/`float: inline-end`
+  - [x] 2.7 Final sweep: grep for any remaining `left`, `right` physical property usage in globals.css
 
-- [ ] Task 3: Preserve code content LTR exceptions (AC: #3)
-  - [ ] 3.1 Verify `.preview-content code:not(pre code)` has `direction: ltr` (line ~388)
-  - [ ] 3.2 Verify `.preview-content pre` has `direction: ltr` (line ~397)
-  - [ ] 3.3 Verify `.preview-content pre code` has `direction: ltr` (line ~406)
-  - [ ] 3.4 Verify `.mermaid-wrapper` has `direction: ltr` (line ~481)
-  - [ ] 3.5 Ensure `unicode-bidi: embed` is present on code blocks to prevent Hebrew contamination
-  - [ ] 3.6 Add `text-align: left` (physical, intentional) to all code blocks if not present — this is the one allowed physical property
+- [x] Task 3: Preserve code content LTR exceptions (AC: #3)
+  - [x] 3.1 Verify `.preview-content code:not(pre code)` has `direction: ltr` (line ~388)
+  - [x] 3.2 Verify `.preview-content pre` has `direction: ltr` (line ~397)
+  - [x] 3.3 Verify `.preview-content pre code` has `direction: ltr` (line ~406)
+  - [x] 3.4 Verify `.mermaid-wrapper` has `direction: ltr` (line ~481)
+  - [x] 3.5 Ensure `unicode-bidi: embed` is present on code blocks to prevent Hebrew contamination
+  - [x] 3.6 Add `text-align: left` (physical, intentional) to all code blocks if not present — this is the one allowed physical property
 
-- [ ] Task 4: Visual verification
-  - [ ] 4.1 Verify editor page renders correctly at 1440px desktop
-  - [ ] 4.2 Verify preview panel text alignment is correct for Hebrew content
-  - [ ] 4.3 Verify code blocks render LTR within RTL context
-  - [ ] 4.4 Verify no visual regressions in dark mode
-  - [ ] 4.5 Verify header remains visually correct
+- [x] Task 4: Visual verification
+  - [x] 4.1 Verify editor page renders correctly at 1440px desktop
+  - [x] 4.2 Verify preview panel text alignment is correct for Hebrew content
+  - [x] 4.3 Verify code blocks render LTR within RTL context
+  - [x] 4.4 Verify no visual regressions in dark mode
+  - [x] 4.5 Verify header remains visually correct
 
 ## Dev Notes
 
@@ -181,9 +181,23 @@ Recent commits show WS2 visual renovation work. The last 5 commits are all `WS2`
 ## Dev Agent Record
 
 ### Agent Model Used
+Claude Opus 4.6 (1M context)
 
 ### Debug Log References
+None — no errors encountered during implementation.
 
 ### Completion Notes List
+- **Task 1 (AC #1):** Root RTL setup verified intact — `<html lang="he" dir="rtl">` at layout.tsx:70, `<Toaster dir="rtl">` at layout.tsx:76, Varela Round font with `["hebrew", "latin"]` subsets at layout.tsx:10, `components.json` has `"rtl": true`.
+- **Task 2 (AC #2):** Full audit of globals.css (1,128 lines) found **zero** remaining physical direction properties. The WS2 renovation work already migrated all properties to logical equivalents: `text-align: start` (lines 447, 879), `margin-inline: auto` (lines 525, 779, 993), `padding-inline-start` (line 423), `padding-inline` (line 1077), `inset-inline: 0` (line 546), `border-inline-start` (lines 411, 493). No `text-align: left/right`, `margin-left/right`, `padding-left/right`, `left:/right:`, `border-left/right`, or `float: left/right` found.
+- **Task 3 (AC #3):** Added `unicode-bidi: embed` and `text-align: left` to `.preview-content pre` (line ~397) and `.preview-content pre code` (line ~408). Inline code already had `unicode-bidi: embed` (line 389). All code block selectors now have `direction: ltr`, `unicode-bidi: embed`, and `text-align: left` — ensuring code always renders LTR within the RTL context.
+- **Task 4:** Visual verification at 1440px desktop confirmed: Hebrew text right-aligned, code blocks LTR, header RTL, dark mode renders correctly with no regressions. Computed styles verified: `pre` has `direction: ltr`, `text-align: left`, `unicode-bidi: embed`.
+
+### Change Log
+- 2026-03-16: Added `unicode-bidi: embed` and `text-align: left` to `.preview-content pre` and `.preview-content pre code` in `app/globals.css`
+- 2026-03-16: [Code Review] Fixed physical `border-radius` on blockquote and mermaid-error → logical border-radius properties; fixed `hr` gradient direction for RTL (`90deg` → `to left`)
 
 ### File List
+- `app/globals.css` — Modified: added `unicode-bidi: embed` and `text-align: left` to code block selectors; fixed physical border-radius and gradient direction
+- `app/layout.tsx` — Verified (read-only): root RTL setup confirmed unchanged
+- `components.json` — Verified (read-only): `"rtl": true` confirmed
+- `_bmad-output/implementation-artifacts/sprint-status.yaml` — Updated: story status ready-for-dev → in-progress → review

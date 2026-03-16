@@ -149,7 +149,7 @@ development_status:
   # Source: B2 (RTL audit), B1 (color panel direction)
   # Priority: P0 — DO FIRST, touches every component
   epic-10: in-progress
-  10-1-root-rtl-setup-and-global-css-logical-properties: ready-for-dev  # WS3-P0
+  10-1-root-rtl-setup-and-global-css-logical-properties: done  # WS3-P0
   10-2-component-level-rtl-audit: backlog  # WS3-P0, depends on S10.1
   10-3-rtl-verification-and-edge-cases: backlog  # WS3-P0, depends on S10.2
   epic-10-retrospective: optional

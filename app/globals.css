@@ -395,6 +395,8 @@
   overflow-x: auto;
   margin-bottom: 1rem;
   direction: ltr;
+  unicode-bidi: embed;
+  text-align: left;
 }
 
 .preview-content pre code {
@@ -404,6 +406,8 @@
   font-size: 0.875rem;
   line-height: 1.6;
   direction: ltr;
+  unicode-bidi: embed;
+  text-align: left;
 }
 
 .preview-content blockquote {
@@ -411,7 +415,10 @@
   border-inline-start: 4px solid var(--color-blockquote-border);
   padding: 0.75rem 1rem;
   margin: 1rem 0;
-  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+  border-start-start-radius: 0;
+  border-start-end-radius: var(--radius-xs);
+  border-end-end-radius: var(--radius-xs);
+  border-end-start-radius: 0;
 }
 
 .preview-content blockquote p:last-child {
@@ -454,7 +461,7 @@
 .preview-content hr {
   border: none;
   height: 2px;
-  background: linear-gradient(90deg, var(--primary), var(--color-emerald-300), transparent);
+  background: linear-gradient(to left, var(--primary), var(--color-emerald-300), transparent);
   margin: 1.5rem 0;
   border-radius: 1px;
 }
@@ -491,7 +498,10 @@
 .mermaid-error {
   background-color: var(--color-blockquote-bg);
   border-inline-start: 4px solid var(--color-blockquote-border);
-  border-radius: 0 var(--radius-xs) var(--radius-xs) 0;
+  border-start-start-radius: 0;
+  border-start-end-radius: var(--radius-xs);
+  border-end-end-radius: var(--radius-xs);
+  border-end-start-radius: 0;
   padding: 0.75rem 1rem;
   margin: 1rem 0;
   direction: rtl;
