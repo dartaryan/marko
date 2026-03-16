@@ -524,6 +524,8 @@
   overflow-x: auto;
   white-space: pre;
   direction: ltr;
+  unicode-bidi: embed;
+  text-align: left;
 }
 
 /* ============================================

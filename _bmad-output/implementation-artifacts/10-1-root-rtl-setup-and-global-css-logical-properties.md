@@ -195,6 +195,7 @@ None — no errors encountered during implementation.
 ### Change Log
 - 2026-03-16: Added `unicode-bidi: embed` and `text-align: left` to `.preview-content pre` and `.preview-content pre code` in `app/globals.css`
 - 2026-03-16: [Code Review] Fixed physical `border-radius` on blockquote and mermaid-error → logical border-radius properties; fixed `hr` gradient direction for RTL (`90deg` → `to left`)
+- 2026-03-16: [Code Review 2] Added `unicode-bidi: embed` and `text-align: left` to `.mermaid-error-source` for consistency with other code display selectors
 
 ### File List
 - `app/globals.css` — Modified: added `unicode-bidi: embed` and `text-align: left` to code block selectors; fixed physical border-radius and gradient direction

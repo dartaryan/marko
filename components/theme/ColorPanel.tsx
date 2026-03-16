@@ -123,7 +123,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
                     }}
                     ref={nameInputRef}
                     placeholder="שם הנושא..."
-                    dir="rtl"
+                    dir="auto"
                     className="marko-panel-input flex-1"
                     aria-label="שם הנושא החדש"
                   />
