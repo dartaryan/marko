@@ -1,5 +1,5 @@
 # generated: 2026-03-06
-# last_updated: 2026-03-17
+# last_updated: 2026-03-19
 # project: marko
 # project_key: NOKEY
 # tracking_system: file-system
@@ -53,7 +53,7 @@
 # WS3C: API connections (parallel track)
 
 generated: 2026-03-06
-last_updated: 2026-03-17
+last_updated: 2026-03-19
 project: marko
 project_key: NOKEY
 tracking_system: file-system
@@ -157,8 +157,8 @@ development_status:
   # Epic 11: Visual Identity — BULK & Polish [WS3-P0 + WS3-P1]
   # Source: D1, D3, D4, D6, N7
   # Priority: P0 (S11.1 BULK) + P1 (S11.2 background, S11.3 footer/icons)
-  epic-11: backlog
-  11-1-bulk-pass-global-css-weight-increase: backlog  # WS3-P0, parallel with E10
+  epic-11: in-progress
+  11-1-bulk-pass-global-css-weight-increase: review  # WS3-P0, parallel with E10
   11-2-editor-page-background-and-panel-spacing: backlog  # WS3-P1
   11-3-remove-footer-and-icon-enrichment: backlog  # WS3-P1
   epic-11-retrospective: optional
