@@ -83,7 +83,7 @@ export function ToolbarDropdown({ triggerAriaLabel, triggerLabel, title, items, 
         title={title ?? triggerAriaLabel}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        className="marko-toolbar-btn h-8 px-2 text-[13px] gap-1"
+        className="marko-toolbar-btn px-2 text-[13px] gap-1"
       >
         <span>{triggerLabel}</span>
         <ChevronDown className="size-3" aria-hidden="true" />

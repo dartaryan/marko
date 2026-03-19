@@ -17,7 +17,7 @@ export function FormatButton({ onClick, ariaLabel, title, disabled, className, c
       aria-label={ariaLabel}
       title={title}
       disabled={disabled}
-      className={`marko-toolbar-btn h-8 w-8 disabled:pointer-events-none disabled:opacity-50${className ? ` ${className}` : ''}`}
+      className={`marko-toolbar-btn disabled:pointer-events-none disabled:opacity-50${className ? ` ${className}` : ''}`}
     >
       {children}
     </button>

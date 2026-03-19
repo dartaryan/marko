@@ -159,7 +159,7 @@ development_status:
   # Priority: P0 (S11.1 BULK) + P1 (S11.2 background, S11.3 footer/icons)
   epic-11: in-progress
   11-1-bulk-pass-global-css-weight-increase: review  # WS3-P0, parallel with E10
-  11-2-editor-page-background-and-panel-spacing: backlog  # WS3-P1
+  11-2-editor-page-background-and-panel-spacing: review  # WS3-P1
   11-3-remove-footer-and-icon-enrichment: backlog  # WS3-P1
   epic-11-retrospective: optional
 
