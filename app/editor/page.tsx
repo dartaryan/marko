@@ -1,5 +1,7 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 import { migrateV1Data } from '@/lib/migration/v1-migration';
 import { useEditorContent } from '@/lib/hooks/useEditorContent';
 import { useDebounce } from '@/lib/hooks/useDebounce';
@@ -8,6 +10,7 @@ import { useDocDirection } from '@/lib/hooks/useDocDirection';
 import { useColorTheme } from '@/lib/hooks/useColorTheme';
 import { useAiAction } from '@/lib/hooks/useAiAction';
 import { useAiDisclosure } from '@/lib/hooks/useAiDisclosure';
+import { useCurrentUser } from '@/lib/hooks/useCurrentUser';
 import { useAnalytics } from '@/lib/hooks/useAnalytics';
 import { useSubscriptionReturn } from '@/lib/hooks/useSubscriptionReturn';
 import { useSubscriptionExpiredNotification } from '@/lib/hooks/useSubscriptionExpiredNotification';
@@ -15,9 +18,9 @@ import { Header } from '@/components/layout/Header';
 import { ColorPanel } from '@/components/theme/ColorPanel';
 import { ExportModal } from '@/components/export/ExportModal';
 import { PdfProgress } from '@/components/export/PdfProgress';
-import { AiCommandPalette } from '@/components/ai/AiCommandPalette';
+import { AiCommandBar, type CommandBarPosition } from '@/components/ai/AiCommandBar';
 import { AiDisclosure } from '@/components/ai/AiDisclosure';
-import { AiResultPanel } from '@/components/ai/AiResultPanel';
+import { AiSuggestionCard } from '@/components/ai/AiSuggestionCard';
 import { generatePdf } from '@/lib/export/pdf-generator';
 import { exportHtml } from '@/lib/export/html-generator';
 import { exportMarkdown } from '@/lib/export/md-generator';
@@ -31,6 +34,8 @@ import { EditorPanel } from '@/components/editor/EditorPanel';
 import { PreviewPanel } from '@/components/preview/PreviewPanel';
 import { PresentationView } from '@/components/preview/PresentationView';
 import { SAMPLE_DOCUMENT } from '@/lib/editor/sample-document';
+
+type AiTriggerSource = 'header' | 'slash' | 'selection' | 'keyboard';
 
 type PdfState = 'idle' | 'generating' | 'success' | 'error';
 
@@ -50,15 +55,25 @@ export default function EditorPage() {
   const previewContentRef = useRef<HTMLDivElement>(null);
   const [pendingPdfFilename, setPendingPdfFilename] = useState('');
   const [pdfState, setPdfState] = useState<PdfState>('idle');
-  const [isAiPaletteOpen, setIsAiPaletteOpen] = useState(false);
+  const [isAiBarOpen, setIsAiBarOpen] = useState(false);
+  const [aiTriggerSource, setAiTriggerSource] = useState<AiTriggerSource>('header');
+  const [aiSelectedText, setAiSelectedText] = useState('');
+  const [commandBarPosition, setCommandBarPosition] = useState<CommandBarPosition>('below-header');
+  const [commandBarAnchor, setCommandBarAnchor] = useState<{ top: number; left: number } | undefined>();
+  const [lastAiActionType, setLastAiActionType] = useState<AiActionType | null>(null);
   const { executeAction, isLoading: isAiLoading, result: aiResult, errorCode: aiErrorCode, clearResult: clearAiResult } = useAiAction();
   const { needsDisclosure, acceptDisclosure } = useAiDisclosure();
+  const { isAuthenticated } = useCurrentUser();
+  const usage = useQuery(api.usage.getMyMonthlyUsage, isAuthenticated ? {} : 'skip');
   const { track } = useAnalytics();
   useSubscriptionReturn();
   useSubscriptionExpiredNotification();
   const [pendingAiAction, setPendingAiAction] = useState<AiActionType | null>(null);
   const [pendingForceOpus, setPendingForceOpus] = useState(false);
+  const [pendingFreeText, setPendingFreeText] = useState<string | undefined>();
+  const acceptTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const isAiUnavailable = aiErrorCode === 'AI_UNAVAILABLE';
+  const isAtLimit = usage !== undefined && usage.limit !== null && usage.count >= usage.limit;
 
   // Track login once per browser session (fire-and-forget; skips if unauthenticated)
   useEffect(() => {
@@ -69,31 +84,53 @@ export default function EditorPage() {
     }
   }, [track]);
 
-  // Reopen palette when AI limit is reached (AC #4: display exhausted state)
+  // When AI limit is reached, reopen the command bar with upgrade gate
   useEffect(() => {
     if (aiErrorCode === 'AI_LIMIT_REACHED') {
-      setIsAiPaletteOpen(true);
+      setIsAiBarOpen(true);
       clearAiResult();
     }
   }, [aiErrorCode, clearAiResult]);
 
+  // Cleanup accept timer on unmount
+  useEffect(() => {
+    return () => {
+      if (acceptTimerRef.current) clearTimeout(acceptTimerRef.current);
+    };
+  }, []);
+
   const runAiAction = useCallback(
-    async (actionType: AiActionType, forceOpus: boolean = false) => {
+    async (actionType: AiActionType, forceOpus: boolean = false, freeText?: string) => {
+      setLastAiActionType(actionType);
+      let textToProcess = aiSelectedText || content;
+      if (!textToProcess.trim()) return; // Guard against empty content
+      // Prepend free-text instruction if provided
+      if (freeText) {
+        textToProcess = `הוראה: ${freeText}\n\n${textToProcess}`;
+      }
       const targetLanguage = actionType === 'translate' ? 'en' : undefined;
-      await executeAction(actionType, content, targetLanguage, forceOpus);
+      // Capture usage count before the async gap to avoid stale/race-condition values
+      const countBefore = usage?.count ?? 0;
+      const limit = usage?.limit ?? null;
+      const response = await executeAction(actionType, textToProcess, targetLanguage, forceOpus);
       track("ai.action_completed", { actionType });
+      // Show usage toast after successful action (Gift, Not Gate pattern)
+      if (response && limit !== null) {
+        toast.success(`✨ פעולת AI ${countBefore + 1} מתוך ${limit} החודש`);
+      }
     },
-    [executeAction, content, track]
+    [executeAction, content, aiSelectedText, track, usage]
   );
 
   const handleAiAction = useCallback(
-    (actionType: AiActionType, forceOpus: boolean = false) => {
+    (actionType: AiActionType, forceOpus: boolean = false, freeText?: string) => {
       if (needsDisclosure) {
         setPendingAiAction(actionType);
         setPendingForceOpus(forceOpus);
+        setPendingFreeText(freeText);
         return;
       }
-      void runAiAction(actionType, forceOpus);
+      void runAiAction(actionType, forceOpus, freeText);
     },
     [needsDisclosure, runAiAction]
   );
@@ -101,23 +138,34 @@ export default function EditorPage() {
   const handleDisclosureAccept = useCallback(() => {
     acceptDisclosure();
     if (pendingAiAction) {
-      void runAiAction(pendingAiAction, pendingForceOpus);
+      void runAiAction(pendingAiAction, pendingForceOpus, pendingFreeText);
       setPendingAiAction(null);
       setPendingForceOpus(false);
+      setPendingFreeText(undefined);
     }
-  }, [acceptDisclosure, pendingAiAction, pendingForceOpus, runAiAction]);
+  }, [acceptDisclosure, pendingAiAction, pendingForceOpus, pendingFreeText, runAiAction]);
 
   const handleDisclosureCancel = useCallback(() => {
     setPendingAiAction(null);
     setPendingForceOpus(false);
+    setPendingFreeText(undefined);
   }, []);
 
   const handleAiAccept = useCallback(
     (text: string) => {
-      setContent(content + '\n\n' + text);
-      clearAiResult();
+      if (aiSelectedText) {
+        // Replace the selected text with the AI result
+        setContent((prev) => prev.replace(aiSelectedText, text));
+      } else {
+        // Append to end of document
+        setContent((prev) => prev + '\n\n' + text);
+      }
+      setAiSelectedText('');
+      track("ai.result_accepted");
+      // Delay clearing result so the suggestion card can show "הוכנס!" feedback briefly
+      acceptTimerRef.current = setTimeout(() => clearAiResult(), 400);
     },
-    [content, setContent, clearAiResult]
+    [aiSelectedText, setContent, clearAiResult, track]
   );
 
   const handleViewModeChange = useCallback((mode: typeof viewMode) => {
@@ -135,13 +183,57 @@ export default function EditorPage() {
     track("theme.preset_applied");
   }, [setColorTheme, track]);
 
-  // Ctrl+K / Cmd+K keyboard shortcut — skip when another modal is active
+  // Entry point: Header AI button click
+  const handleHeaderAiClick = useCallback(() => {
+    setAiTriggerSource('header');
+    setCommandBarPosition('below-header');
+    setCommandBarAnchor(undefined);
+    setAiSelectedText('');
+    setIsAiBarOpen(true);
+  }, []);
+
+  // Entry point: Slash command from editor
+  const handleSlashCommand = useCallback((cursorTop: number, cursorLeft: number) => {
+    setAiTriggerSource('slash');
+    setCommandBarPosition('above-selection');
+    setCommandBarAnchor({ top: cursorTop, left: cursorLeft });
+    setAiSelectedText('');
+    setIsAiBarOpen(true);
+  }, []);
+
+  // Entry point: Selection toolbar sparkle click
+  const handleSelectionAiClick = useCallback((selectedText: string, rect: { top: number; left: number }) => {
+    setAiTriggerSource('selection');
+    setCommandBarPosition('above-selection');
+    setCommandBarAnchor({ top: rect.top, left: rect.left });
+    setAiSelectedText(selectedText);
+    setIsAiBarOpen(true);
+  }, []);
+
+  // Regenerate last AI action
+  const handleRegenerate = useCallback(() => {
+    if (lastAiActionType) {
+      void runAiAction(lastAiActionType);
+    }
+  }, [lastAiActionType, runAiAction]);
+
+  // Ctrl+J / Cmd+J keyboard shortcut — skip when another modal is active
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'j') {
         if (isExportModalOpen || isColorPanelOpen || isPresentationMode) return;
         e.preventDefault();
-        setIsAiPaletteOpen((prev) => !prev);
+        setAiTriggerSource('keyboard');
+        setCommandBarPosition('below-header');
+        setCommandBarAnchor(undefined);
+        // If text is selected in the editor, use it as context
+        const activeEl = document.activeElement as HTMLTextAreaElement | null;
+        if (activeEl?.tagName === 'TEXTAREA' && activeEl.selectionStart !== activeEl.selectionEnd) {
+          setAiSelectedText(activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd));
+        } else {
+          setAiSelectedText('');
+        }
+        setIsAiBarOpen(true);
       }
     }
     document.addEventListener('keydown', handleKeyDown);
@@ -249,19 +341,30 @@ export default function EditorPage() {
       />
       <PanelLayout
         viewMode={viewMode}
-        editorPanel={<EditorPanel content={content} onChange={setContent} dir={docDirection} onAiClick={() => setIsAiPaletteOpen(true)} />}
-        previewPanel={
+        editorPanel={
           <div className="flex flex-col flex-1 min-h-0">
-            <div className="flex-1 min-h-0">
-              <PreviewPanel content={debouncedContent} dir={docDirection} contentRef={previewContentRef} />
+            <div className="flex-1 min-h-0 overflow-hidden">
+              <EditorPanel
+                content={content}
+                onChange={setContent}
+                dir={docDirection}
+                onAiClick={handleHeaderAiClick}
+                onSlashCommand={handleSlashCommand}
+                onSelectionAiClick={handleSelectionAiClick}
+              />
             </div>
-            <AiResultPanel
+            <AiSuggestionCard
               isLoading={isAiLoading}
               result={aiResult}
               onAccept={handleAiAccept}
               onDismiss={clearAiResult}
+              onRegenerate={lastAiActionType ? handleRegenerate : undefined}
+              isBlurred={isAtLimit}
             />
           </div>
+        }
+        previewPanel={
+          <PreviewPanel content={debouncedContent} dir={docDirection} contentRef={previewContentRef} />
         }
       />
       {isPresentationMode && (
@@ -294,10 +397,13 @@ export default function EditorPage() {
           onPrint={() => window.print()}
         />
       )}
-      <AiCommandPalette
-        open={isAiPaletteOpen}
-        onOpenChange={setIsAiPaletteOpen}
+      <AiCommandBar
+        open={isAiBarOpen}
+        onOpenChange={setIsAiBarOpen}
         onAction={handleAiAction}
+        position={commandBarPosition}
+        anchorRect={commandBarAnchor}
+        selectedText={aiSelectedText}
       />
       <AiDisclosure
         open={pendingAiAction !== null}

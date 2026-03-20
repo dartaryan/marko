@@ -78,15 +78,15 @@ describe('EditorToolbar — structure & ARIA', () => {
     expect(count).toBeGreaterThanOrEqual(6);
   });
 
-  it('toolbar container has border-b divider separating it from editor', () => {
+  it('toolbar container has marko-toolbar class', () => {
     const html = renderToStaticMarkup(<EditorToolbar textareaRef={makeRef()} onInsert={vi.fn()} />);
-    expect(html).toContain('border-b');
+    expect(html).toContain('marko-toolbar');
   });
 
-  it('AI sparkle button renders with correct aria-label and tooltip', () => {
+  it('AI button renders with correct aria-label and tooltip', () => {
     const html = renderToStaticMarkup(<EditorToolbar textareaRef={makeRef()} onInsert={vi.fn()} />);
-    expect(html).toContain('aria-label="שאל את מארקו AI (Ctrl+K)"');
-    expect(html).toContain('title="שאל את מארקו AI (Ctrl+K)"');
+    expect(html).toContain('aria-label="עוזר AI (Ctrl+J)"');
+    expect(html).toContain('title="עוזר AI (Ctrl+J)"');
   });
 
   it('six separators render between seven groups (with AI group)', () => {

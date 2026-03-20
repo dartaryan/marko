@@ -167,14 +167,16 @@ export function EditorToolbar({ textareaRef, onInsert, onAiClick }: EditorToolba
       <ToolbarSeparator />
 
       {/* Group 7: AI */}
-      <FormatButton
+      <button
+        type="button"
         onClick={() => onAiClick?.()}
-        ariaLabel="שאל את מארקו AI (Ctrl+K)"
-        title="שאל את מארקו AI (Ctrl+K)"
+        aria-label="עוזר AI (Ctrl+J)"
+        title="עוזר AI (Ctrl+J)"
         className="marko-toolbar-btn--ai"
       >
         <Sparkles className="size-4" />
-      </FormatButton>
+        <span>עוזר AI</span>
+      </button>
     </div>
   );
 }

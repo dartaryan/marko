@@ -1,8 +1,6 @@
 import type { UserTier } from "../../types/user";
 
-// TODO: finalize limits in Epic 6
-export const FREE_MONTHLY_AI_LIMIT = 10;
-// TODO: finalize limits in Epic 6
+export const FREE_MONTHLY_AI_LIMIT = 5;
 export const PAID_DAILY_OPUS_LIMIT = 5;
 
 export type AiModel = "haiku" | "sonnet" | "opus";

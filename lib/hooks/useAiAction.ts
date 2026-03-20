@@ -34,9 +34,8 @@ export function useAiAction() {
         // Handle Opus fallback notification
         if (response.opusFallback) {
           toast.warning("מכסת Opus היומית נוצלה, משתמש ב-Sonnet");
-        } else {
-          toast.success("AI סיים לעבד");
         }
+        // Usage toast is handled by the EditorPage using getMyMonthlyUsage data
         return response;
       } catch (err: unknown) {
         const errorData = (err as { data?: { code?: string; message?: string } })?.data;

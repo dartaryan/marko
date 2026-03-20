@@ -61,7 +61,7 @@ describe("getMyMonthlyUsage", () => {
     expect(result).toEqual({ count: 0, limit: 0 });
   });
 
-  it("returns { count: N, limit: 10 } for free user with N usage records", async () => {
+  it("returns { count: N, limit: 5 } for free user with N usage records", async () => {
     const { getMyMonthlyUsage } = await import("../usage");
     const now = Date.now();
     const ctx = createMockPublicQueryCtx({
@@ -77,7 +77,7 @@ describe("getMyMonthlyUsage", () => {
     const handler = getHandler(getMyMonthlyUsage);
     const result = await handler(ctx, {});
 
-    expect(result).toEqual({ count: 3, limit: 10 });
+    expect(result).toEqual({ count: 3, limit: 5 });
 
     // Verify correct tables and indexes are queried
     expect(ctx.auth.getUserIdentity).toHaveBeenCalled();
@@ -85,7 +85,7 @@ describe("getMyMonthlyUsage", () => {
     expect(ctx.db.query).toHaveBeenCalledWith("aiUsage");
   });
 
-  it("returns { count: 0, limit: 10 } for free user with no usage this month", async () => {
+  it("returns { count: 0, limit: 5 } for free user with no usage this month", async () => {
     const { getMyMonthlyUsage } = await import("../usage");
     const ctx = createMockPublicQueryCtx({
       identity: { subject: "clerk_new_free" },
@@ -96,7 +96,7 @@ describe("getMyMonthlyUsage", () => {
     const handler = getHandler(getMyMonthlyUsage);
     const result = await handler(ctx, {});
 
-    expect(result).toEqual({ count: 0, limit: 10 });
+    expect(result).toEqual({ count: 0, limit: 5 });
   });
 
   it("returns { count: N, limit: null } for paid user", async () => {

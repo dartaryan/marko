@@ -593,6 +593,17 @@
   color: #FFFFFF;
 }
 
+.marko-header .marko-toolbar-btn--ai {
+  background: linear-gradient(135deg, var(--color-emerald-500), var(--color-emerald-600));
+  color: #FFFFFF;
+  border: none;
+}
+
+.marko-header .marko-toolbar-btn--ai:hover {
+  background: linear-gradient(135deg, var(--color-emerald-400), var(--color-emerald-500));
+  color: #FFFFFF;
+}
+
 .marko-logo-icon {
   background: var(--gradient-logo);
   border-radius: var(--radius-lg);
@@ -694,18 +705,175 @@
 }
 
 .marko-toolbar-btn--ai {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  height: 44px;
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--color-emerald-500), var(--color-emerald-600));
+  color: #FFFFFF;
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  position: relative;
+  transition: box-shadow 0.3s ease, transform 0.15s ease;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  animation: ai-btn-glow 2.5s ease-in-out infinite;
+}
+
+.marko-toolbar-btn--ai:hover {
+  background: linear-gradient(135deg, var(--color-emerald-600), var(--color-emerald-700));
+  color: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-glow);
+}
+
+.marko-toolbar-btn--ai:active {
+  background: linear-gradient(135deg, var(--color-emerald-700), var(--color-emerald-800));
+  color: #FFFFFF;
+  transform: translateY(0);
+}
+
+.marko-toolbar-btn--ai:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.5);
+}
+
+/* ============================================
+   AI Command Bar & Chips (Story 6.2r)
+   ============================================ */
+
+.marko-ai-command-bar {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+  max-width: 560px;
+  width: 100%;
+}
+
+.marko-ai-command-bar--header {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  margin-inline: auto;
+  z-index: var(--z-dropdown);
+}
+
+.marko-ai-command-bar--selection {
+  z-index: var(--z-dropdown);
+}
+
+.marko-ai-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1-5);
+  padding: var(--space-1-5) var(--space-3);
+  border-radius: var(--radius-pill);
+  border: 2px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--foreground-muted);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.marko-ai-chip:hover {
+  background: var(--primary-ghost);
   color: var(--primary);
+  border-color: var(--primary);
+}
+
+.marko-ai-chip:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
+  border-color: var(--primary);
+}
+
+.marko-ai-chip[aria-selected="true"] {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.marko-ai-chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* AI Suggestion Card (Story 6.2r) */
+.marko-suggestion-card {
+  display: flex;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+  margin: var(--space-2);
+}
+
+.marko-suggestion-card-border {
+  width: 4px;
+  flex-shrink: 0;
+  background: var(--gradient-brand);
+}
+
+.marko-suggestion-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Partial blur paywall effect */
+.marko-ai-result-blurred {
   position: relative;
 }
 
-.marko-toolbar-btn--ai::after {
+.marko-ai-result-blurred::after {
   content: '';
   position: absolute;
-  inset: -2px;
-  border: 1px dashed var(--primary);
-  border-radius: var(--radius-sm);
+  inset-block-start: 2em;
+  inset-block-end: 0;
+  inset-inline: 0;
+  backdrop-filter: blur(4px);
+  background: linear-gradient(to bottom, transparent, var(--background));
   pointer-events: none;
-  animation: pulse-border 2s infinite;
+}
+
+/* Selection Toolbar (Story 6.2r) */
+.marko-selection-toolbar {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
+  padding: var(--space-1);
+}
+
+.marko-selection-toolbar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-emerald-500), var(--color-emerald-600));
+  color: #FFFFFF;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+}
+
+.marko-selection-toolbar-btn:hover {
+  background: linear-gradient(135deg, var(--color-emerald-600), var(--color-emerald-700));
+  box-shadow: var(--shadow-glow);
+}
+
+.marko-selection-toolbar-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--ring);
 }
 
 /* Custom scrollbar */
@@ -762,6 +930,17 @@
 @keyframes pulse-border {
   0%, 100% { opacity: 0; }
   50% { opacity: 0.5; }
+}
+
+@keyframes ai-btn-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.2); }
+  50% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.4); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marko-toolbar-btn--ai {
+    animation: none;
+  }
 }
 
 @keyframes spin {
@@ -1145,6 +1324,15 @@
   .marko-toolbar-btn {
     min-height: 36px;
     min-width: 36px;
+  }
+
+  .marko-toolbar-btn--ai {
+    height: 36px;
+    padding-inline: var(--space-2-5);
+  }
+
+  .marko-toolbar-btn--ai span {
+    display: none;
   }
 }
 

@@ -2,6 +2,7 @@
 import { useRef } from 'react';
 import { EditorTextarea } from './EditorTextarea';
 import { EditorToolbar } from './EditorToolbar';
+import { SelectionToolbar } from './SelectionToolbar';
 import type { DocDirection } from '@/types/editor';
 
 interface EditorPanelProps {
@@ -9,9 +10,11 @@ interface EditorPanelProps {
   onChange: (content: string) => void;
   dir?: DocDirection;
   onAiClick?: () => void;
+  onSlashCommand?: (cursorTop: number, cursorLeft: number) => void;
+  onSelectionAiClick?: (selectedText: string, rect: { top: number; left: number }) => void;
 }
 
-export function EditorPanel({ content, onChange, dir = 'rtl', onAiClick }: EditorPanelProps) {
+export function EditorPanel({ content, onChange, dir = 'rtl', onAiClick, onSlashCommand, onSelectionAiClick }: EditorPanelProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   function insertTextAtCursor(text: string) {
@@ -40,8 +43,11 @@ export function EditorPanel({ content, onChange, dir = 'rtl', onAiClick }: Edito
         <span style={{ fontSize: 'var(--text-caption)', fontWeight: 600, letterSpacing: '0.05em', color: 'var(--foreground-muted)', textTransform: 'uppercase' }}>עורך</span>
       </div>
       <EditorToolbar textareaRef={textareaRef} onInsert={insertTextAtCursor} onAiClick={onAiClick} />
-      <div className="flex-1 overflow-hidden">
-        <EditorTextarea ref={textareaRef} value={content} onChange={onChange} dir={dir} />
+      <div className="flex-1 overflow-hidden relative">
+        <EditorTextarea ref={textareaRef} value={content} onChange={onChange} dir={dir} onSlashCommand={onSlashCommand} />
+        {onSelectionAiClick && (
+          <SelectionToolbar textareaRef={textareaRef} onAiClick={onSelectionAiClick} />
+        )}
       </div>
     </section>
   );

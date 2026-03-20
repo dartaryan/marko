@@ -99,7 +99,8 @@ describe("useAiAction", () => {
       await hookResult.executeAction("summarize", "content");
     });
 
-    expect(mockToast.success).toHaveBeenCalledWith("AI סיים לעבד");
+    // Usage toast is now handled by EditorPage, not the hook
+expect(mockToast.success).not.toHaveBeenCalled();
   });
 
   it("catches error and sets error state with Hebrew message", async () => {
@@ -364,7 +365,8 @@ describe("useAiAction", () => {
       await hookResult.executeAction("summarize", "content", undefined, true);
     });
 
-    expect(mockToast.success).toHaveBeenCalledWith("AI סיים לעבד");
+    // Usage toast is now handled by EditorPage, not the hook
+expect(mockToast.success).not.toHaveBeenCalled();
     expect(mockToast.warning).not.toHaveBeenCalled();
   });
 
