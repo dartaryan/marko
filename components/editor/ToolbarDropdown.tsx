@@ -6,18 +6,20 @@ export interface DropdownItem {
   label: string;
   labelEn?: string;
   value: string;
+  icon?: React.ReactNode;
 }
 
 interface ToolbarDropdownProps {
   triggerAriaLabel: string;
   triggerLabel: string;
+  triggerIcon?: React.ReactNode;
   title?: string;
   items: DropdownItem[];
   onSelect: (value: string) => void;
   onBeforeOpen?: () => void;
 }
 
-export function ToolbarDropdown({ triggerAriaLabel, triggerLabel, title, items, onSelect, onBeforeOpen }: ToolbarDropdownProps) {
+export function ToolbarDropdown({ triggerAriaLabel, triggerLabel, triggerIcon, title, items, onSelect, onBeforeOpen }: ToolbarDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -83,9 +85,10 @@ export function ToolbarDropdown({ triggerAriaLabel, triggerLabel, title, items, 
         title={title ?? triggerAriaLabel}
         aria-haspopup="menu"
         aria-expanded={isOpen}
-        className="marko-toolbar-btn px-2 text-[13px] gap-1"
+        className="marko-toolbar-btn px-2 text-[13px] gap-1.5"
       >
-        <span>{triggerLabel}</span>
+        {triggerIcon}
+        <span className={triggerIcon ? "hidden md:inline" : ""}>{triggerLabel}</span>
         <ChevronDown className="size-3" aria-hidden="true" />
       </button>
 
@@ -109,6 +112,7 @@ export function ToolbarDropdown({ triggerAriaLabel, triggerLabel, title, items, 
               className="flex w-full items-center gap-2 rounded-[4px] px-3 py-2 text-start text-sm
                          text-popover-foreground hover:bg-primary-ghost hover:text-primary transition-colors"
             >
+              {item.icon}
               <span>{item.label}</span>
               {item.labelEn && (
                 <span className="ms-auto text-xs text-muted-foreground">{item.labelEn}</span>

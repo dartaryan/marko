@@ -39,11 +39,11 @@ const HEBREW_LABELS: Record<keyof ColorTheme, string> = {
   tableBorder: 'גבול טבלה',
 };
 
-const SECTIONS: { title: string; keys: (keyof ColorTheme)[] }[] = [
-  { title: 'טקסט', keys: ['primaryText', 'secondaryText', 'link', 'code'] },
-  { title: 'כותרות', keys: ['h1', 'h1Border', 'h2', 'h2Border', 'h3'] },
-  { title: 'רקעים', keys: ['previewBg', 'codeBg', 'blockquoteBg', 'tableHeader', 'tableAlt'] },
-  { title: 'מבטאים', keys: ['blockquoteBorder', 'hr', 'tableBorder'] },
+const SECTIONS: { title: string; icon: string; keys: (keyof ColorTheme)[] }[] = [
+  { title: 'טקסט', icon: '🖌', keys: ['primaryText', 'secondaryText', 'link', 'code'] },
+  { title: 'כותרות', icon: '🖌', keys: ['h1', 'h1Border', 'h2', 'h2Border', 'h3'] },
+  { title: 'רקעים', icon: '🖌', keys: ['previewBg', 'codeBg', 'blockquoteBg', 'tableHeader', 'tableAlt'] },
+  { title: 'מבטאים', icon: '🖌', keys: ['blockquoteBorder', 'hr', 'tableBorder'] },
 ];
 
 export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: ColorPanelProps) {
@@ -91,7 +91,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
         <div className="mt-4 space-y-6 pb-6" style={{ padding: '0 16px 24px' }}>
           {/* Preset selection grid + custom presets + save form */}
           <div>
-            <h3 className="mb-2 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>נושא</h3>
+            <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}><span>🎨</span> נושא</h3>
             <PresetGrid
               activePreset={activePreset}
               onPresetSelect={(name, presetTheme) => {
@@ -163,7 +163,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
 
           {/* Image extraction */}
           <div>
-            <h3 className="mb-2 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>חילוץ מתמונה</h3>
+            <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}><span>🖼</span> חילוץ מתמונה</h3>
             <ImageColorExtractor
               onApply={(extractedTheme) => {
                 onThemeChange(extractedTheme);
@@ -174,8 +174,8 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
 
           {SECTIONS.map((section) => (
             <div key={section.title}>
-              <h3 className="mb-2 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>
-                {section.title}
+              <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>
+                <span>{section.icon}</span> {section.title}
               </h3>
               <div className="space-y-2">
                 {section.keys.map((key) => (

@@ -21,12 +21,10 @@ describe("LandingPage", () => {
     expect(data.inLanguage).toBe("he");
   });
 
-  it("renders footer with Hebrew text", () => {
+  it("does not render a footer", () => {
     render(<LandingPage />);
     const footer = getContainer().querySelector("footer");
-    expect(footer).not.toBeNull();
-    expect(footer!.textContent).toContain("מארקו");
-    expect(footer!.textContent).toContain("כלי מארקדאון");
+    expect(footer).toBeNull();
   });
 
   it("includes Hebrew keywords across the page", () => {
@@ -34,7 +32,6 @@ describe("LandingPage", () => {
     const html = getContainer().innerHTML;
     expect(html).toContain("עורך מארקדאון");
     expect(html).toContain("מארקדאון בעברית");
-    expect(html).toContain("כלי מארקדאון");
   });
 
   it("does not contain 'use client' directive (Server Component)", async () => {

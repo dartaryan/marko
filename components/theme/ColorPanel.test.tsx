@@ -44,35 +44,35 @@ function renderColorPanel(props: Partial<React.ComponentProps<typeof ColorPanel>
 // ─── Hebrew Section Headers ──────────────────────────────────────────────────
 
 describe('ColorPanel — Hebrew section headers', () => {
-  it('renders "טקסט" section header', () => {
+  it('renders "🖌 טקסט" section header', () => {
     renderColorPanel();
     const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent);
-    expect(headers).toContain('טקסט');
+    expect(headers).toContain('🖌 טקסט');
   });
 
-  it('renders "כותרות" section header', () => {
+  it('renders "🖌 כותרות" section header', () => {
     renderColorPanel();
     const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent);
-    expect(headers).toContain('כותרות');
+    expect(headers).toContain('🖌 כותרות');
   });
 
-  it('renders "רקעים" section header', () => {
+  it('renders "🖌 רקעים" section header', () => {
     renderColorPanel();
     const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent);
-    expect(headers).toContain('רקעים');
+    expect(headers).toContain('🖌 רקעים');
   });
 
-  it('renders "מבטאים" section header', () => {
+  it('renders "🖌 מבטאים" section header', () => {
     renderColorPanel();
     const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent);
-    expect(headers).toContain('מבטאים');
+    expect(headers).toContain('🖌 מבטאים');
   });
 
   it('renders exactly 4 section headers', () => {
     renderColorPanel();
     // Filter h3 elements that are section headers (not SheetTitle h3)
     const sectionHeaders = Array.from(document.body.querySelectorAll('h3')).filter((h) =>
-      ['טקסט', 'כותרות', 'רקעים', 'מבטאים'].includes(h.textContent ?? '')
+      ['🖌 טקסט', '🖌 כותרות', '🖌 רקעים', '🖌 מבטאים'].includes(h.textContent ?? '')
     );
     expect(sectionHeaders).toHaveLength(4);
   });
