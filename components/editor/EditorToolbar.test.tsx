@@ -83,16 +83,9 @@ describe('EditorToolbar — structure & ARIA', () => {
     expect(html).toContain('marko-toolbar');
   });
 
-  it('AI button renders with correct aria-label and tooltip', () => {
+  it('AI button no longer renders in toolbar (moved to header in Story 12.1)', () => {
     const html = renderToStaticMarkup(<EditorToolbar textareaRef={makeRef()} onInsert={vi.fn()} />);
-    expect(html).toContain('aria-label="עוזר AI (Ctrl+J)"');
-    expect(html).toContain('title="עוזר AI (Ctrl+J)"');
-  });
-
-  it('six separators render between seven groups (with AI group)', () => {
-    const html = renderToStaticMarkup(<EditorToolbar textareaRef={makeRef()} onInsert={vi.fn()} />);
-    const count = (html.match(/aria-hidden="true"/g) ?? []).length;
-    expect(count).toBeGreaterThanOrEqual(6);
+    expect(html).not.toContain('עוזר AI');
   });
 });
 

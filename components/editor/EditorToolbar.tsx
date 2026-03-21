@@ -11,7 +11,6 @@ import {
   ImageIcon,
   Table2,
   Minus,
-  Sparkles,
 } from 'lucide-react';
 import { FormatButton } from './FormatButton';
 import { ToolbarDropdown, type DropdownItem } from './ToolbarDropdown';
@@ -21,14 +20,13 @@ import { MERMAID_TEMPLATES, getMermaidTemplate } from '@/lib/markdown/mermaid-te
 interface EditorToolbarProps {
   textareaRef: RefObject<HTMLTextAreaElement | null>;
   onInsert: (text: string) => void;
-  onAiClick?: () => void;
 }
 
 function ToolbarSeparator() {
   return <div className="mx-1 h-5 w-px bg-border" aria-hidden="true" />;
 }
 
-export function EditorToolbar({ textareaRef, onInsert, onAiClick }: EditorToolbarProps) {
+export function EditorToolbar({ textareaRef, onInsert }: EditorToolbarProps) {
   // Stores textarea selection at the moment a dropdown trigger is clicked,
   // before the textarea loses focus and the selection may be cleared visually.
   const savedSelRef = useRef<string>('');
@@ -164,19 +162,6 @@ export function EditorToolbar({ textareaRef, onInsert, onAiClick }: EditorToolba
         onSelect={(key) => onInsert(getMermaidTemplate(key))}
       />
 
-      <ToolbarSeparator />
-
-      {/* Group 7: AI */}
-      <button
-        type="button"
-        onClick={() => onAiClick?.()}
-        aria-label="עוזר AI (Ctrl+J)"
-        title="עוזר AI (Ctrl+J)"
-        className="marko-toolbar-btn--ai"
-      >
-        <Sparkles className="size-4" />
-        <span>עוזר AI</span>
-      </button>
     </div>
   );
 }

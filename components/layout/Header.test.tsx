@@ -26,6 +26,11 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn() }),
 }));
 
+vi.mock("next/link", () => ({
+  default: ({ children, href, ...props }: { children: React.ReactNode; href: string; [key: string]: unknown }) =>
+    React.createElement("a", { href, ...props }, children),
+}));
+
 vi.mock("@clerk/nextjs", () => ({
   SignInButton: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="sign-in-button-wrapper">{children}</div>
@@ -64,6 +69,7 @@ const defaultProps = {
   onOpenColorPanel: vi.fn(),
   onExportRequest: vi.fn(),
   onCopyRequest: vi.fn(),
+  onAiClick: vi.fn(),
 };
 
 let container: HTMLDivElement;
@@ -91,8 +97,8 @@ describe("Header", () => {
       root = createRoot(container);
       root.render(<Header {...defaultProps} />);
     });
-    const logo = container.querySelector("h1")!;
-    expect(logo.textContent).toBe("מארקו");
+    const logo = container.querySelector("a")!;
+    expect(logo.textContent).toContain("מארקו");
   });
 
   it("renders AuthButton when user is anonymous", () => {
@@ -120,7 +126,7 @@ describe("Header", () => {
     expect(userMenu).toBeTruthy();
   });
 
-  it("renders a visual separator before auth section", () => {
+  it("renders zone separators between header zones", () => {
     mockUseConvexAuth.mockReturnValue({ isAuthenticated: false, isLoading: false });
     mockUseQuery.mockReturnValue(undefined);
 
@@ -128,13 +134,9 @@ describe("Header", () => {
       root = createRoot(container);
       root.render(<Header {...defaultProps} />);
     });
-    // Find the separator div (aria-hidden, bg-border divider)
-    const separators = container.querySelectorAll('[aria-hidden="true"]');
-    const dividerSeparator = Array.from(separators).find(
-      (el) =>
-        el.tagName === "DIV" && el.classList.contains("bg-border")
-    );
-    expect(dividerSeparator).toBeTruthy();
+    const separators = container.querySelectorAll(".marko-header-separator");
+    // 7 zones → 6 separators between them
+    expect(separators.length).toBe(6);
   });
 
   it("shows loading skeleton when auth is loading", () => {
@@ -159,6 +161,59 @@ describe("Header", () => {
     });
     const badge = container.querySelector('[data-testid="paid-badge"]')!;
     expect(badge).toBeTruthy();
+  });
+
+  it("renders AI star button with keyboard hint", () => {
+    mockUseConvexAuth.mockReturnValue({ isAuthenticated: false, isLoading: false });
+    mockUseQuery.mockReturnValue(undefined);
+
+    act(() => {
+      root = createRoot(container);
+      root.render(<Header {...defaultProps} />);
+    });
+    const aiBtn = container.querySelector('[aria-label="עוזר AI (Ctrl+J)"]')!;
+    expect(aiBtn).toBeTruthy();
+    expect(aiBtn.classList.contains("marko-header-btn--ai")).toBe(true);
+    expect(aiBtn.textContent).toContain("עוזר AI");
+  });
+
+  it("calls onAiClick when AI button is clicked", () => {
+    mockUseConvexAuth.mockReturnValue({ isAuthenticated: false, isLoading: false });
+    mockUseQuery.mockReturnValue(undefined);
+
+    act(() => {
+      root = createRoot(container);
+      root.render(<Header {...defaultProps} />);
+    });
+    const aiBtn = container.querySelector('[aria-label="עוזר AI (Ctrl+J)"]') as HTMLButtonElement;
+    act(() => {
+      aiBtn.click();
+    });
+    expect(defaultProps.onAiClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders 7 header zones", () => {
+    mockUseConvexAuth.mockReturnValue({ isAuthenticated: false, isLoading: false });
+    mockUseQuery.mockReturnValue(undefined);
+
+    act(() => {
+      root = createRoot(container);
+      root.render(<Header {...defaultProps} />);
+    });
+    const zones = container.querySelectorAll(".marko-header-zone");
+    expect(zones.length).toBe(7);
+  });
+
+  it("renders overflow button placeholder", () => {
+    mockUseConvexAuth.mockReturnValue({ isAuthenticated: false, isLoading: false });
+    mockUseQuery.mockReturnValue(undefined);
+
+    act(() => {
+      root = createRoot(container);
+      root.render(<Header {...defaultProps} />);
+    });
+    const overflowBtn = container.querySelector('[aria-label="תפריט נוסף"]')!;
+    expect(overflowBtn).toBeTruthy();
   });
 
   it("has correct header aria-label", () => {

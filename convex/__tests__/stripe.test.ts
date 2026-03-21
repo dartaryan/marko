@@ -97,7 +97,7 @@ describe("createCheckoutSession", () => {
     });
   });
 
-  it("throws USER_NOT_FOUND when user doesn't exist", async () => {
+  it("throws USER_NOT_FOUND when user doesn't exist even after upsert", async () => {
     const { createCheckoutSession } = await import("../stripe");
     const handler = getHandler(createCheckoutSession);
 
@@ -105,14 +105,17 @@ describe("createCheckoutSession", () => {
       auth: {
         getUserIdentity: vi
           .fn()
-          .mockResolvedValue({ subject: "clerk_123" }),
+          .mockResolvedValue({ subject: "clerk_123", email: "test@test.com", name: "Test" }),
       },
       runQuery: vi.fn().mockResolvedValue(null),
+      runMutation: vi.fn().mockResolvedValue("fake_id"),
     };
 
     await expect(handler(ctx)).rejects.toMatchObject({
       data: { code: "USER_NOT_FOUND" },
     });
+    // Verify upsert was attempted before giving up
+    expect(ctx.runMutation).toHaveBeenCalledTimes(1);
   });
 
   it("throws ALREADY_SUBSCRIBED when user is paid tier", async () => {

@@ -23,7 +23,7 @@ export function PanelLayout({ editorPanel, previewPanel, viewMode }: PanelLayout
 
   return (
     <div
-      className="marko-panel-grid grid h-[calc(100vh-var(--header-height,3.5rem))] overflow-hidden p-2 gap-2 md:p-4 md:gap-4 lg:p-6 lg:gap-6"
+      className="marko-panel-grid grid h-[calc(100vh-var(--header-height,4rem))] overflow-hidden p-2 gap-2 md:p-4 md:gap-4 lg:p-6 lg:gap-6"
       style={{ gridTemplateColumns, transition }}
       aria-label="פאנל עורך ותצוגה מקדימה"
       suppressHydrationWarning

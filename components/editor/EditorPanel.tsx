@@ -9,12 +9,11 @@ interface EditorPanelProps {
   content: string;
   onChange: (content: string) => void;
   dir?: DocDirection;
-  onAiClick?: () => void;
   onSlashCommand?: (cursorTop: number, cursorLeft: number) => void;
   onSelectionAiClick?: (selectedText: string, rect: { top: number; left: number }) => void;
 }
 
-export function EditorPanel({ content, onChange, dir = 'rtl', onAiClick, onSlashCommand, onSelectionAiClick }: EditorPanelProps) {
+export function EditorPanel({ content, onChange, dir = 'rtl', onSlashCommand, onSelectionAiClick }: EditorPanelProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   function insertTextAtCursor(text: string) {
@@ -42,7 +41,7 @@ export function EditorPanel({ content, onChange, dir = 'rtl', onAiClick, onSlash
       <div className="flex items-center border-b border-border-subtle" style={{ padding: '12px 16px' }}>
         <span style={{ fontSize: 'var(--text-caption)', fontWeight: 600, letterSpacing: '0.05em', color: 'var(--foreground-muted)', textTransform: 'uppercase' }}>עורך</span>
       </div>
-      <EditorToolbar textareaRef={textareaRef} onInsert={insertTextAtCursor} onAiClick={onAiClick} />
+      <EditorToolbar textareaRef={textareaRef} onInsert={insertTextAtCursor} />
       <div className="flex-1 overflow-hidden relative">
         <EditorTextarea ref={textareaRef} value={content} onChange={onChange} dir={dir} onSlashCommand={onSlashCommand} />
         {onSelectionAiClick && (

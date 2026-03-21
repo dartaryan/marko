@@ -337,6 +337,7 @@ export default function EditorPage() {
         onOpenColorPanel={() => setIsColorPanelOpen(true)}
         onExportRequest={handleExportRequest}
         onCopyRequest={handleCopyRequest}
+        onAiClick={handleHeaderAiClick}
       />
       <PanelLayout
         viewMode={viewMode}
@@ -347,7 +348,6 @@ export default function EditorPage() {
                 content={content}
                 onChange={setContent}
                 dir={docDirection}
-                onAiClick={handleHeaderAiClick}
                 onSlashCommand={handleSlashCommand}
                 onSelectionAiClick={handleSelectionAiClick}
               />

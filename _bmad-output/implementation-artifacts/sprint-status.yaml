@@ -1,5 +1,5 @@
 # generated: 2026-03-06
-# last_updated: 2026-03-20
+# last_updated: 2026-03-21
 # project: marko
 # project_key: NOKEY
 # tracking_system: file-system
@@ -53,7 +53,7 @@
 # WS3C: API connections (parallel track)
 
 generated: 2026-03-06
-last_updated: 2026-03-20
+last_updated: 2026-03-21
 project: marko
 project_key: NOKEY
 tracking_system: file-system
@@ -157,18 +157,18 @@ development_status:
   # Epic 11: Visual Identity — BULK & Polish [WS3-P0 + WS3-P1]
   # Source: D1, D3, D4, D6, N7
   # Priority: P0 (S11.1 BULK) + P1 (S11.2 background, S11.3 footer/icons)
-  epic-11: in-progress
+  epic-11: done
   11-1-bulk-pass-global-css-weight-increase: done  # WS3-P0, parallel with E10
   11-2-editor-page-background-and-panel-spacing: done  # WS3-P1
-  11-3-remove-footer-and-icon-enrichment: review  # WS3-P1
+  11-3-remove-footer-and-icon-enrichment: done  # WS3-P1, code review fixes applied 2026-03-21
   epic-11-retrospective: optional
 
   # Epic 12: Header & Navigation Redesign [WS3-P1 + WS3-P2]
   # Source: U1, U3, U4, D2
   # Priority: P0 (U1 header) + P2 (U3 BiDi, U4 nav)
   # Dependencies: E10 complete + E11/S11.1 complete before S12.1
-  epic-12: backlog
-  12-1-header-layout-7-zones-and-ai-star-button: backlog  # WS3-P1, LARGE story
+  epic-12: in-progress
+  12-1-header-layout-7-zones-and-ai-star-button: done  # WS3-P1, LARGE story, code review fixes applied 2026-03-21
   12-2-header-responsive-behavior: backlog  # WS3-P1, depends on S12.1
   12-3-overflow-menu-and-bidi-simplification: backlog  # WS3-P2
   12-4-user-menu-and-navigation: backlog  # WS3-P2

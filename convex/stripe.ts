@@ -167,16 +167,28 @@ export const createCheckoutSession = action({
   handler: async (ctx): Promise<{ url: string }> => {
     const identity = await requireAuth(ctx);
 
-    const user = await ctx.runQuery(internal.users.getUserByClerkId, {
+    let user = await ctx.runQuery(internal.users.getUserByClerkId, {
       clerkId: identity.subject,
     });
 
+    // If user record doesn't exist yet (race condition: Clerk auth completed
+    // before the webhook created the Convex user), create it now.
     if (!user) {
-      throw new ConvexError({
-        code: "USER_NOT_FOUND",
-        message: "משתמש לא נמצא",
-        messageEn: "User not found",
+      const userId = await ctx.runMutation(internal.users.upsertFromClerk, {
+        clerkId: identity.subject,
+        email: identity.email ?? undefined,
+        name: identity.name ?? undefined,
       });
+      user = await ctx.runQuery(internal.users.getUserByClerkId, {
+        clerkId: identity.subject,
+      });
+      if (!user) {
+        throw new ConvexError({
+          code: "USER_NOT_FOUND",
+          message: "משתמש לא נמצא",
+          messageEn: "User not found",
+        });
+      }
     }
 
     if (user.tier === "paid") {

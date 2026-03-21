@@ -218,7 +218,7 @@
   --color-table-border: #d1d5db;
 
   /* Layout */
-  --header-height: 3.5rem;
+  --header-height: 4rem;
 
   /* shadcn base radius override (Section 16.2) */
   --radius: 0.75rem;
@@ -561,16 +561,16 @@
   top: 0;
   inset-inline: 0;
   z-index: var(--z-header);
-  background: rgba(6, 78, 59, 0.95);
-  backdrop-filter: blur(12px) saturate(1.2);
-  -webkit-backdrop-filter: blur(12px) saturate(1.2);
+  background: rgba(6, 78, 59, 0.97);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
   box-shadow: var(--shadow-header);
   color: var(--color-emerald-50);
   direction: rtl;
 }
 
 .dark .marko-header {
-  background: rgba(11, 26, 20, 0.95);
+  background: rgba(11, 26, 20, 0.97);
 }
 
 .marko-header .text-muted-foreground {
@@ -581,33 +581,100 @@
   background-color: rgba(255, 255, 255, 0.15);
 }
 
-.marko-header .marko-toolbar-btn {
-  color: #ecfdf5;
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 6px;
-}
-
-.marko-header .marko-toolbar-btn:hover {
-  background: rgba(110, 231, 183, 0.2);
-  color: #FFFFFF;
-}
-
-.marko-header .marko-toolbar-btn--ai {
-  background: linear-gradient(135deg, var(--color-emerald-500), var(--color-emerald-600));
-  color: #FFFFFF;
-  border: none;
-}
-
-.marko-header .marko-toolbar-btn--ai:hover {
-  background: linear-gradient(135deg, var(--color-emerald-400), var(--color-emerald-500));
-  color: #FFFFFF;
-}
 
 .marko-logo-icon {
   background: var(--gradient-logo);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-2);
+}
+
+/* ============================================
+   Header 7-Zone Layout (Story 12.1)
+   ============================================ */
+
+.marko-header-zones {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+  padding-inline: var(--space-4);
+}
+
+.marko-header-zone {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.marko-header-separator {
+  width: 1px;
+  height: 24px;
+  background: rgba(167, 243, 208, 0.2);
+  align-self: center;
+  flex-shrink: 0;
+}
+
+.marko-header-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-pill);
+  color: var(--color-emerald-50);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+  gap: var(--space-1-5);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+}
+
+.marko-header-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+}
+
+.marko-header-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.5);
+}
+
+.marko-header-btn--ai {
+  height: 44px;
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--color-emerald-500), var(--color-emerald-600));
+  color: white;
+  font-weight: 600;
+  animation: ai-header-glow 2.5s ease-in-out infinite;
+}
+
+.marko-header-btn--ai:hover {
+  box-shadow: 0 0 24px rgba(16, 185, 129, 0.6);
+  animation: none;
+}
+
+.marko-header-btn--ai:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.5);
+}
+
+/* Override toolbar-btn styles when inside header zones */
+.marko-header-zone .marko-toolbar-btn {
+  color: var(--color-emerald-50);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-pill);
+  min-height: 40px;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-body-sm);
+}
+
+.marko-header-zone .marko-toolbar-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+  color: #FFFFFF;
 }
 
 .marko-panel-grid {
@@ -937,8 +1004,13 @@
   50% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.4); }
 }
 
+@keyframes ai-header-glow {
+  0%, 100% { box-shadow: 0 0 8px rgba(16, 185, 129, 0.3); }
+  50% { box-shadow: 0 0 16px rgba(16, 185, 129, 0.5); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .marko-toolbar-btn--ai {
+  .marko-header-btn--ai {
     animation: none;
   }
 }
@@ -1278,9 +1350,6 @@
 
 @media (max-width: 767px) {
   .marko-header {
-    justify-content: flex-start;
-    gap: var(--space-2);
-    padding-inline: var(--space-2);
     overflow-x: auto;
     scrollbar-width: none;
   }
@@ -1289,8 +1358,9 @@
     display: none;
   }
 
-  .marko-header > * {
-    flex-shrink: 0;
+  .marko-header-zones {
+    gap: var(--space-2);
+    padding-inline: var(--space-2);
   }
 }
 
