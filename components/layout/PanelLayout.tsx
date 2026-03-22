@@ -1,13 +1,16 @@
 'use client';
+import { ViewModeToggle } from './ViewModeToggle';
 import type { ViewMode } from '@/types/editor';
 
 interface PanelLayoutProps {
   editorPanel: React.ReactNode;
   previewPanel: React.ReactNode;
   viewMode: ViewMode;
+  onViewModeChange: (mode: ViewMode) => void;
+  hasBottomToolbar?: boolean;
 }
 
-export function PanelLayout({ editorPanel, previewPanel, viewMode }: PanelLayoutProps) {
+export function PanelLayout({ editorPanel, previewPanel, viewMode, onViewModeChange, hasBottomToolbar }: PanelLayoutProps) {
   const gridTemplateColumns =
     viewMode === 'split'   ? '1fr 1fr' :
     viewMode === 'editor'  ? '1fr 0fr' :
@@ -21,28 +24,40 @@ export function PanelLayout({ editorPanel, previewPanel, viewMode }: PanelLayout
       ? 'none'
       : 'grid-template-columns 200ms ease-in-out';
 
+  const gridClassName = [
+    'marko-panel-grid grid overflow-hidden p-2 gap-2 md:p-4 md:gap-4 lg:p-6 lg:gap-6',
+    hasBottomToolbar ? 'marko-panel-grid--has-bottom-toolbar' : '',
+  ].join(' ');
+
   return (
-    <div
-      className="marko-panel-grid grid h-[calc(100vh-var(--header-height,4rem))] overflow-hidden p-2 gap-2 md:p-4 md:gap-4 lg:p-6 lg:gap-6"
-      style={{ gridTemplateColumns, transition }}
-      aria-label="פאנל עורך ותצוגה מקדימה"
-      suppressHydrationWarning
-    >
-      <div
-        className="marko-panel flex flex-col overflow-hidden min-w-0 bg-surface"
-        aria-hidden={viewMode === 'preview' || undefined}
-        inert={viewMode === 'preview'}
-        suppressHydrationWarning
-      >
-        {editorPanel}
+    <div className="flex flex-col h-[calc(100vh-var(--header-height,4rem))] overflow-hidden">
+      {/* Mobile view toggle — shown ≤1023px via CSS */}
+      <div className="marko-mobile-view-toggle">
+        <ViewModeToggle value={viewMode} onChange={onViewModeChange} />
       </div>
+
       <div
-        className="marko-panel flex flex-col overflow-hidden min-w-0 bg-surface"
-        aria-hidden={viewMode === 'editor' || undefined}
-        inert={viewMode === 'editor'}
+        className={gridClassName}
+        style={{ gridTemplateColumns, transition, height: '100%' }}
+        aria-label="פאנל עורך ותצוגה מקדימה"
         suppressHydrationWarning
       >
-        {previewPanel}
+        <div
+          className="marko-panel flex flex-col overflow-hidden min-w-0 bg-surface"
+          aria-hidden={viewMode === 'preview' || undefined}
+          inert={viewMode === 'preview'}
+          suppressHydrationWarning
+        >
+          {editorPanel}
+        </div>
+        <div
+          className="marko-panel flex flex-col overflow-hidden min-w-0 bg-surface"
+          aria-hidden={viewMode === 'editor' || undefined}
+          inert={viewMode === 'editor'}
+          suppressHydrationWarning
+        >
+          {previewPanel}
+        </div>
       </div>
     </div>
   );

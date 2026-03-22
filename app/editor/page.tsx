@@ -32,6 +32,7 @@ import { PanelLayout } from '@/components/layout/PanelLayout';
 import { EditorPanel } from '@/components/editor/EditorPanel';
 import { PreviewPanel } from '@/components/preview/PreviewPanel';
 import { PresentationView } from '@/components/preview/PresentationView';
+import { MobileBottomToolbar } from '@/components/layout/MobileBottomToolbar';
 import { SAMPLE_DOCUMENT } from '@/lib/editor/sample-document';
 
 type AiTriggerSource = 'header' | 'slash' | 'selection' | 'keyboard';
@@ -51,6 +52,7 @@ export default function EditorPage() {
   const [colorTheme, setColorTheme] = useColorTheme();
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [pendingExportType, setPendingExportType] = useState<ExportType | null>(null);
+  const editorTextareaRef = useRef<HTMLTextAreaElement>(null);
   const previewContentRef = useRef<HTMLDivElement>(null);
   const [pendingPdfFilename, setPendingPdfFilename] = useState('');
   const [pdfState, setPdfState] = useState<PdfState>('idle');
@@ -341,6 +343,8 @@ export default function EditorPage() {
       />
       <PanelLayout
         viewMode={viewMode}
+        onViewModeChange={handleViewModeChange}
+        hasBottomToolbar={!isPresentationMode && viewMode !== 'preview'}
         editorPanel={
           <div className="flex flex-col flex-1 min-h-0">
             <div className="flex-1 min-h-0 overflow-hidden">
@@ -350,6 +354,7 @@ export default function EditorPage() {
                 dir={docDirection}
                 onSlashCommand={handleSlashCommand}
                 onSelectionAiClick={handleSelectionAiClick}
+                textareaRef={editorTextareaRef}
               />
             </div>
             <AiSuggestionCard
@@ -366,6 +371,9 @@ export default function EditorPage() {
           <PreviewPanel content={debouncedContent} dir={docDirection} contentRef={previewContentRef} />
         }
       />
+      {!isPresentationMode && (
+        <MobileBottomToolbar viewMode={viewMode} textareaRef={editorTextareaRef} onContentChange={setContent} />
+      )}
       {isPresentationMode && (
         <PresentationView
           content={debouncedContent}

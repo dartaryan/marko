@@ -1348,19 +1348,106 @@
   }
 }
 
-@media (max-width: 767px) {
-  .marko-header {
-    overflow-x: auto;
-    scrollbar-width: none;
+/* ============================================
+   Header Responsive Breakpoints (Story 12.2)
+   ============================================ */
+
+/* Unified output dropdown — hidden on desktop (≥1440px) */
+.marko-header-output-unified {
+  display: none;
+}
+
+.marko-header-output-individual {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* 1024–1439px: Collapse Export+Copy into unified dropdown */
+@media (max-width: 1439px) {
+  .marko-header-output-individual {
+    display: none;
   }
 
-  .marko-header::-webkit-scrollbar {
+  .marko-header-output-unified {
+    display: flex;
+  }
+}
+
+/* 768–1023px: Hide ViewModes + Tools zones */
+@media (max-width: 1023px) {
+  .marko-header-zone--viewmodes,
+  .marko-header-separator--after-viewmodes,
+  .marko-header-zone--tools,
+  .marko-header-separator--after-tools {
+    display: none;
+  }
+}
+
+/* <768px: Logo text hidden, Output zone hidden */
+@media (max-width: 767px) {
+  .marko-header-brand-text {
+    display: none;
+  }
+
+  .marko-header-zone--output,
+  .marko-header-separator--after-output {
     display: none;
   }
 
   .marko-header-zones {
     gap: var(--space-2);
     padding-inline: var(--space-2);
+  }
+}
+
+/* Mobile view toggle bar (above editor panels) — Story 12.2 */
+.marko-mobile-view-toggle {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  .marko-mobile-view-toggle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 48px;
+    margin-bottom: var(--space-2);
+    flex-shrink: 0;
+  }
+}
+
+/* Mobile bottom toolbar strip — Story 12.2 */
+.marko-mobile-bottom-toolbar {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .marko-mobile-bottom-toolbar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    inset-inline: 0;
+    z-index: var(--z-header);
+    height: 48px;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding-inline: var(--space-3);
+    background: rgba(6, 78, 59, 0.97);
+    backdrop-filter: blur(16px) saturate(1.4);
+    -webkit-backdrop-filter: blur(16px) saturate(1.4);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    direction: rtl;
+  }
+
+  .dark .marko-mobile-bottom-toolbar {
+    background: rgba(11, 26, 20, 0.97);
+  }
+
+  /* Bottom padding on panel grid so content isn't obscured by fixed toolbar */
+  .marko-panel-grid--has-bottom-toolbar {
+    padding-bottom: 56px;
   }
 }
 

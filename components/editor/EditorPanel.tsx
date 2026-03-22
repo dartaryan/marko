@@ -11,10 +11,12 @@ interface EditorPanelProps {
   dir?: DocDirection;
   onSlashCommand?: (cursorTop: number, cursorLeft: number) => void;
   onSelectionAiClick?: (selectedText: string, rect: { top: number; left: number }) => void;
+  textareaRef?: React.RefObject<HTMLTextAreaElement | null>;
 }
 
-export function EditorPanel({ content, onChange, dir = 'rtl', onSlashCommand, onSelectionAiClick }: EditorPanelProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+export function EditorPanel({ content, onChange, dir = 'rtl', onSlashCommand, onSelectionAiClick, textareaRef: externalRef }: EditorPanelProps) {
+  const internalRef = useRef<HTMLTextAreaElement>(null);
+  const textareaRef = externalRef ?? internalRef;
 
   function insertTextAtCursor(text: string) {
     const textarea = textareaRef.current;

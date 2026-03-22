@@ -169,7 +169,7 @@ development_status:
   # Dependencies: E10 complete + E11/S11.1 complete before S12.1
   epic-12: in-progress
   12-1-header-layout-7-zones-and-ai-star-button: done  # WS3-P1, LARGE story, code review fixes applied 2026-03-21
-  12-2-header-responsive-behavior: backlog  # WS3-P1, depends on S12.1
+  12-2-header-responsive-behavior: review  # WS3-P1, depends on S12.1
   12-3-overflow-menu-and-bidi-simplification: backlog  # WS3-P2
   12-4-user-menu-and-navigation: backlog  # WS3-P2
   epic-12-retrospective: optional
