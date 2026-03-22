@@ -204,7 +204,7 @@ describe("Header", () => {
     expect(zones.length).toBe(7);
   });
 
-  it("renders overflow button placeholder", () => {
+  it("renders overflow menu trigger button", () => {
     mockUseConvexAuth.mockReturnValue({ isAuthenticated: false, isLoading: false });
     mockUseQuery.mockReturnValue(undefined);
 
@@ -214,6 +214,7 @@ describe("Header", () => {
     });
     const overflowBtn = container.querySelector('[aria-label="תפריט נוסף"]')!;
     expect(overflowBtn).toBeTruthy();
+    expect(overflowBtn.classList.contains('marko-header-btn')).toBe(true);
   });
 
   it("has correct header aria-label", () => {

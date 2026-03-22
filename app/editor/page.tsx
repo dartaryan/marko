@@ -33,6 +33,7 @@ import { EditorPanel } from '@/components/editor/EditorPanel';
 import { PreviewPanel } from '@/components/preview/PreviewPanel';
 import { PresentationView } from '@/components/preview/PresentationView';
 import { MobileBottomToolbar } from '@/components/layout/MobileBottomToolbar';
+import { DirectionIndicator } from '@/components/layout/DirectionIndicator';
 import { SAMPLE_DOCUMENT } from '@/lib/editor/sample-document';
 
 type AiTriggerSource = 'header' | 'slash' | 'selection' | 'keyboard';
@@ -347,7 +348,7 @@ export default function EditorPage() {
         hasBottomToolbar={!isPresentationMode && viewMode !== 'preview'}
         editorPanel={
           <div className="flex flex-col flex-1 min-h-0">
-            <div className="flex-1 min-h-0 overflow-hidden">
+            <div className="relative flex-1 min-h-0 overflow-hidden">
               <EditorPanel
                 content={content}
                 onChange={setContent}
@@ -356,6 +357,7 @@ export default function EditorPage() {
                 onSelectionAiClick={handleSelectionAiClick}
                 textareaRef={editorTextareaRef}
               />
+              <DirectionIndicator value={docDirection} onChange={setDocDirection} />
             </div>
             <AiSuggestionCard
               isLoading={isAiLoading}

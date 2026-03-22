@@ -1,11 +1,12 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Palette, Copy, FileDown, ClipboardCopy, Clipboard, Code, FileType, Sparkles, MoreHorizontal, ChevronDown } from 'lucide-react';
+import { Palette, Copy, FileDown, ClipboardCopy, Clipboard, Code, FileType, Sparkles, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { ViewModeToggle } from './ViewModeToggle';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
 import { ToolbarDropdown } from '@/components/editor/ToolbarDropdown';
 import { AuthGate } from '@/components/auth/AuthGate';
+import { OverflowMenu } from './OverflowMenu';
 import type { ViewMode, DocDirection, ExportType, CopyType } from '@/types/editor';
 
 const copyItems = [
@@ -147,6 +148,11 @@ interface HeaderProps {
 export function Header({
   viewMode,
   onViewModeChange,
+  onEnterPresentation,
+  docDirection,
+  onDirectionChange,
+  onClearEditor,
+  onLoadSample,
   onOpenColorPanel,
   onExportRequest,
   onCopyRequest,
@@ -236,16 +242,15 @@ export function Header({
 
         <ZoneSeparator className="marko-header-separator--after-tools" />
 
-        {/* Zone 6: Overflow (placeholder — dropdown in Story 12.3) */}
+        {/* Zone 6: Overflow Menu (Story 12.3) */}
         <div className="marko-header-zone marko-header-zone--overflow">
-          <button
-            type="button"
-            aria-label="תפריט נוסף"
-            title="תפריט נוסף"
-            className="marko-header-btn"
-          >
-            <MoreHorizontal className="size-5" aria-hidden="true" />
-          </button>
+          <OverflowMenu
+            docDirection={docDirection}
+            onDirectionChange={onDirectionChange}
+            onLoadSample={onLoadSample}
+            onClearEditor={onClearEditor}
+            onEnterPresentation={onEnterPresentation}
+          />
         </div>
 
         <ZoneSeparator className="marko-header-separator--after-overflow" />

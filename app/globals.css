@@ -1500,6 +1500,108 @@
   }
 }
 
+/* ============================================
+   Overflow Menu Dropdown (Story 12.3)
+   ============================================ */
+
+.marko-overflow-menu {
+  background: rgba(6, 78, 59, 0.97);
+  backdrop-filter: blur(16px) saturate(1.4);
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  border: 1px solid rgba(167, 243, 208, 0.15);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: var(--color-emerald-50);
+  min-width: 200px;
+}
+
+.dark .marko-overflow-menu {
+  background: rgba(11, 26, 20, 0.97);
+}
+
+.marko-overflow-menu [data-slot="dropdown-menu-item"],
+.marko-overflow-menu [data-slot="dropdown-menu-sub-trigger"] {
+  color: var(--color-emerald-50);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.marko-overflow-menu [data-slot="dropdown-menu-item"]:hover,
+.marko-overflow-menu [data-slot="dropdown-menu-item"]:focus,
+.marko-overflow-menu [data-slot="dropdown-menu-sub-trigger"]:hover,
+.marko-overflow-menu [data-slot="dropdown-menu-sub-trigger"]:focus,
+.marko-overflow-menu [data-slot="dropdown-menu-sub-trigger"][data-state="open"] {
+  background: rgba(16, 185, 129, 0.2);
+  color: #FFFFFF;
+}
+
+.marko-overflow-menu [data-slot="dropdown-menu-radio-item"] {
+  color: var(--color-emerald-50);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.marko-overflow-menu [data-slot="dropdown-menu-radio-item"]:hover,
+.marko-overflow-menu [data-slot="dropdown-menu-radio-item"]:focus {
+  background: rgba(16, 185, 129, 0.2);
+  color: #FFFFFF;
+}
+
+.marko-overflow-menu [data-slot="dropdown-menu-radio-item"] [data-slot="dropdown-menu-item-indicator"] svg {
+  color: var(--color-emerald-400);
+}
+
+.marko-overflow-menu [data-slot="dropdown-menu-separator"] {
+  background: rgba(167, 243, 208, 0.15);
+}
+
+/* ============================================
+   Direction Indicator (Story 12.3)
+   ============================================ */
+
+.marko-direction-indicator {
+  position: absolute;
+  inset-block-end: 8px;
+  inset-inline-end: 8px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  padding-inline: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.15);
+  color: var(--foreground-muted);
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 0.15s ease, background 0.15s ease;
+  user-select: none;
+}
+
+.marko-direction-indicator:hover,
+.marko-direction-indicator:focus-visible {
+  opacity: 0.9;
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.marko-direction-indicator:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.dark .marko-direction-indicator {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--foreground-faint);
+}
+
+.dark .marko-direction-indicator:hover,
+.dark .marko-direction-indicator:focus-visible {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 /* Reduced motion (Section 8.6) */
 @media (prefers-reduced-motion: reduce) {
   *,

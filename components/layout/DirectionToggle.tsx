@@ -1,3 +1,5 @@
+// Deprecated by S12.3 — direction control moved to overflow menu (OverflowMenu.tsx) and DirectionIndicator.
+// Kept for reference — may be useful for S14.2 Settings page.
 'use client';
 import type { DocDirection } from '@/types/editor';
 
