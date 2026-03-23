@@ -1,5 +1,5 @@
 # generated: 2026-03-06
-# last_updated: 2026-03-22 (Story 12.4 review)
+# last_updated: 2026-03-23 (Stories 12.3 + 12.4 done, Epic 12 complete)
 # project: marko
 # project_key: NOKEY
 # tracking_system: file-system
@@ -53,7 +53,7 @@
 # WS3C: API connections (parallel track)
 
 generated: 2026-03-06
-last_updated: 2026-03-22
+last_updated: 2026-03-23
 project: marko
 project_key: NOKEY
 tracking_system: file-system
@@ -167,19 +167,19 @@ development_status:
   # Source: U1, U3, U4, D2
   # Priority: P0 (U1 header) + P2 (U3 BiDi, U4 nav)
   # Dependencies: E10 complete + E11/S11.1 complete before S12.1
-  epic-12: in-progress
+  epic-12: done
   12-1-header-layout-7-zones-and-ai-star-button: done  # WS3-P1, LARGE story, code review fixes applied 2026-03-21
   12-2-header-responsive-behavior: done  # WS3-P1, code review fixes applied 2026-03-22
-  12-3-overflow-menu-and-bidi-simplification: review  # WS3-P2
-  12-4-user-menu-and-navigation: review  # WS3-P2
+  12-3-overflow-menu-and-bidi-simplification: done  # WS3-P2, code review fixes applied 2026-03-23
+  12-4-user-menu-and-navigation: done  # WS3-P2, code review fixes applied 2026-03-23
   epic-12-retrospective: optional
 
   # Epic 13: Theme System Redesign [WS3-P1 + WS3-P2]
   # Source: D5 (curated themes), U2 (color panel redesign)
   # Priority: P1 (D5 themes) + P2 (U2 panel redesign)
   # Dependencies: S13.1 before S13.2 (need theme data before panel)
-  epic-13: backlog
-  13-1-theme-data-model-and-8-launch-themes: backlog  # WS3-P1
+  epic-13: in-progress
+  13-1-theme-data-model-and-8-launch-themes: ready-for-dev  # WS3-P1
   13-2-color-panel-redesign-theme-gallery: backlog  # WS3-P2, depends on S13.1
   13-3-accent-customizer-and-advanced-mode: backlog  # WS3-P2, depends on S13.2
   epic-13-retrospective: optional
