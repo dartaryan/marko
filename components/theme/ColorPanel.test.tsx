@@ -2,10 +2,11 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { act } from 'react';
-import { ColorPanel, ACTIVE_PRESET_KEY } from './ColorPanel';
+import { ColorPanel, ACTIVE_PRESET_KEY, ACTIVE_THEME_KEY } from './ColorPanel';
 import { CUSTOM_PRESETS_KEY } from '@/lib/hooks/useCustomPresets';
-import { DEFAULT_CLASSIC_THEME } from '@/lib/colors/defaults';
+import { DEFAULT_CLASSIC_THEME, DEFAULT_THEME } from '@/lib/colors/defaults';
 import { COLOR_PRESETS } from '@/lib/colors/presets';
+import { CURATED_THEMES } from '@/lib/colors/themes';
 import type { ColorTheme } from '@/types/colors';
 
 const SAMPLE_THEME: ColorTheme = { ...DEFAULT_CLASSIC_THEME };
@@ -32,6 +33,7 @@ function renderColorPanel(props: Partial<React.ComponentProps<typeof ColorPanel>
     onOpenChange: vi.fn(),
     theme: SAMPLE_THEME,
     onThemeChange: vi.fn(),
+    userTier: 'free' as const,
   };
   const merged = { ...defaults, ...props };
   act(() => {
@@ -130,7 +132,7 @@ describe('ColorPanel — reset button', () => {
     expect(resetButton).toBeDefined();
   });
 
-  it('calls onThemeChange with DEFAULT_CLASSIC_THEME when reset button is clicked', () => {
+  it('calls onThemeChange with Green Meadow (DEFAULT_THEME) when reset button is clicked', () => {
     const onThemeChange = vi.fn();
     const customTheme: ColorTheme = { ...SAMPLE_THEME, primaryText: '#FF0000' };
     renderColorPanel({ theme: customTheme, onThemeChange });
@@ -143,81 +145,56 @@ describe('ColorPanel — reset button', () => {
       resetButton!.click();
     });
 
-    expect(onThemeChange).toHaveBeenCalledWith(DEFAULT_CLASSIC_THEME);
+    expect(onThemeChange).toHaveBeenCalledWith(DEFAULT_THEME);
   });
 });
 
 // ─── Preset Grid ─────────────────────────────────────────────────────────────
 
-describe('ColorPanel — preset grid', () => {
-  it('renders 15 preset buttons', () => {
+describe('ColorPanel — curated theme grid', () => {
+  it('renders 8 curated theme buttons in the primary radiogroup', () => {
     renderColorPanel();
-    const presetButtons = document.body.querySelectorAll('[role="radiogroup"] [role="radio"]');
-    expect(presetButtons).toHaveLength(15);
+    const curatedButtons = document.body.querySelectorAll('[role="radiogroup"][aria-label="ערכות נושא"] [role="radio"]');
+    expect(curatedButtons).toHaveLength(8);
   });
 
-  it('calls onThemeChange with ocean preset theme when ocean button clicked', () => {
+  it('calls onThemeChange with Sea of Galilee theme when its button is clicked', () => {
     const onThemeChange = vi.fn();
     renderColorPanel({ onThemeChange });
 
-    const oceanPreset = COLOR_PRESETS.find((p) => p.name === 'ocean')!;
-    const oceanButton = document.body.querySelector(
-      `button[title="${oceanPreset.hebrewName}"]`
+    const seaTheme = CURATED_THEMES.find((t) => t.id === 'sea-of-galilee')!;
+    const seaButton = document.body.querySelector(
+      `button[title="${seaTheme.hebrewName}"]`
     ) as HTMLButtonElement;
-    expect(oceanButton).not.toBeNull();
+    expect(seaButton).not.toBeNull();
 
     act(() => {
-      oceanButton.click();
+      seaButton.click();
     });
 
-    expect(onThemeChange).toHaveBeenCalledWith(oceanPreset.theme);
-    // Spot-check 3 properties
-    const calledTheme = onThemeChange.mock.calls[0][0] as ColorTheme;
-    expect(calledTheme.primaryText).toBe(oceanPreset.theme.primaryText);
-    expect(calledTheme.link).toBe(oceanPreset.theme.link);
-    expect(calledTheme.previewBg).toBe(oceanPreset.theme.previewBg);
+    expect(onThemeChange).toHaveBeenCalledWith(seaTheme.colors);
   });
 
-  it('shows active state (aria-checked=true) on the stored active preset button', () => {
-    localStorage.setItem(ACTIVE_PRESET_KEY, JSON.stringify('ocean'));
-    const oceanPreset = COLOR_PRESETS.find((p) => p.name === 'ocean')!;
-    const classicPreset = COLOR_PRESETS.find((p) => p.name === 'classic')!;
-
+  it('shows active state on the curated theme matching stored active-theme ID', () => {
+    localStorage.setItem(ACTIVE_THEME_KEY, JSON.stringify('sea-of-galilee'));
     renderColorPanel();
 
-    const oceanButton = document.body.querySelector(
-      `button[title="${oceanPreset.hebrewName}"]`
+    const seaTheme = CURATED_THEMES.find((t) => t.id === 'sea-of-galilee')!;
+    const seaButton = document.body.querySelector(
+      `button[title="${seaTheme.hebrewName}"]`
     ) as HTMLButtonElement;
-    const classicButton = document.body.querySelector(
-      `button[title="${classicPreset.hebrewName}"]`
-    ) as HTMLButtonElement;
-
-    expect(oceanButton.getAttribute('aria-checked')).toBe('true');
-    expect(classicButton.getAttribute('aria-checked')).toBe('false');
+    expect(seaButton.getAttribute('aria-checked')).toBe('true');
   });
 
-  it('active preset button has ring-2 class', () => {
-    localStorage.setItem(ACTIVE_PRESET_KEY, JSON.stringify('ocean'));
-    const oceanPreset = COLOR_PRESETS.find((p) => p.name === 'ocean')!;
-
+  it('clears active curated theme when an individual color picker is changed', () => {
+    localStorage.setItem(ACTIVE_THEME_KEY, JSON.stringify('sea-of-galilee'));
     renderColorPanel();
 
-    const oceanButton = document.body.querySelector(
-      `button[title="${oceanPreset.hebrewName}"]`
+    const seaTheme = CURATED_THEMES.find((t) => t.id === 'sea-of-galilee')!;
+    const seaButton = document.body.querySelector(
+      `button[title="${seaTheme.hebrewName}"]`
     ) as HTMLButtonElement;
-
-    expect(oceanButton.className).toContain('ring-2');
-  });
-
-  it('clears active preset indicator when an individual color picker is changed (AC7)', () => {
-    localStorage.setItem(ACTIVE_PRESET_KEY, JSON.stringify('ocean'));
-    const oceanPreset = COLOR_PRESETS.find((p) => p.name === 'ocean')!;
-    renderColorPanel();
-
-    const oceanButton = document.body.querySelector(
-      `button[title="${oceanPreset.hebrewName}"]`
-    ) as HTMLButtonElement;
-    expect(oceanButton.getAttribute('aria-checked')).toBe('true');
+    expect(seaButton.getAttribute('aria-checked')).toBe('true');
 
     const firstColorInput = document.body.querySelector('input[type="color"]') as HTMLInputElement;
     act(() => {
@@ -226,7 +203,14 @@ describe('ColorPanel — preset grid', () => {
       firstColorInput.dispatchEvent(new Event('change', { bubbles: true }));
     });
 
-    expect(oceanButton.getAttribute('aria-checked')).toBe('false');
+    expect(seaButton.getAttribute('aria-checked')).toBe('false');
+  });
+
+  it('renders "נושאים נוספים" collapsible section for legacy presets', () => {
+    renderColorPanel();
+    const buttons = Array.from(document.body.querySelectorAll('button'));
+    const legacyToggle = buttons.find((b) => b.textContent?.includes('נושאים נוספים'));
+    expect(legacyToggle).toBeDefined();
   });
 });
 

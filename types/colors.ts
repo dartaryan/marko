@@ -32,3 +32,11 @@ export interface CustomPreset {
   name: string;
   colors: ColorTheme; // MUST be 'colors' — matches V2_KEYS.customPresets migration format
 }
+
+export interface Theme {
+  id: string;           // kebab-case slug, e.g., "green-meadow"
+  name: string;         // English display name
+  hebrewName: string;   // Hebrew display name
+  tier: 'free' | 'premium';
+  colors: ColorTheme;   // Reuses existing 17-property interface
+}

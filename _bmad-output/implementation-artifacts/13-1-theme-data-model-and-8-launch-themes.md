@@ -1,6 +1,6 @@
 # Story 13.1: Theme Data Model & 8 Launch Themes
 
-Status: ready-for-dev
+Status: done
 
 <!-- Note: Validation is optional. Run validate-create-story for quality check before dev-story. -->
 
@@ -74,37 +74,37 @@ Scenario: Existing user migration — no disruption
 
 ## Tasks / Subtasks
 
-- [ ] Task 1: Define `Theme` interface and theme data (AC: #1, #2)
-  - [ ] 1.1 Add `Theme` interface to `types/colors.ts`
-  - [ ] 1.2 Create `lib/colors/themes.ts` with 8 theme objects (complete 17-property ColorTheme for each)
-  - [ ] 1.3 Export `CURATED_THEMES` array and `CURATED_THEME_MAP` lookup
-  - [ ] 1.4 Update `lib/colors/defaults.ts` — `DEFAULT_THEME` becomes Green Meadow's ColorTheme
+- [x] Task 1: Define `Theme` interface and theme data (AC: #1, #2)
+  - [x] 1.1 Add `Theme` interface to `types/colors.ts`
+  - [x] 1.2 Create `lib/colors/themes.ts` with 8 theme objects (complete 17-property ColorTheme for each)
+  - [x] 1.3 Export `CURATED_THEMES` array and `CURATED_THEME_MAP` lookup
+  - [x] 1.4 Update `lib/colors/defaults.ts` — `DEFAULT_THEME` becomes Green Meadow's ColorTheme
 
-- [ ] Task 2: Create theme selection hook (AC: #5, #6)
-  - [ ] 2.1 Create `lib/hooks/useThemeSelection.ts` — manages `activeThemeId` in localStorage
-  - [ ] 2.2 Integrate with `useColorTheme` — when a curated theme is selected, apply its ColorTheme
-  - [ ] 2.3 Handle "no stored theme" → default to `green-meadow`
-  - [ ] 2.4 Preserve backward compatibility with existing `marko-v2-color-theme` key
+- [x] Task 2: Create theme selection hook (AC: #5, #6)
+  - [x] 2.1 Create `lib/hooks/useThemeSelection.ts` — manages `activeThemeId` in localStorage
+  - [x] 2.2 Integrate with `useColorTheme` — when a curated theme is selected, apply its ColorTheme
+  - [x] 2.3 Handle "no stored theme" → default to `green-meadow`
+  - [x] 2.4 Preserve backward compatibility with existing `marko-v2-color-theme` key
 
-- [ ] Task 3: Premium tier gating logic (AC: #3, #4)
-  - [ ] 3.1 Add tier check utility: `canApplyTheme(theme, userTier)` in `lib/colors/themes.ts`
-  - [ ] 3.2 Wire premium gate into theme selection flow — show Hebrew upsell toast on blocked apply
+- [x] Task 3: Premium tier gating logic (AC: #3, #4)
+  - [x] 3.1 Add tier check utility: `canApplyTheme(theme, userTier)` in `lib/colors/themes.ts`
+  - [x] 3.2 Wire premium gate into theme selection flow — show Hebrew upsell toast on blocked apply
 
-- [ ] Task 4: Update PresetGrid to show curated themes (AC: #1, #7)
-  - [ ] 4.1 Update `PresetGrid.tsx` to render 8 curated themes as primary selection
-  - [ ] 4.2 Show premium badge (lock icon) on premium theme circles
-  - [ ] 4.3 Keep existing 15 presets accessible (collapsed "נושאים נוספים" section or similar)
+- [x] Task 4: Update PresetGrid to show curated themes (AC: #1, #7)
+  - [x] 4.1 Update `PresetGrid.tsx` to render 8 curated themes as primary selection
+  - [x] 4.2 Show premium badge (lock icon) on premium theme circles
+  - [x] 4.3 Keep existing 15 presets accessible (collapsed "נושאים נוספים" section or similar)
 
-- [ ] Task 5: Wire into ColorPanel and editor page (AC: #5, #6)
-  - [ ] 5.1 Update `ColorPanel.tsx` to use `useThemeSelection` for curated theme selection
-  - [ ] 5.2 Update `app/editor/page.tsx` if needed for new hook integration
-  - [ ] 5.3 Update reset button to reset to Green Meadow (not old Classic)
+- [x] Task 5: Wire into ColorPanel and editor page (AC: #5, #6)
+  - [x] 5.1 Update `ColorPanel.tsx` to use `useThemeSelection` for curated theme selection
+  - [x] 5.2 Update `app/editor/page.tsx` if needed for new hook integration
+  - [x] 5.3 Update reset button to reset to Green Meadow (not old Classic)
 
-- [ ] Task 6: Tests (AC: all)
-  - [ ] 6.1 Unit test: Theme data model — all 8 themes have valid 17-property ColorTheme
-  - [ ] 6.2 Unit test: `canApplyTheme` returns correct result per tier
-  - [ ] 6.3 Unit test: `useThemeSelection` defaults to green-meadow when no stored ID
-  - [ ] 6.4 Unit test: Theme selection persists to localStorage
+- [x] Task 6: Tests (AC: all)
+  - [x] 6.1 Unit test: Theme data model — all 8 themes have valid 17-property ColorTheme
+  - [x] 6.2 Unit test: `canApplyTheme` returns correct result per tier
+  - [x] 6.3 Unit test: `useThemeSelection` defaults to green-meadow when no stored ID
+  - [x] 6.4 Unit test: Theme selection persists to localStorage
 
 ## Dev Notes
 
@@ -310,8 +310,38 @@ Last 5 commits:
 
 ### Agent Model Used
 
+Claude Opus 4.6 (1M context)
+
 ### Debug Log References
+
+- No blocking issues encountered during implementation
 
 ### Completion Notes List
 
+- **Task 1**: Added `Theme` interface to `types/colors.ts`. Created `lib/colors/themes.ts` with 8 curated themes (3 free, 5 premium), each with complete 17-property `ColorTheme` derived from spec base colors. Added `DEFAULT_THEME` (Green Meadow) to `defaults.ts`.
+- **Task 2**: Created `lib/hooks/useThemeSelection.ts` with `marko-v2-active-theme` localStorage key. Updated `useColorTheme` to default to `DEFAULT_THEME` (Green Meadow). Backward compatibility preserved — `marko-v2-color-theme` key remains the primary color storage.
+- **Task 3**: Added `canApplyTheme(theme, userTier)` to `themes.ts`. Free themes allowed for all users; premium requires `paid` tier. Upsell toast wired in ColorPanel via `sonner`.
+- **Task 4**: Rewrote `PresetGrid.tsx` — 8 curated themes as primary radiogroup with lock icons on premium circles. Existing 15 presets in collapsible "נושאים נוספים" section with `ChevronDown` toggle.
+- **Task 5**: Updated `ColorPanel.tsx` with `userTier` prop, curated theme selection flow, and Green Meadow reset. Updated `app/editor/page.tsx` to pass actual user tier from `useCurrentUser()`.
+- **Task 6**: Added 19 unit tests in `themes.test.ts` (data model validation, hex format, tier counts, `canApplyTheme` for all user tiers) and 7 tests in `useThemeSelection.test.ts`. Updated `ColorPanel.test.tsx` with 5 curated theme tests replacing legacy preset tests. Total: 26 new tests, 736 passing, 0 regressions (1 pre-existing failure in `layout.test.ts`).
+
 ### File List
+
+**New files:**
+- `lib/colors/themes.ts` — 8 curated Theme objects, CURATED_THEMES, CURATED_THEME_MAP, canApplyTheme
+- `lib/hooks/useThemeSelection.ts` — Theme ID selection hook with localStorage
+- `lib/colors/themes.test.ts` — 19 unit tests for theme data model and canApplyTheme
+- `lib/hooks/useThemeSelection.test.ts` — 7 unit tests for theme selection hook
+
+**Modified files:**
+- `types/colors.ts` — Added Theme interface
+- `lib/colors/defaults.ts` — Added DEFAULT_THEME (Green Meadow)
+- `lib/hooks/useColorTheme.ts` — Changed default from DEFAULT_CLASSIC_THEME to DEFAULT_THEME
+- `components/theme/PresetGrid.tsx` — Curated themes primary, legacy presets collapsible, premium lock badges
+- `components/theme/ColorPanel.tsx` — Added userTier prop, curated theme selection, upsell toast, Green Meadow reset
+- `components/theme/ColorPanel.test.tsx` — Updated tests for curated themes and new reset default
+- `app/editor/page.tsx` — Pass userTier to ColorPanel from useCurrentUser()
+
+### Change Log
+
+- 2026-03-23: Story 13.1 implemented — Theme data model, 8 curated themes, premium gating, PresetGrid update, 26 new tests

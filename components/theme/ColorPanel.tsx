@@ -4,19 +4,25 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '
 import { ColorPicker } from './ColorPicker';
 import { PresetGrid } from './PresetGrid';
 import { ImageColorExtractor } from './ImageColorExtractor';
-import { DEFAULT_CLASSIC_THEME } from '@/lib/colors/defaults';
+import { DEFAULT_THEME } from '@/lib/colors/defaults';
+import { CURATED_THEME_MAP, DEFAULT_THEME_ID } from '@/lib/colors/themes';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
+import { useThemeSelection, ACTIVE_THEME_KEY } from '@/lib/hooks/useThemeSelection';
 import { useCustomPresets } from '@/lib/hooks/useCustomPresets';
-import type { ColorTheme } from '@/types/colors';
+import { toast } from 'sonner';
+import type { ColorTheme, Theme } from '@/types/colors';
 
 // Exported so Story 2.3 can use the same key for custom preset persistence
 export const ACTIVE_PRESET_KEY = 'marko-v2-active-preset';
+// Re-export for tests
+export { ACTIVE_THEME_KEY };
 
 interface ColorPanelProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   theme: ColorTheme;
   onThemeChange: (theme: ColorTheme) => void;
+  userTier: 'free' | 'paid' | 'anonymous' | 'loading';
 }
 
 const HEBREW_LABELS: Record<keyof ColorTheme, string> = {
@@ -46,8 +52,9 @@ const SECTIONS: { title: string; icon: string; keys: (keyof ColorTheme)[] }[] = 
   { title: 'מבטאים', icon: '🖌', keys: ['blockquoteBorder', 'hr', 'tableBorder'] },
 ];
 
-export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: ColorPanelProps) {
-  const [activePreset, setActivePreset] = useLocalStorage<string>(ACTIVE_PRESET_KEY, 'classic');
+export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange, userTier }: ColorPanelProps) {
+  const [activePreset, setActivePreset] = useLocalStorage<string>(ACTIVE_PRESET_KEY, '');
+  const { activeThemeId, setActiveThemeId } = useThemeSelection();
   const { customPresets, savePreset, deletePreset } = useCustomPresets();
   const [isSavingPreset, setIsSavingPreset] = useState(false);
   const [draftPresetName, setDraftPresetName] = useState('');
@@ -61,7 +68,24 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
 
   function handleColorChange(key: keyof ColorTheme, value: string) {
     onThemeChange({ ...theme, [key]: value });
-    setActivePreset(''); // manual edit = custom theme
+    setActivePreset('');
+    setActiveThemeId(''); // manual edit = custom
+  }
+
+  function handleCuratedThemeSelect(t: Theme) {
+    onThemeChange(t.colors);
+    setActiveThemeId(t.id);
+    setActivePreset(''); // clear legacy active
+  }
+
+  function handleLegacyPresetSelect(name: string, presetTheme: ColorTheme) {
+    onThemeChange(presetTheme);
+    setActivePreset(name);
+    setActiveThemeId(''); // clear curated active
+  }
+
+  function handlePremiumBlocked() {
+    toast('ערכת נושא פרימיום — זמינה עם מנוי');
   }
 
   function handleSavePreset() {
@@ -94,14 +118,16 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
             <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}><span>🎨</span> נושא</h3>
             <PresetGrid
               activePreset={activePreset}
-              onPresetSelect={(name, presetTheme) => {
-                onThemeChange(presetTheme);
-                setActivePreset(name);
-              }}
+              activeThemeId={activeThemeId}
+              userTier={userTier}
+              onPresetSelect={handleLegacyPresetSelect}
+              onCuratedThemeSelect={handleCuratedThemeSelect}
+              onPremiumBlocked={handlePremiumBlocked}
               customPresets={customPresets}
               onCustomPresetSelect={(colors) => {
                 onThemeChange(colors);
-                setActivePreset(''); // clear built-in active indicator
+                setActivePreset('');
+                setActiveThemeId(''); // clear curated
               }}
               onDeleteCustomPreset={deletePreset}
             />
@@ -167,7 +193,8 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
             <ImageColorExtractor
               onApply={(extractedTheme) => {
                 onThemeChange(extractedTheme);
-                setActivePreset(''); // extracted theme is not a named preset
+                setActivePreset('');
+                setActiveThemeId('');
               }}
             />
           </div>
@@ -193,8 +220,10 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange }: Color
           <button
             type="button"
             onClick={() => {
-              onThemeChange(DEFAULT_CLASSIC_THEME);
-              setActivePreset('classic');
+              const greenMeadow = CURATED_THEME_MAP[DEFAULT_THEME_ID];
+              onThemeChange(greenMeadow ? greenMeadow.colors : DEFAULT_THEME);
+              setActiveThemeId(DEFAULT_THEME_ID);
+              setActivePreset('');
             }}
             className="marko-panel-btn-reset"
           >

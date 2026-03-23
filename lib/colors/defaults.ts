@@ -1,4 +1,5 @@
 import type { ColorTheme } from '@/types/colors';
+import { CURATED_THEMES } from './themes';
 
 export const DEFAULT_CLASSIC_THEME: ColorTheme = {
   primaryText: '#333333',
@@ -19,3 +20,6 @@ export const DEFAULT_CLASSIC_THEME: ColorTheme = {
   hr: '#d1d5db',
   tableBorder: '#d1d5db',
 };
+
+// Green Meadow — derived from CURATED_THEMES[0] (single source of truth)
+export const DEFAULT_THEME: ColorTheme = CURATED_THEMES[0].colors;

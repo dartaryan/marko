@@ -65,7 +65,7 @@ export default function EditorPage() {
   const [lastAiActionType, setLastAiActionType] = useState<AiActionType | null>(null);
   const { executeAction, isLoading: isAiLoading, result: aiResult, errorCode: aiErrorCode, clearResult: clearAiResult } = useAiAction();
   const { needsDisclosure, acceptDisclosure } = useAiDisclosure();
-  const { isAuthenticated } = useCurrentUser();
+  const { user, isAuthenticated } = useCurrentUser();
   const usage = useQuery(api.usage.getMyMonthlyUsage, isAuthenticated ? {} : 'skip');
   const { track } = useAnalytics();
   useSubscriptionReturn();
@@ -388,6 +388,7 @@ export default function EditorPage() {
         onOpenChange={setIsColorPanelOpen}
         theme={colorTheme}
         onThemeChange={handleThemeChange}
+        userTier={!isAuthenticated ? 'anonymous' : (!user ? 'loading' : (user.tier === 'paid' ? 'paid' : 'free'))}
       />
       {pendingExportType && (
         <ExportModal
