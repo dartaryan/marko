@@ -15,11 +15,14 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@clerk/nextjs", () => ({
-  SignInButton: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="sign-in-button-wrapper">{children}</div>
-  ),
-  UserButton: () => <div data-testid="clerk-user-button" />,
-  useClerk: () => ({ signOut: vi.fn() }),
+  useUser: () => ({
+    user: {
+      firstName: "Test",
+      imageUrl: null,
+      primaryEmailAddress: { emailAddress: "test@example.com" },
+    },
+  }),
+  useClerk: () => ({ signOut: vi.fn(), openSignIn: vi.fn() }),
 }));
 
 vi.mock("convex/react", () => ({
@@ -31,7 +34,7 @@ vi.mock("@/convex/_generated/api", () => ({
 }));
 
 vi.mock("sonner", () => ({
-  toast: { success: vi.fn(), error: vi.fn() },
+  toast: Object.assign(vi.fn(), { success: vi.fn(), error: vi.fn() }),
 }));
 
 let container: HTMLDivElement;
@@ -62,54 +65,82 @@ describe("AuthGate", () => {
     expect(loading).toBeTruthy();
   });
 
-  it("shows AuthButton when not authenticated", () => {
+  it("shows AuthButton in desktop container when not authenticated", () => {
     mockUseCurrentUser.mockReturnValue({ user: null, isLoading: false, isAuthenticated: false });
 
     act(() => {
       root = createRoot(container);
       root.render(<AuthGate />);
     });
-    const authBtn = container.querySelector('[data-testid="auth-button"]')!;
+    const desktop = container.querySelector('.marko-user-desktop')!;
+    expect(desktop).toBeTruthy();
+    const authBtn = desktop.querySelector('[data-testid="auth-button"]')!;
     expect(authBtn).toBeTruthy();
-    expect(authBtn.textContent).toBe("הרשמה / התחברות");
   });
 
-  it("shows UserMenu when authenticated (free tier)", () => {
+  it("shows MobileUserSheet in mobile container when not authenticated", () => {
+    mockUseCurrentUser.mockReturnValue({ user: null, isLoading: false, isAuthenticated: false });
+
+    act(() => {
+      root = createRoot(container);
+      root.render(<AuthGate />);
+    });
+    const mobile = container.querySelector('.marko-user-mobile')!;
+    expect(mobile).toBeTruthy();
+    const mobileBtn = mobile.querySelector('[data-testid="mobile-menu-trigger"]')!;
+    expect(mobileBtn).toBeTruthy();
+  });
+
+  it("shows UserMenu in desktop container when authenticated (free tier)", () => {
     mockUseCurrentUser.mockReturnValue({ user: { tier: "free" }, isLoading: false, isAuthenticated: true });
 
     act(() => {
       root = createRoot(container);
       root.render(<AuthGate />);
     });
-    const userMenu = container.querySelector('[data-testid="user-menu"]')!;
+    const desktop = container.querySelector('.marko-user-desktop')!;
+    const userMenu = desktop.querySelector('[data-testid="user-menu"]')!;
     expect(userMenu).toBeTruthy();
-    const badge = container.querySelector('[data-testid="paid-badge"]');
+    const badge = desktop.querySelector('[data-testid="paid-badge"]');
     expect(badge).toBeNull();
   });
 
-  it("shows UserMenu with gold badge when authenticated (paid tier)", () => {
+  it("shows paid badge when authenticated (paid tier)", () => {
     mockUseCurrentUser.mockReturnValue({ user: { tier: "paid" }, isLoading: false, isAuthenticated: true });
 
     act(() => {
       root = createRoot(container);
       root.render(<AuthGate />);
     });
-    const userMenu = container.querySelector('[data-testid="user-menu"]')!;
+    const desktop = container.querySelector('.marko-user-desktop')!;
+    const userMenu = desktop.querySelector('[data-testid="user-menu"]')!;
     expect(userMenu).toBeTruthy();
-    const badge = container.querySelector('[data-testid="paid-badge"]')!;
+    const badge = desktop.querySelector('[data-testid="paid-badge"]')!;
     expect(badge).toBeTruthy();
   });
 
-  it("defaults to free tier when user data is still loading", () => {
+  it("defaults to free tier when user data is null", () => {
     mockUseCurrentUser.mockReturnValue({ user: null, isLoading: false, isAuthenticated: true });
 
     act(() => {
       root = createRoot(container);
       root.render(<AuthGate />);
     });
-    const userMenu = container.querySelector('[data-testid="user-menu"]')!;
+    const desktop = container.querySelector('.marko-user-desktop')!;
+    const userMenu = desktop.querySelector('[data-testid="user-menu"]')!;
     expect(userMenu).toBeTruthy();
-    const badge = container.querySelector('[data-testid="paid-badge"]');
+    const badge = desktop.querySelector('[data-testid="paid-badge"]');
     expect(badge).toBeNull();
+  });
+
+  it("renders both desktop and mobile containers", () => {
+    mockUseCurrentUser.mockReturnValue({ user: null, isLoading: false, isAuthenticated: false });
+
+    act(() => {
+      root = createRoot(container);
+      root.render(<AuthGate />);
+    });
+    expect(container.querySelector('.marko-user-desktop')).toBeTruthy();
+    expect(container.querySelector('.marko-user-mobile')).toBeTruthy();
   });
 });

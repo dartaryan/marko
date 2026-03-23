@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, afterAll } from 'vitest';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { act } from 'react';
@@ -28,9 +28,14 @@ class FakeResizeObserver {
 globalThis.ResizeObserver = FakeResizeObserver as unknown as typeof ResizeObserver;
 
 // Radix needs DOMRect for positioning
+const origGetBoundingClientRect = Element.prototype.getBoundingClientRect;
 Element.prototype.getBoundingClientRect = vi.fn(() => ({
   x: 0, y: 0, width: 100, height: 40, top: 0, right: 100, bottom: 40, left: 0, toJSON: () => {},
 }));
+
+afterAll(() => {
+  Element.prototype.getBoundingClientRect = origGetBoundingClientRect;
+});
 
 const defaultProps = {
   docDirection: 'auto' as const,

@@ -78,7 +78,11 @@ export function OverflowMenu({
           <DropdownMenuSubContent className="marko-overflow-menu">
             <DropdownMenuRadioGroup
               value={docDirection}
-              onValueChange={(val) => onDirectionChange(val as DocDirection)}
+              onValueChange={(val) => {
+                if (val === 'auto' || val === 'rtl' || val === 'ltr') {
+                  onDirectionChange(val);
+                }
+              }}
             >
               {directionOptions.map((opt) => (
                 <DropdownMenuRadioItem key={opt.value} value={opt.value}>

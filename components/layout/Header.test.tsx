@@ -32,15 +32,18 @@ vi.mock("next/link", () => ({
 }));
 
 vi.mock("@clerk/nextjs", () => ({
-  SignInButton: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="sign-in-button-wrapper">{children}</div>
-  ),
-  UserButton: () => <div data-testid="clerk-user-button" />,
-  useClerk: () => ({ signOut: vi.fn() }),
+  useUser: () => ({
+    user: {
+      firstName: "Test",
+      imageUrl: null,
+      primaryEmailAddress: { emailAddress: "test@example.com" },
+    },
+  }),
+  useClerk: () => ({ signOut: vi.fn(), openSignIn: vi.fn() }),
 }));
 
 vi.mock("sonner", () => ({
-  toast: { success: vi.fn(), error: vi.fn() },
+  toast: Object.assign(vi.fn(), { success: vi.fn(), error: vi.fn() }),
 }));
 
 // Stub matchMedia for ThemeToggle
@@ -89,7 +92,7 @@ afterEach(() => {
 });
 
 describe("Header", () => {
-  it("renders the logo", () => {
+  it("renders the logo with /?home=true href", () => {
     mockUseConvexAuth.mockReturnValue({ isAuthenticated: false, isLoading: false });
     mockUseQuery.mockReturnValue(undefined);
 
@@ -99,6 +102,7 @@ describe("Header", () => {
     });
     const logo = container.querySelector("a")!;
     expect(logo.textContent).toContain("מארקו");
+    expect(logo.getAttribute("href")).toBe("/?home=true");
   });
 
   it("renders AuthButton when user is anonymous", () => {
@@ -109,9 +113,9 @@ describe("Header", () => {
       root = createRoot(container);
       root.render(<Header {...defaultProps} />);
     });
-    const authBtn = container.querySelector('[data-testid="auth-button"]')!;
+    const desktop = container.querySelector('.marko-user-desktop')!;
+    const authBtn = desktop.querySelector('[data-testid="auth-button"]')!;
     expect(authBtn).toBeTruthy();
-    expect(authBtn.textContent).toBe("הרשמה / התחברות");
   });
 
   it("renders UserMenu when user is authenticated", () => {

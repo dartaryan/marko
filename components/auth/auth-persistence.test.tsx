@@ -34,15 +34,18 @@ vi.mock("next/navigation", () => ({
 }));
 
 vi.mock("@clerk/nextjs", () => ({
-  SignInButton: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="sign-in-button-wrapper">{children}</div>
-  ),
-  UserButton: () => <div data-testid="clerk-user-button" />,
-  useClerk: () => ({ signOut: vi.fn() }),
+  useUser: () => ({
+    user: {
+      firstName: "Test",
+      imageUrl: null,
+      primaryEmailAddress: { emailAddress: "test@example.com" },
+    },
+  }),
+  useClerk: () => ({ signOut: vi.fn(), openSignIn: vi.fn() }),
 }));
 
 vi.mock("sonner", () => ({
-  toast: { success: vi.fn(), error: vi.fn() },
+  toast: Object.assign(vi.fn(), { success: vi.fn(), error: vi.fn() }),
 }));
 
 let container: HTMLDivElement;

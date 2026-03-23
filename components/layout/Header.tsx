@@ -166,7 +166,7 @@ export function Header({
       <div className="marko-header-zones">
         {/* Zone 1: Brand */}
         <div className="marko-header-zone marko-header-zone--brand">
-          <Link href="/" className="flex items-center gap-2 text-[18px] font-bold text-[#10B981]">
+          <Link href="/?home=true" className="flex items-center gap-2 text-[18px] font-bold text-[#10B981]">
             <span className="marko-logo-icon flex h-8 w-8 items-center justify-center text-[13px] font-bold text-emerald-900">מ</span>
             <span className="marko-header-brand-text">מארקו</span>
           </Link>
@@ -257,7 +257,13 @@ export function Header({
 
         {/* Zone 7: User */}
         <div className="marko-header-zone marko-header-zone--user">
-          <AuthGate />
+          <AuthGate
+            docDirection={docDirection}
+            onDirectionChange={onDirectionChange}
+            onLoadSample={onLoadSample}
+            onClearEditor={onClearEditor}
+            onEnterPresentation={onEnterPresentation}
+          />
         </div>
       </div>
     </header>
