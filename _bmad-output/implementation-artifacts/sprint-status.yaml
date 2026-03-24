@@ -1,5 +1,5 @@
 # generated: 2026-03-06
-# last_updated: 2026-03-24 (Story 13.1 done, Epic 13 in-progress)
+# last_updated: 2026-03-24 (Story 13.2 done)
 # project: marko
 # project_key: NOKEY
 # tracking_system: file-system
@@ -53,7 +53,7 @@
 # WS3C: API connections (parallel track)
 
 generated: 2026-03-06
-last_updated: 2026-03-23
+last_updated: 2026-03-24
 project: marko
 project_key: NOKEY
 tracking_system: file-system
@@ -180,7 +180,7 @@ development_status:
   # Dependencies: S13.1 before S13.2 (need theme data before panel)
   epic-13: in-progress
   13-1-theme-data-model-and-8-launch-themes: done  # WS3-P1, code review fixes applied 2026-03-24
-  13-2-color-panel-redesign-theme-gallery: backlog  # WS3-P2, depends on S13.1
+  13-2-color-panel-redesign-theme-gallery: done  # WS3-P2, code review fixes applied 2026-03-24
   13-3-accent-customizer-and-advanced-mode: backlog  # WS3-P2, depends on S13.2
   epic-13-retrospective: optional
 

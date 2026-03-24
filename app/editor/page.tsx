@@ -8,6 +8,7 @@ import { useDebounce } from '@/lib/hooks/useDebounce';
 import { useViewMode } from '@/lib/hooks/useViewMode';
 import { useDocDirection } from '@/lib/hooks/useDocDirection';
 import { useColorTheme } from '@/lib/hooks/useColorTheme';
+import { applyColorTheme } from '@/lib/colors/apply-colors';
 import { useAiAction } from '@/lib/hooks/useAiAction';
 import { useAiDisclosure } from '@/lib/hooks/useAiDisclosure';
 import { useCurrentUser } from '@/lib/hooks/useCurrentUser';
@@ -388,6 +389,7 @@ export default function EditorPage() {
         onOpenChange={setIsColorPanelOpen}
         theme={colorTheme}
         onThemeChange={handleThemeChange}
+        onThemePreview={applyColorTheme}
         userTier={!isAuthenticated ? 'anonymous' : (!user ? 'loading' : (user.tier === 'paid' ? 'paid' : 'free'))}
       />
       {pendingExportType && (

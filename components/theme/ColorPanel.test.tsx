@@ -33,6 +33,7 @@ function renderColorPanel(props: Partial<React.ComponentProps<typeof ColorPanel>
     onOpenChange: vi.fn(),
     theme: SAMPLE_THEME,
     onThemeChange: vi.fn(),
+    onThemePreview: vi.fn(),
     userTier: 'free' as const,
   };
   const merged = { ...defaults, ...props };
@@ -46,37 +47,39 @@ function renderColorPanel(props: Partial<React.ComponentProps<typeof ColorPanel>
 // ─── Hebrew Section Headers ──────────────────────────────────────────────────
 
 describe('ColorPanel — Hebrew section headers', () => {
-  it('renders "🖌 טקסט" section header', () => {
+  it('renders "טקסט" section header with Lucide icon', () => {
     renderColorPanel();
-    const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent);
-    expect(headers).toContain('🖌 טקסט');
+    const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent?.trim());
+    expect(headers).toContain('טקסט');
   });
 
-  it('renders "🖌 כותרות" section header', () => {
+  it('renders "כותרות" section header with Lucide icon', () => {
     renderColorPanel();
-    const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent);
-    expect(headers).toContain('🖌 כותרות');
+    const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent?.trim());
+    expect(headers).toContain('כותרות');
   });
 
-  it('renders "🖌 רקעים" section header', () => {
+  it('renders "רקעים" section header with Lucide icon', () => {
     renderColorPanel();
-    const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent);
-    expect(headers).toContain('🖌 רקעים');
+    const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent?.trim());
+    expect(headers).toContain('רקעים');
   });
 
-  it('renders "🖌 מבטאים" section header', () => {
+  it('renders "מבטאים" section header with Lucide icon', () => {
     renderColorPanel();
-    const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent);
-    expect(headers).toContain('🖌 מבטאים');
+    const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent?.trim());
+    expect(headers).toContain('מבטאים');
   });
 
-  it('renders exactly 4 section headers', () => {
+  it('renders exactly 4 color section headers with SVG icons', () => {
     renderColorPanel();
-    // Filter h3 elements that are section headers (not SheetTitle h3)
     const sectionHeaders = Array.from(document.body.querySelectorAll('h3')).filter((h) =>
-      ['🖌 טקסט', '🖌 כותרות', '🖌 רקעים', '🖌 מבטאים'].includes(h.textContent ?? '')
+      ['טקסט', 'כותרות', 'רקעים', 'מבטאים'].includes(h.textContent?.trim() ?? '')
     );
     expect(sectionHeaders).toHaveLength(4);
+    sectionHeaders.forEach((h) => {
+      expect(h.querySelector('svg')).not.toBeNull();
+    });
   });
 });
 
@@ -164,7 +167,7 @@ describe('ColorPanel — curated theme grid', () => {
 
     const seaTheme = CURATED_THEMES.find((t) => t.id === 'sea-of-galilee')!;
     const seaButton = document.body.querySelector(
-      `button[title="${seaTheme.hebrewName}"]`
+      `button[aria-label="${seaTheme.hebrewName}"]`
     ) as HTMLButtonElement;
     expect(seaButton).not.toBeNull();
 
@@ -181,7 +184,7 @@ describe('ColorPanel — curated theme grid', () => {
 
     const seaTheme = CURATED_THEMES.find((t) => t.id === 'sea-of-galilee')!;
     const seaButton = document.body.querySelector(
-      `button[title="${seaTheme.hebrewName}"]`
+      `button[aria-label="${seaTheme.hebrewName}"]`
     ) as HTMLButtonElement;
     expect(seaButton.getAttribute('aria-checked')).toBe('true');
   });
@@ -192,7 +195,7 @@ describe('ColorPanel — curated theme grid', () => {
 
     const seaTheme = CURATED_THEMES.find((t) => t.id === 'sea-of-galilee')!;
     const seaButton = document.body.querySelector(
-      `button[title="${seaTheme.hebrewName}"]`
+      `button[aria-label="${seaTheme.hebrewName}"]`
     ) as HTMLButtonElement;
     expect(seaButton.getAttribute('aria-checked')).toBe('true');
 
@@ -442,6 +445,90 @@ describe('ColorPanel — custom presets', () => {
     const headings = Array.from(document.body.querySelectorAll('h4'));
     const myThemesHeading = headings.find((h) => h.textContent?.trim() === 'נושאים שלי');
     expect(myThemesHeading).toBeDefined();
+  });
+});
+
+// ─── Story 13.2: Theme Gallery ───────────────────────────────────────────────
+
+describe('ColorPanel — theme gallery (Story 13.2)', () => {
+  it('renders panel header "ערכות נושא" with Palette icon', () => {
+    renderColorPanel();
+    const allText = document.body.textContent ?? '';
+    expect(allText).toContain('ערכות נושא');
+    // No emoji — uses Lucide Palette icon (SVG)
+    expect(allText).not.toContain('🎨');
+  });
+
+  it('renders description "בחר ערכת נושא או התאם צבעים ידנית"', () => {
+    renderColorPanel();
+    const allText = document.body.textContent ?? '';
+    expect(allText).toContain('בחר ערכת נושא או התאם צבעים ידנית');
+  });
+
+  it('renders curated themes in a 2-column grid', () => {
+    renderColorPanel();
+    const grid = document.body.querySelector('[role="radiogroup"][aria-label="ערכות נושא"]') as HTMLElement;
+    expect(grid).not.toBeNull();
+    expect(grid.className).toContain('grid-cols-2');
+  });
+
+  it('renders 8 curated theme cards with role="radio"', () => {
+    renderColorPanel();
+    const cards = document.body.querySelectorAll('[role="radiogroup"][aria-label="ערכות נושא"] [role="radio"]');
+    expect(cards).toHaveLength(8);
+  });
+
+  it('each theme card contains Hebrew document mockup text', () => {
+    renderColorPanel();
+    const cards = document.body.querySelectorAll('[role="radiogroup"][aria-label="ערכות נושא"] [role="radio"]');
+    cards.forEach((card) => {
+      expect(card.textContent).toContain('כותרת ראשית');
+    });
+  });
+
+  it('click on free theme card commits (calls onThemeChange)', () => {
+    const onThemeChange = vi.fn();
+    renderColorPanel({ onThemeChange });
+
+    const freeTheme = CURATED_THEMES.find((t) => t.tier === 'free' && t.id !== 'green-meadow')!;
+    const btn = document.body.querySelector(
+      `button[aria-label="${freeTheme.hebrewName}"]`
+    ) as HTMLButtonElement;
+    expect(btn).not.toBeNull();
+
+    act(() => { btn.click(); });
+    expect(onThemeChange).toHaveBeenCalledWith(freeTheme.colors);
+  });
+
+  it('arrow-key navigation triggers live preview via onThemePreview (not onThemeChange)', () => {
+    const onThemeChange = vi.fn();
+    const onThemePreview = vi.fn();
+    renderColorPanel({ onThemeChange, onThemePreview });
+
+    const firstCard = document.body.querySelector(
+      '[role="radiogroup"][aria-label="ערכות נושא"] [role="radio"]'
+    ) as HTMLButtonElement;
+    expect(firstCard).not.toBeNull();
+
+    // Focus the first card and press ArrowLeft (next in RTL)
+    act(() => { firstCard.focus(); });
+    act(() => {
+      firstCard.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+    });
+
+    // onThemePreview should be called (non-persisting), NOT onThemeChange
+    expect(onThemePreview).toHaveBeenCalledWith(CURATED_THEMES[1].colors);
+    expect(onThemeChange).not.toHaveBeenCalled();
+  });
+
+  it('premium theme cards show premium badge text', () => {
+    renderColorPanel({ userTier: 'free' });
+    const premiumTheme = CURATED_THEMES.find((t) => t.tier === 'premium')!;
+    const btn = document.body.querySelector(
+      `button[aria-label="${premiumTheme.hebrewName} (פרימיום)"]`
+    ) as HTMLButtonElement;
+    expect(btn).not.toBeNull();
+    expect(btn.textContent).toContain('פרימיום');
   });
 });
 

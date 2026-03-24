@@ -1,50 +1,93 @@
 'use client';
 import { useState, useRef, useCallback } from 'react';
-import { X, Lock, ChevronDown } from 'lucide-react';
+import { X, ChevronDown } from 'lucide-react';
 import { COLOR_PRESETS } from '@/lib/colors/presets';
 import { CURATED_THEMES, canApplyTheme } from '@/lib/colors/themes';
+import { ThemeCard } from './ThemeCard';
 import type { ColorTheme, CustomPreset, Theme } from '@/types/colors';
 
 interface PresetGridProps {
   activePreset: string; // preset name or '' for custom
   activeThemeId: string; // curated theme ID or '' for none
+  currentColors: ColorTheme; // current persisted colors (for Escape revert)
   userTier: 'free' | 'paid' | 'anonymous' | 'loading';
   onPresetSelect: (name: string, theme: ColorTheme) => void;
   onCuratedThemeSelect: (theme: Theme) => void;
   onPremiumBlocked: () => void;
+  onPreview: (colors: ColorTheme) => void;
   customPresets: CustomPreset[];
   onCustomPresetSelect: (colors: ColorTheme) => void;
   onDeleteCustomPreset: (index: number) => void;
 }
 
-function getPresetGradient(theme: ColorTheme): string {
-  return `linear-gradient(135deg, ${theme.previewBg} 0%, ${theme.h1} 50%, ${theme.link} 90%)`;
+function ColorStrips({ colors }: { colors: ColorTheme }) {
+  const strips = [colors.h1, colors.link, colors.codeBg];
+  return (
+    <span className="flex h-full w-full overflow-hidden" aria-hidden="true">
+      {strips.map((color, i) => (
+        <span key={i} className="flex-1" style={{ backgroundColor: color }} />
+      ))}
+    </span>
+  );
 }
 
-const COLS = 5;
+const CURATED_COLS = 2;
+const LEGACY_COLS = 5;
 
 export function PresetGrid({
   activePreset,
   activeThemeId,
+  currentColors,
   userTier,
   onPresetSelect,
   onCuratedThemeSelect,
   onPremiumBlocked,
+  onPreview,
   customPresets,
   onCustomPresetSelect,
   onDeleteCustomPreset,
 }: PresetGridProps) {
   const curatedRef = useRef<HTMLDivElement>(null);
   const legacyRef = useRef<HTMLDivElement>(null);
+  const committedThemeRef = useRef<Theme | null>(null);
   const [showLegacy, setShowLegacy] = useState(false);
+
+  // Track the committed theme (the theme that was last persisted via click/Enter)
+  const curatedActiveIndex = CURATED_THEMES.findIndex((t) => t.id === activeThemeId);
+  if (curatedActiveIndex >= 0 && committedThemeRef.current?.id !== activeThemeId) {
+    committedThemeRef.current = CURATED_THEMES[curatedActiveIndex];
+  }
+  const curatedTabbableIndex = curatedActiveIndex >= 0 ? curatedActiveIndex : 0;
 
   const handleCuratedKeyDown = useCallback((e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
     const count = CURATED_THEMES.length;
     let nextIndex: number | null = null;
-    if (e.key === 'ArrowRight') nextIndex = (index + 1) % count;
-    else if (e.key === 'ArrowLeft') nextIndex = (index - 1 + count) % count;
-    else if (e.key === 'ArrowDown') nextIndex = Math.min(index + COLS, count - 1);
-    else if (e.key === 'ArrowUp') nextIndex = Math.max(index - COLS, 0);
+
+    // RTL: ArrowRight = previous (index - 1), ArrowLeft = next (index + 1)
+    if (e.key === 'ArrowRight') nextIndex = (index - 1 + count) % count;
+    else if (e.key === 'ArrowLeft') nextIndex = (index + 1) % count;
+    else if (e.key === 'ArrowDown') {
+      const target = index + CURATED_COLS;
+      if (target < count) nextIndex = target; // only move if a row below exists
+    } else if (e.key === 'ArrowUp') {
+      const target = index - CURATED_COLS;
+      if (target >= 0) nextIndex = target; // only move if a row above exists
+    }
+    else if (e.key === 'Enter') {
+      e.preventDefault();
+      const theme = CURATED_THEMES[index];
+      if (!canApplyTheme(theme, userTier)) {
+        onPremiumBlocked();
+        return;
+      }
+      onCuratedThemeSelect(theme);
+      committedThemeRef.current = theme;
+      return;
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      onPreview(committedThemeRef.current?.colors ?? currentColors);
+      return;
+    }
 
     if (nextIndex !== null) {
       e.preventDefault();
@@ -52,17 +95,25 @@ export function PresetGrid({
       if (buttons?.[nextIndex]) {
         buttons.forEach((btn, i) => { btn.tabIndex = i === nextIndex ? 0 : -1; });
         buttons[nextIndex].focus();
+        // Live preview on arrow-key navigation
+        onPreview(CURATED_THEMES[nextIndex].colors);
       }
     }
-  }, []);
+  }, [userTier, onCuratedThemeSelect, onPremiumBlocked, onPreview, currentColors]);
 
   const handleLegacyKeyDown = useCallback((e: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
     const count = COLOR_PRESETS.length;
     let nextIndex: number | null = null;
-    if (e.key === 'ArrowRight') nextIndex = (index + 1) % count;
-    else if (e.key === 'ArrowLeft') nextIndex = (index - 1 + count) % count;
-    else if (e.key === 'ArrowDown') nextIndex = Math.min(index + COLS, count - 1);
-    else if (e.key === 'ArrowUp') nextIndex = Math.max(index - COLS, 0);
+    // RTL: ArrowRight = previous (index - 1), ArrowLeft = next (index + 1)
+    if (e.key === 'ArrowRight') nextIndex = (index - 1 + count) % count;
+    else if (e.key === 'ArrowLeft') nextIndex = (index + 1) % count;
+    else if (e.key === 'ArrowDown') {
+      const target = index + LEGACY_COLS;
+      if (target < count) nextIndex = target;
+    } else if (e.key === 'ArrowUp') {
+      const target = index - LEGACY_COLS;
+      if (target >= 0) nextIndex = target;
+    }
 
     if (nextIndex !== null) {
       e.preventDefault();
@@ -74,9 +125,6 @@ export function PresetGrid({
     }
   }, []);
 
-  const curatedActiveIndex = CURATED_THEMES.findIndex((t) => t.id === activeThemeId);
-  const curatedTabbableIndex = curatedActiveIndex >= 0 ? curatedActiveIndex : 0;
-
   const legacyActiveIndex = !activeThemeId ? COLOR_PRESETS.findIndex((p) => p.name === activePreset) : -1;
   const legacyTabbableIndex = legacyActiveIndex >= 0 ? legacyActiveIndex : 0;
 
@@ -86,43 +134,26 @@ export function PresetGrid({
       return;
     }
     onCuratedThemeSelect(theme);
+    committedThemeRef.current = theme;
   }
 
   return (
     <div>
-      {/* Curated themes: primary 5-column radiogroup */}
-      <div ref={curatedRef} className="grid grid-cols-5 gap-2" role="radiogroup" aria-label="ערכות נושא">
+      {/* Curated themes: 2-column visual card grid */}
+      <div ref={curatedRef} className="grid grid-cols-2 gap-2.5" role="radiogroup" aria-label="ערכות נושא">
         {CURATED_THEMES.map((theme, index) => {
           const isActive = theme.id === activeThemeId;
           const isPremiumLocked = !canApplyTheme(theme, userTier);
           return (
-            <button
+            <ThemeCard
               key={theme.id}
-              type="button"
-              role="radio"
-              aria-checked={isActive}
-              aria-label={`${theme.hebrewName}${isPremiumLocked ? ' (פרימיום)' : ''}`}
-              title={theme.hebrewName}
+              theme={theme}
+              isActive={isActive}
+              isPremiumLocked={isPremiumLocked}
               tabIndex={index === curatedTabbableIndex ? 0 : -1}
               onClick={() => handleCuratedClick(theme)}
               onKeyDown={(e) => handleCuratedKeyDown(e, index)}
-              style={{ background: getPresetGradient(theme.colors), boxShadow: 'var(--shadow-1)' }}
-              className={[
-                'marko-preset-circle relative',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
-                isActive
-                  ? 'border-2 border-[var(--primary)]'
-                  : 'border-2 border-transparent motion-safe:hover:scale-110',
-                'motion-safe:active:scale-95',
-              ].join(' ')}
-            >
-              {isPremiumLocked && (
-                <Lock
-                  className="absolute bottom-0 end-0 size-2.5 rounded-full bg-[var(--surface)] text-[var(--foreground-muted)]"
-                  aria-hidden="true"
-                />
-              )}
-            </button>
+            />
           );
         })}
       </div>
@@ -159,16 +190,18 @@ export function PresetGrid({
                   tabIndex={index === legacyTabbableIndex ? 0 : -1}
                   onClick={() => onPresetSelect(preset.name, preset.theme)}
                   onKeyDown={(e) => handleLegacyKeyDown(e, index)}
-                  style={{ background: getPresetGradient(preset.theme), boxShadow: 'var(--shadow-1)' }}
+                  style={{ boxShadow: 'var(--shadow-1)' }}
                   className={[
-                    'marko-preset-circle',
+                    'flex size-9 overflow-hidden rounded-md',
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
                     isActive
-                      ? 'border-2 border-[var(--primary)]'
-                      : 'border-2 border-transparent motion-safe:hover:scale-110',
+                      ? 'ring-2 ring-[var(--primary)] ring-offset-1'
+                      : 'motion-safe:hover:scale-110',
                     'motion-safe:active:scale-95',
                   ].join(' ')}
-                />
+                >
+                  <ColorStrips colors={preset.theme} />
+                </button>
               );
             })}
           </div>
@@ -185,12 +218,14 @@ export function PresetGrid({
                 <button
                   type="button"
                   onClick={() => onCustomPresetSelect(preset.colors)}
-                  style={{ background: getPresetGradient(preset.colors), boxShadow: 'var(--shadow-1)' }}
-                  className="h-7 w-7 flex-shrink-0 rounded-full transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 motion-safe:hover:scale-110 motion-safe:active:scale-95"
+                  style={{ boxShadow: 'var(--shadow-1)' }}
+                  className="flex size-7 flex-shrink-0 overflow-hidden rounded-md transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 motion-safe:hover:scale-110 motion-safe:active:scale-95"
                   aria-hidden="true"
                   tabIndex={-1}
                   title={preset.name}
-                />
+                >
+                  <ColorStrips colors={preset.colors} />
+                </button>
                 <button
                   type="button"
                   onClick={() => onCustomPresetSelect(preset.colors)}

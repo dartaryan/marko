@@ -4,6 +4,7 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '
 import { ColorPicker } from './ColorPicker';
 import { PresetGrid } from './PresetGrid';
 import { ImageColorExtractor } from './ImageColorExtractor';
+import { Palette, Paintbrush, ImagePlus } from 'lucide-react';
 import { DEFAULT_THEME } from '@/lib/colors/defaults';
 import { CURATED_THEME_MAP, DEFAULT_THEME_ID } from '@/lib/colors/themes';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
@@ -22,6 +23,7 @@ interface ColorPanelProps {
   onOpenChange: (open: boolean) => void;
   theme: ColorTheme;
   onThemeChange: (theme: ColorTheme) => void;
+  onThemePreview?: (theme: ColorTheme) => void;
   userTier: 'free' | 'paid' | 'anonymous' | 'loading';
 }
 
@@ -45,14 +47,14 @@ const HEBREW_LABELS: Record<keyof ColorTheme, string> = {
   tableBorder: 'גבול טבלה',
 };
 
-const SECTIONS: { title: string; icon: string; keys: (keyof ColorTheme)[] }[] = [
-  { title: 'טקסט', icon: '🖌', keys: ['primaryText', 'secondaryText', 'link', 'code'] },
-  { title: 'כותרות', icon: '🖌', keys: ['h1', 'h1Border', 'h2', 'h2Border', 'h3'] },
-  { title: 'רקעים', icon: '🖌', keys: ['previewBg', 'codeBg', 'blockquoteBg', 'tableHeader', 'tableAlt'] },
-  { title: 'מבטאים', icon: '🖌', keys: ['blockquoteBorder', 'hr', 'tableBorder'] },
+const SECTIONS: { title: string; keys: (keyof ColorTheme)[] }[] = [
+  { title: 'טקסט', keys: ['primaryText', 'secondaryText', 'link', 'code'] },
+  { title: 'כותרות', keys: ['h1', 'h1Border', 'h2', 'h2Border', 'h3'] },
+  { title: 'רקעים', keys: ['previewBg', 'codeBg', 'blockquoteBg', 'tableHeader', 'tableAlt'] },
+  { title: 'מבטאים', keys: ['blockquoteBorder', 'hr', 'tableBorder'] },
 ];
 
-export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange, userTier }: ColorPanelProps) {
+export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange, onThemePreview, userTier }: ColorPanelProps) {
   const [activePreset, setActivePreset] = useLocalStorage<string>(ACTIVE_PRESET_KEY, '');
   const { activeThemeId, setActiveThemeId } = useThemeSelection();
   const { customPresets, savePreset, deletePreset } = useCustomPresets();
@@ -84,6 +86,23 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange, userTie
     setActiveThemeId(''); // clear curated active
   }
 
+  function handlePreview(colors: ColorTheme) {
+    // Apply CSS vars visually without persisting to localStorage
+    if (onThemePreview) {
+      onThemePreview(colors);
+    } else {
+      onThemeChange(colors);
+    }
+  }
+
+  function handleOpenChange(open: boolean) {
+    if (!open && onThemePreview) {
+      // Revert any uncommitted preview when closing the panel
+      onThemePreview(theme);
+    }
+    onOpenChange(open);
+  }
+
   function handlePremiumBlocked() {
     toast('ערכת נושא פרימיום — זמינה עם מנוי');
   }
@@ -97,7 +116,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange, userTie
   }
 
   return (
-    <Sheet open={isOpen} onOpenChange={onOpenChange}>
+    <Sheet open={isOpen} onOpenChange={handleOpenChange}>
       <SheetContent
         side="right"
         className="w-80 overflow-y-auto border-s border-[var(--border)]"
@@ -108,21 +127,23 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange, userTie
         }}
       >
         <SheetHeader>
-          <SheetTitle className="text-[var(--foreground)]" style={{ fontSize: 'var(--text-h4)', fontWeight: 700 }}>הגדרות צבע</SheetTitle>
-          <SheetDescription className="text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>התאם את צבעי מסמך התצוגה המקדימה</SheetDescription>
+          <SheetTitle className="flex items-center gap-1.5 text-[var(--foreground)]" style={{ fontSize: 'var(--text-h4)', fontWeight: 700 }}><Palette className="size-4" aria-hidden="true" />ערכות נושא</SheetTitle>
+          <SheetDescription className="text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>בחר ערכת נושא או התאם צבעים ידנית</SheetDescription>
         </SheetHeader>
 
         <div className="mt-4 space-y-6 pb-6" style={{ padding: '0 16px 24px' }}>
           {/* Preset selection grid + custom presets + save form */}
           <div>
-            <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}><span>🎨</span> נושא</h3>
+            <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}><Palette className="size-3.5" aria-hidden="true" />נושא</h3>
             <PresetGrid
               activePreset={activePreset}
               activeThemeId={activeThemeId}
+              currentColors={theme}
               userTier={userTier}
               onPresetSelect={handleLegacyPresetSelect}
               onCuratedThemeSelect={handleCuratedThemeSelect}
               onPremiumBlocked={handlePremiumBlocked}
+              onPreview={handlePreview}
               customPresets={customPresets}
               onCustomPresetSelect={(colors) => {
                 onThemeChange(colors);
@@ -135,7 +156,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange, userTie
             {/* Save current colors as named custom preset */}
             <div className="mt-2">
               {isSavingPreset ? (
-                <div className="flex gap-1.5">
+                <div className="space-y-1.5">
                   <input
                     type="text"
                     value={draftPresetName}
@@ -150,29 +171,31 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange, userTie
                     ref={nameInputRef}
                     placeholder="שם הנושא..."
                     dir="auto"
-                    className="marko-panel-input flex-1"
+                    className="marko-panel-input w-full"
                     aria-label="שם הנושא החדש"
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsSavingPreset(false);
-                      setDraftPresetName('');
-                    }}
-                    className="marko-panel-btn-sm"
-                    aria-label="ביטול שמירת נושא"
-                  >
-                    ביטול
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSavePreset}
-                    disabled={!draftPresetName.trim()}
-                    className="marko-panel-btn-sm"
-                    aria-label="שמור נושא"
-                  >
-                    שמור
-                  </button>
+                  <div className="flex gap-1.5 justify-end">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSavingPreset(false);
+                        setDraftPresetName('');
+                      }}
+                      className="marko-panel-btn-sm"
+                      aria-label="ביטול שמירת נושא"
+                    >
+                      ביטול
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSavePreset}
+                      disabled={!draftPresetName.trim()}
+                      className="marko-panel-btn-sm"
+                      aria-label="שמור נושא"
+                    >
+                      שמור
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <button
@@ -189,7 +212,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange, userTie
 
           {/* Image extraction */}
           <div>
-            <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}><span>🖼</span> חילוץ מתמונה</h3>
+            <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}><ImagePlus className="size-3.5" aria-hidden="true" />חילוץ מתמונה</h3>
             <ImageColorExtractor
               onApply={(extractedTheme) => {
                 onThemeChange(extractedTheme);
@@ -202,7 +225,7 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange, userTie
           {SECTIONS.map((section) => (
             <div key={section.title}>
               <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>
-                <span>{section.icon}</span> {section.title}
+                <Paintbrush className="size-3.5" aria-hidden="true" />{section.title}
               </h3>
               <div className="space-y-2">
                 {section.keys.map((key) => (
