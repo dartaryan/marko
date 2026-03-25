@@ -4,7 +4,8 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '
 import { ColorPicker } from './ColorPicker';
 import { PresetGrid } from './PresetGrid';
 import { ImageColorExtractor } from './ImageColorExtractor';
-import { Palette, Paintbrush, ImagePlus } from 'lucide-react';
+import { Palette, Paintbrush, ImagePlus, Settings, ChevronDown } from 'lucide-react';
+import { AccentCustomizer } from './AccentCustomizer';
 import { DEFAULT_THEME } from '@/lib/colors/defaults';
 import { CURATED_THEME_MAP, DEFAULT_THEME_ID } from '@/lib/colors/themes';
 import { useLocalStorage } from '@/lib/hooks/useLocalStorage';
@@ -60,6 +61,8 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange, onTheme
   const { customPresets, savePreset, deletePreset } = useCustomPresets();
   const [isSavingPreset, setIsSavingPreset] = useState(false);
   const [draftPresetName, setDraftPresetName] = useState('');
+  const [showAccent, setShowAccent] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -210,43 +213,81 @@ export function ColorPanel({ isOpen, onOpenChange, theme, onThemeChange, onTheme
             </div>
           </div>
 
-          {/* Image extraction */}
-          <div>
-            <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}><ImagePlus className="size-3.5" aria-hidden="true" />חילוץ מתמונה</h3>
-            <ImageColorExtractor
-              onApply={(extractedTheme) => {
-                onThemeChange(extractedTheme);
-                setActivePreset('');
-                setActiveThemeId('');
-              }}
-            />
-          </div>
+          {/* Accent Customizer — collapsible (key resets internal state on theme switch) */}
+          <AccentCustomizer
+            key={activeThemeId}
+            onThemeChange={onThemeChange}
+            onClearActiveSelections={() => {
+              setActiveThemeId('');
+              setActivePreset('');
+            }}
+            expanded={showAccent}
+            onExpandedChange={setShowAccent}
+          />
 
-          {SECTIONS.map((section) => (
-            <div key={section.title}>
-              <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>
-                <Paintbrush className="size-3.5" aria-hidden="true" />{section.title}
-              </h3>
-              <div className="space-y-2">
-                {section.keys.map((key) => (
-                  <ColorPicker
-                    key={key}
-                    label={HEBREW_LABELS[key]}
-                    value={theme[key]}
-                    onChange={(value) => handleColorChange(key, value)}
+          {/* Advanced mode — collapsible wrapper for image extractor + individual pickers */}
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowAdvanced((v) => !v)}
+              className="flex w-full items-center gap-1 text-[var(--foreground-muted)] hover:text-[var(--foreground)] transition-colors"
+              style={{ fontSize: 'var(--text-body-sm)' }}
+              aria-expanded={showAdvanced}
+              aria-label="מתקדם"
+            >
+              <ChevronDown
+                className={`size-3.5 transition-transform ${showAdvanced ? 'rotate-180' : ''}`}
+                aria-hidden="true"
+              />
+              <Settings className="size-3.5" aria-hidden="true" />
+              <span className="font-medium">מתקדם</span>
+            </button>
+
+            {showAdvanced && (
+              <div className="mt-2 space-y-6">
+                {/* Image extraction */}
+                <div>
+                  <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}><ImagePlus className="size-3.5" aria-hidden="true" />חילוץ מתמונה</h3>
+                  <ImageColorExtractor
+                    onApply={(extractedTheme) => {
+                      onThemeChange(extractedTheme);
+                      setActivePreset('');
+                      setActiveThemeId('');
+                    }}
                   />
+                </div>
+
+                {SECTIONS.map((section) => (
+                  <div key={section.title}>
+                    <h3 className="mb-2 flex items-center gap-1.5 font-semibold text-[var(--foreground-muted)]" style={{ fontSize: 'var(--text-body-sm)' }}>
+                      <Paintbrush className="size-3.5" aria-hidden="true" />{section.title}
+                    </h3>
+                    <div className="space-y-2">
+                      {section.keys.map((key) => (
+                        <ColorPicker
+                          key={key}
+                          label={HEBREW_LABELS[key]}
+                          value={theme[key]}
+                          onChange={(value) => handleColorChange(key, value)}
+                        />
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
-            </div>
-          ))}
+            )}
+          </div>
 
           <button
             type="button"
             onClick={() => {
-              const greenMeadow = CURATED_THEME_MAP[DEFAULT_THEME_ID];
-              onThemeChange(greenMeadow ? greenMeadow.colors : DEFAULT_THEME);
-              setActiveThemeId(DEFAULT_THEME_ID);
+              const activeTheme = activeThemeId ? CURATED_THEME_MAP[activeThemeId] : null;
+              const resetTarget = activeTheme ?? CURATED_THEME_MAP[DEFAULT_THEME_ID];
+              onThemeChange(resetTarget ? resetTarget.colors : DEFAULT_THEME);
+              setActiveThemeId(resetTarget?.id ?? DEFAULT_THEME_ID);
               setActivePreset('');
+              setShowAccent(false);
+              setShowAdvanced(false);
             }}
             className="marko-panel-btn-reset"
           >

@@ -44,35 +44,46 @@ function renderColorPanel(props: Partial<React.ComponentProps<typeof ColorPanel>
   return merged;
 }
 
+// Helper: expand the Advanced section to reveal color pickers & image extractor
+function expandAdvancedSection() {
+  const advancedToggle = document.body.querySelector('button[aria-label="מתקדם"]') as HTMLButtonElement;
+  act(() => { advancedToggle.click(); });
+}
+
 // ─── Hebrew Section Headers ──────────────────────────────────────────────────
 
-describe('ColorPanel — Hebrew section headers', () => {
-  it('renders "טקסט" section header with Lucide icon', () => {
+describe('ColorPanel — Hebrew section headers (inside Advanced)', () => {
+  it('renders "טקסט" section header with Lucide icon when Advanced is expanded', () => {
     renderColorPanel();
+    expandAdvancedSection();
     const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent?.trim());
     expect(headers).toContain('טקסט');
   });
 
-  it('renders "כותרות" section header with Lucide icon', () => {
+  it('renders "כותרות" section header with Lucide icon when Advanced is expanded', () => {
     renderColorPanel();
+    expandAdvancedSection();
     const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent?.trim());
     expect(headers).toContain('כותרות');
   });
 
-  it('renders "רקעים" section header with Lucide icon', () => {
+  it('renders "רקעים" section header with Lucide icon when Advanced is expanded', () => {
     renderColorPanel();
+    expandAdvancedSection();
     const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent?.trim());
     expect(headers).toContain('רקעים');
   });
 
-  it('renders "מבטאים" section header with Lucide icon', () => {
+  it('renders "מבטאים" section header with Lucide icon when Advanced is expanded', () => {
     renderColorPanel();
+    expandAdvancedSection();
     const headers = Array.from(document.body.querySelectorAll('h3')).map((h) => h.textContent?.trim());
     expect(headers).toContain('מבטאים');
   });
 
-  it('renders exactly 4 color section headers with SVG icons', () => {
+  it('renders exactly 4 color section headers with SVG icons when Advanced is expanded', () => {
     renderColorPanel();
+    expandAdvancedSection();
     const sectionHeaders = Array.from(document.body.querySelectorAll('h3')).filter((h) =>
       ['טקסט', 'כותרות', 'רקעים', 'מבטאים'].includes(h.textContent?.trim() ?? '')
     );
@@ -85,15 +96,17 @@ describe('ColorPanel — Hebrew section headers', () => {
 
 // ─── Color Picker Count ──────────────────────────────────────────────────────
 
-describe('ColorPanel — color picker count', () => {
-  it('renders exactly 17 color inputs', () => {
+describe('ColorPanel — color picker count (inside Advanced)', () => {
+  it('renders exactly 17 color inputs when Advanced is expanded', () => {
     renderColorPanel();
+    expandAdvancedSection();
     const colorInputs = document.body.querySelectorAll('input[type="color"]');
     expect(colorInputs).toHaveLength(17);
   });
 
-  it('renders exactly 17 hex text inputs', () => {
+  it('renders exactly 17 hex text inputs when Advanced is expanded', () => {
     renderColorPanel();
+    expandAdvancedSection();
     const textInputs = document.body.querySelectorAll('input[type="text"]');
     expect(textInputs).toHaveLength(17);
   });
@@ -101,10 +114,11 @@ describe('ColorPanel — color picker count', () => {
 
 // ─── Color Change ────────────────────────────────────────────────────────────
 
-describe('ColorPanel — color change', () => {
+describe('ColorPanel — color change (inside Advanced)', () => {
   it('calls onThemeChange with merged theme when first color picker changes', () => {
     const onThemeChange = vi.fn();
     renderColorPanel({ onThemeChange });
+    expandAdvancedSection();
 
     const firstColorInput = document.body.querySelector('input[type="color"]') as HTMLInputElement;
     expect(firstColorInput).not.toBeNull();
@@ -192,6 +206,7 @@ describe('ColorPanel — curated theme grid', () => {
   it('clears active curated theme when an individual color picker is changed', () => {
     localStorage.setItem(ACTIVE_THEME_KEY, JSON.stringify('sea-of-galilee'));
     renderColorPanel();
+    expandAdvancedSection();
 
     const seaTheme = CURATED_THEMES.find((t) => t.id === 'sea-of-galilee')!;
     const seaButton = document.body.querySelector(
@@ -534,18 +549,132 @@ describe('ColorPanel — theme gallery (Story 13.2)', () => {
 
 // ─── Image Color Extraction (Story 2.4) ──────────────────────────────────────
 
-describe('ColorPanel — image color extraction (Story 2.4)', () => {
-  it('renders "העלה תמונה" button in the open color panel', () => {
+describe('ColorPanel — image color extraction (Story 2.4, inside Advanced)', () => {
+  it('renders "העלה תמונה" button when Advanced is expanded', () => {
     renderColorPanel();
+    expandAdvancedSection();
     const buttons = Array.from(document.body.querySelectorAll('button'));
     const uploadBtn = buttons.find((b) => b.getAttribute('aria-label') === 'העלה תמונה לחילוץ צבעים');
     expect(uploadBtn).toBeDefined();
   });
 
-  it('has a hidden file input that accepts image/* files', () => {
+  it('has a hidden file input that accepts image/* files when Advanced is expanded', () => {
     renderColorPanel();
+    expandAdvancedSection();
     const fileInput = document.body.querySelector('input[type="file"]') as HTMLInputElement;
     expect(fileInput).toBeTruthy();
     expect(fileInput.accept).toBe('image/*');
+  });
+});
+
+// ─── Story 13.3: Accent Customizer & Advanced Mode ──────────────────────────
+
+describe('ColorPanel — accent customizer section (Story 13.3)', () => {
+  it('renders "התאמה אישית" toggle button collapsed by default', () => {
+    renderColorPanel();
+    const toggle = document.body.querySelector('button[aria-label="התאמה אישית"]') as HTMLButtonElement;
+    expect(toggle).not.toBeNull();
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('expands accent customizer when toggle is clicked', () => {
+    renderColorPanel();
+    const toggle = document.body.querySelector('button[aria-label="התאמה אישית"]') as HTMLButtonElement;
+    act(() => { toggle.click(); });
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    // Should show the HSL wheel canvas
+    expect(document.body.querySelector('canvas')).not.toBeNull();
+    // Should show contrast indicator
+    expect(document.body.textContent).toContain('ניגודיות:');
+  });
+});
+
+describe('ColorPanel — advanced mode section (Story 13.3)', () => {
+  it('renders "מתקדם" toggle button collapsed by default', () => {
+    renderColorPanel();
+    const toggle = document.body.querySelector('button[aria-label="מתקדם"]') as HTMLButtonElement;
+    expect(toggle).not.toBeNull();
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('hides color pickers and image extractor when Advanced is collapsed', () => {
+    renderColorPanel();
+    expect(document.body.querySelectorAll('input[type="color"]')).toHaveLength(0);
+    expect(document.body.querySelector('input[type="file"]')).toBeNull();
+  });
+
+  it('shows color pickers and image extractor when Advanced is expanded', () => {
+    renderColorPanel();
+    expandAdvancedSection();
+    expect(document.body.querySelectorAll('input[type="color"]')).toHaveLength(17);
+    expect(document.body.querySelector('input[type="file"]')).not.toBeNull();
+  });
+});
+
+describe('ColorPanel — panel layout order (Story 13.3 AC#4)', () => {
+  it('renders sections in order: gallery, save, accent, advanced, reset', () => {
+    renderColorPanel();
+    const allText = document.body.textContent ?? '';
+    const saveIdx = allText.indexOf('שמור נושא נוכחי...');
+    const accentIdx = allText.indexOf('התאמה אישית');
+    const advancedIdx = allText.indexOf('מתקדם');
+    const resetIdx = allText.indexOf('איפוס לברירת מחדל');
+
+    expect(saveIdx).toBeGreaterThan(-1);
+    expect(accentIdx).toBeGreaterThan(saveIdx);
+    expect(advancedIdx).toBeGreaterThan(accentIdx);
+    expect(resetIdx).toBeGreaterThan(advancedIdx);
+  });
+});
+
+describe('ColorPanel — reset button (Story 13.3 AC#3)', () => {
+  it('resets to active curated theme (not always Green Meadow)', () => {
+    const onThemeChange = vi.fn();
+    localStorage.setItem(ACTIVE_THEME_KEY, JSON.stringify('sea-of-galilee'));
+    renderColorPanel({ onThemeChange });
+
+    const resetBtn = Array.from(document.body.querySelectorAll('button')).find(
+      (btn) => btn.textContent?.trim() === 'איפוס לברירת מחדל'
+    )!;
+    act(() => { resetBtn.click(); });
+
+    const seaTheme = CURATED_THEMES.find((t) => t.id === 'sea-of-galilee')!;
+    expect(onThemeChange).toHaveBeenCalledWith(seaTheme.colors);
+  });
+
+  it('falls back to Green Meadow when no active curated theme', () => {
+    const onThemeChange = vi.fn();
+    renderColorPanel({ onThemeChange });
+
+    const resetBtn = Array.from(document.body.querySelectorAll('button')).find(
+      (btn) => btn.textContent?.trim() === 'איפוס לברירת מחדל'
+    )!;
+    act(() => { resetBtn.click(); });
+
+    expect(onThemeChange).toHaveBeenCalledWith(DEFAULT_THEME);
+  });
+
+  it('collapses accent and advanced sections on reset', () => {
+    renderColorPanel();
+
+    // Expand both sections
+    const accentToggle = document.body.querySelector('button[aria-label="התאמה אישית"]') as HTMLButtonElement;
+    const advancedToggle = document.body.querySelector('button[aria-label="מתקדם"]') as HTMLButtonElement;
+    act(() => { accentToggle.click(); });
+    act(() => { advancedToggle.click(); });
+    expect(accentToggle.getAttribute('aria-expanded')).toBe('true');
+    expect(advancedToggle.getAttribute('aria-expanded')).toBe('true');
+
+    // Click reset
+    const resetBtn = Array.from(document.body.querySelectorAll('button')).find(
+      (btn) => btn.textContent?.trim() === 'איפוס לברירת מחדל'
+    )!;
+    act(() => { resetBtn.click(); });
+
+    // Re-query toggles (AccentCustomizer remounts via key prop on reset)
+    const accentAfter = document.body.querySelector('button[aria-label="התאמה אישית"]') as HTMLButtonElement;
+    const advancedAfter = document.body.querySelector('button[aria-label="מתקדם"]') as HTMLButtonElement;
+    expect(accentAfter.getAttribute('aria-expanded')).toBe('false');
+    expect(advancedAfter.getAttribute('aria-expanded')).toBe('false');
   });
 });
