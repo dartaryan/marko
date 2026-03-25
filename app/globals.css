@@ -571,6 +571,91 @@
   background: var(--gradient-landing-dark);
 }
 
+/* Landing page warm theme (Story 7.1r) */
+.landing-warm {
+  --landing-heading: #1F2937;
+  --landing-subtext: #4B5563;
+  background: #FAFAF5;
+  min-height: 100vh;
+}
+
+.dark .landing-warm {
+  --landing-heading: #ecfdf5;
+  --landing-subtext: #a7f3d0;
+  background: #0B1A14;
+}
+
+/* Landing mockup glow */
+.landing-mockup-container {
+  position: relative;
+}
+
+.landing-warm .landing-mockup-container::before {
+  content: '';
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Hero secondary CTA */
+.marko-hero-cta-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-8);
+  font-size: var(--text-h4);
+  font-weight: 600;
+  color: var(--primary);
+  background: transparent;
+  border: 2px solid var(--primary);
+  border-radius: var(--radius-pill);
+  transition: all 0.2s ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.marko-hero-cta-secondary:hover {
+  background: var(--primary-ghost);
+  transform: translateY(-2px);
+}
+
+.marko-hero-cta-secondary:active {
+  transform: translateY(0);
+}
+
+.marko-hero-cta-secondary:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.3);
+}
+
+/* Landing tab buttons */
+.landing-tab-btn:hover:not(.landing-tab-btn--active) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+/* Landing CTA section separator */
+.landing-cta-section {
+  border-block-start: 1px solid var(--border-subtle);
+}
+
+/* Landing tab demo responsive */
+@media (max-width: 767px) {
+  .landing-tab-demo-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .landing-tab-demo-format {
+    flex-direction: column !important;
+  }
+
+  .marko-hero-cta-secondary {
+    padding: var(--space-2-5) var(--space-6);
+    font-size: var(--text-body);
+  }
+}
+
 .marko-header {
   position: fixed;
   top: 0;

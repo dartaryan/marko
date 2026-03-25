@@ -74,7 +74,7 @@ export default function EditorPage() {
   const [pendingAiAction, setPendingAiAction] = useState<AiActionType | null>(null);
   const [pendingForceOpus, setPendingForceOpus] = useState(false);
   const [pendingFreeText, setPendingFreeText] = useState<string | undefined>();
-  const acceptTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const acceptTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const isAiUnavailable = aiErrorCode === 'AI_UNAVAILABLE';
   const isAtLimit = usage !== undefined && usage.limit !== null && usage.count >= usage.limit;
 
@@ -158,10 +158,10 @@ export default function EditorPage() {
     (text: string) => {
       if (aiSelectedText) {
         // Replace the selected text with the AI result
-        setContent((prev) => prev.replace(aiSelectedText, text));
+        setContent(content.replace(aiSelectedText, text));
       } else {
         // Append to end of document
-        setContent((prev) => prev + '\n\n' + text);
+        setContent(content + '\n\n' + text);
       }
       setAiSelectedText('');
       track("ai.result_accepted");

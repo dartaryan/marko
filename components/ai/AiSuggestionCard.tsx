@@ -26,7 +26,7 @@ export function AiSuggestionCard({
   isBlurred = false,
 }: AiSuggestionCardProps) {
   const [accepted, setAccepted] = useState(false);
-  const acceptTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const acceptTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   useEffect(() => {
     return () => {

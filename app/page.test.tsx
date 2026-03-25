@@ -1,4 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
+import React from "react";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import LandingPage from "./page";
 import { setupComponentTest } from "@/components/landing/test-utils";
 
@@ -6,9 +7,34 @@ vi.mock("@/components/landing/LandingRedirectGuard", () => ({
   LandingRedirectGuard: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
+vi.mock("@clerk/nextjs", () => ({
+  useAuth: () => ({ isSignedIn: undefined }),
+}));
+
+vi.mock("next/link", () => ({
+  default: ({ children, href, ...props }: { children: React.ReactNode; href: string; [key: string]: unknown }) =>
+    React.createElement("a", { href, ...props }, children),
+}));
+
 const { render, getContainer } = setupComponentTest();
 
 describe("LandingPage", () => {
+  beforeEach(() => {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      value: vi.fn().mockImplementation((query: string) => ({
+        matches: false,
+        media: query,
+        onchange: null,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      })),
+    });
+  });
+
   it("renders Hero, Features, and Demo sections", () => {
     render(<LandingPage />);
     const sections = getContainer().querySelectorAll("section");
@@ -42,5 +68,11 @@ describe("LandingPage", () => {
     const fs = await import("fs");
     const content = fs.readFileSync("app/page.tsx", "utf-8");
     expect(content).not.toContain("use client");
+  });
+
+  it("renders landing-warm class on main element", () => {
+    render(<LandingPage />);
+    const main = getContainer().querySelector("main.landing-warm");
+    expect(main).not.toBeNull();
   });
 });

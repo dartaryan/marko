@@ -42,7 +42,7 @@ export function Features() {
           textAlign: "center",
           fontSize: "var(--text-h2)",
           fontWeight: 700,
-          color: "#FFFFFF",
+          color: "var(--landing-heading)",
         }}
       >
         כל מה שצריך כדי לכתוב מארקדאון בעברית

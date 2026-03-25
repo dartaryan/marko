@@ -1,59 +1,95 @@
+"use client";
+
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
+import { EditorMockup } from "./EditorMockup";
 
 export function Hero() {
+  const { isSignedIn } = useAuth();
+  const ctaText = isSignedIn === true ? "פתח את מארקו" : "התחל בחינם";
+  const ctaHref = "/editor";
+
+  const handleDemoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    document.getElementById("demos")?.scrollIntoView({ behavior: "smooth" });
+  };
+
   return (
     <section
-      className="flex flex-col items-center justify-center text-center animate-fade-in"
+      className="animate-fade-in"
       style={{
-        paddingTop: "calc(var(--header-height) + var(--space-20))",
-        paddingBottom: "var(--space-24)",
+        paddingBlockStart: "calc(var(--header-height) + var(--space-16))",
+        paddingBlockEnd: "var(--space-20)",
         paddingInline: "var(--space-6)",
       }}
       aria-label="מארקו — עורך מארקדאון בעברית"
     >
-      <div style={{ maxWidth: "800px" }}>
-        <h1
-          style={{
-            fontSize: "var(--text-display)",
-            fontWeight: 700,
-            lineHeight: 1.2,
-            letterSpacing: "-0.02em",
-            color: "#FFFFFF",
-          }}
-        >
-          מארקו — עורך מארקדאון בעברית
-        </h1>
-        <p
-          style={{
-            marginTop: "var(--space-6)",
-            fontSize: "var(--text-h3)",
-            lineHeight: 1.6,
-            color: "var(--color-emerald-200)",
-            maxWidth: "640px",
-            marginInline: "auto",
-          }}
-        >
-          כלי מארקדאון מתקדם עם תמיכה מלאה ב-RTL, ייצוא מעוצב ועריכה חכמה.
-          כתבו מארקדאון בעברית — בדיוק כמו שצריך.
-        </p>
-        <Link
-          href="/editor"
-          className="marko-hero-cta animate-slide-in"
-          aria-label="פתחו את העורך"
-        >
-          <span>פתחו את העורך</span>
-          <ArrowLeft style={{ width: "var(--icon-md)", height: "var(--icon-md)" }} />
-        </Link>
-        <p
-          style={{
-            marginTop: "var(--space-4)",
-            fontSize: "var(--text-body-sm)",
-            color: "var(--color-emerald-300)",
-          }}
-        >
-          חינם לחלוטין. בלי הרשמה.
-        </p>
+      <div
+        style={{
+          maxWidth: "900px",
+          marginInline: "auto",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "var(--space-10)",
+        }}
+      >
+        {/* Headline + CTAs */}
+        <div style={{ textAlign: "center" }}>
+          <h1
+            style={{
+              fontSize: "var(--text-display)",
+              fontWeight: 700,
+              lineHeight: 1.2,
+              letterSpacing: "-0.02em",
+              color: "var(--landing-heading)",
+            }}
+          >
+            מארקו — עורך מארקדאון בעברית
+          </h1>
+          <p
+            style={{
+              marginBlockStart: "var(--space-5)",
+              fontSize: "var(--text-h3)",
+              lineHeight: 1.6,
+              color: "var(--landing-subtext)",
+              maxWidth: "640px",
+              marginInline: "auto",
+            }}
+          >
+            כלי מארקדאון מתקדם עם תמיכה מלאה ב-RTL, ייצוא מעוצב ועריכה חכמה.
+          </p>
+
+          {/* CTA buttons */}
+          <div
+            style={{
+              marginBlockStart: "var(--space-10)",
+              display: "flex",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: "var(--space-4)",
+            }}
+          >
+            <Link
+              href={ctaHref}
+              className="marko-hero-cta"
+              aria-label={ctaText}
+            >
+              {ctaText}
+            </Link>
+            <a
+              href="#demos"
+              onClick={handleDemoClick}
+              className="marko-hero-cta-secondary"
+              aria-label="צפה בהדגמה"
+            >
+              צפה בהדגמה
+            </a>
+          </div>
+        </div>
+
+        {/* Editor mockup */}
+        <EditorMockup />
       </div>
     </section>
   );
