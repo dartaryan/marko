@@ -18,7 +18,7 @@ const jetBrainsMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
-const FOUC_SCRIPT = `try{var s=localStorage.getItem('marko-v2-ui-mode');var d=s!==null?JSON.parse(s):window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark')}catch(e){}`;
+const FOUC_SCRIPT = `try{var p=localStorage.getItem('marko-v2-ui-mode-pref');if(p){p=JSON.parse(p);var d=p==='dark'?true:p==='light'?false:window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark')}else{var s=localStorage.getItem('marko-v2-ui-mode');var d=s!==null?JSON.parse(s):window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark')}var f=localStorage.getItem('marko-v2-font-size');if(f){var fv=JSON.parse(f);if(fv==='small'||fv==='medium'||fv==='large')document.documentElement.dataset.fontSize=fv}else{document.documentElement.dataset.fontSize='medium'}}catch(e){}`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

@@ -25,5 +25,16 @@ export function useTheme(): [isDark: boolean, toggleTheme: () => void] {
     document.documentElement.classList.toggle('dark', isDark);
   }, [isDark]);
 
-  return [isDark, () => setIsDark((v) => !v)];
+  return [isDark, () => {
+    setIsDark((v) => {
+      const next = !v;
+      // Keep pref key in sync so FOUC script and settings page stay coherent
+      try {
+        window.localStorage.setItem('marko-v2-ui-mode-pref', JSON.stringify(next ? 'dark' : 'light'));
+      } catch {
+        // Silently fail
+      }
+      return next;
+    });
+  }];
 }

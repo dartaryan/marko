@@ -1,5 +1,5 @@
 # generated: 2026-03-06
-# last_updated: 2026-03-25 (Story 14.1 done)
+# last_updated: 2026-03-25 (Story 14.2 done)
 # project: marko
 # project_key: NOKEY
 # tracking_system: file-system
@@ -53,7 +53,7 @@
 # WS3C: API connections (parallel track)
 
 generated: 2026-03-06
-last_updated: 2026-03-25 (Story 14.1 done)
+last_updated: 2026-03-25 (Story 14.2 done)
 project: marko
 project_key: NOKEY
 tracking_system: file-system
@@ -189,7 +189,7 @@ development_status:
   # Priority: P2 (N4) + P3 (N5, N6)
   epic-14: in-progress
   14-1-skip-landing-for-returning-visitors: done  # WS3-P2, code review fixes applied 2026-03-25
-  14-2-settings-page: backlog  # WS3-P3
+  14-2-settings-page: done  # WS3-P3, code review fixes applied 2026-03-25
   14-3-contact-and-bug-report-pages: backlog  # WS3-P3
   epic-14-retrospective: optional
 

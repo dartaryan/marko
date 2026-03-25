@@ -24,6 +24,7 @@ import type * as subscriptionActions from "../subscriptionActions.js";
 import type * as subscriptions from "../subscriptions.js";
 import type * as sumit from "../sumit.js";
 import type * as usage from "../usage.js";
+import type * as userSettings from "../userSettings.js";
 import type * as users from "../users.js";
 
 import type {
@@ -49,6 +50,7 @@ declare const fullApi: ApiFromModules<{
   subscriptions: typeof subscriptions;
   sumit: typeof sumit;
   usage: typeof usage;
+  userSettings: typeof userSettings;
   users: typeof users;
 }>;
 

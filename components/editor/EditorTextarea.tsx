@@ -89,6 +89,7 @@ export const EditorTextarea = forwardRef<HTMLTextAreaElement, EditorTextareaProp
         ref={ref}
         className="h-full w-full resize-none bg-surface p-4 font-mono text-sm text-foreground
                    placeholder:text-muted-foreground focus:outline-none"
+        style={{ fontSize: 'var(--editor-font-size, 16px)' }}
         dir={dir}
         lang="he"
         aria-label="תוכן מארקדאון לעריכה"

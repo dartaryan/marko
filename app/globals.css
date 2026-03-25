@@ -224,6 +224,20 @@
   --radius: 0.75rem;
 }
 
+/* Font Size Preference (Story 14.2) */
+[data-font-size="small"] {
+  --editor-font-size: 14px;
+  --preview-font-size: 15px;
+}
+[data-font-size="medium"] {
+  --editor-font-size: 16px;
+  --preview-font-size: 17px;
+}
+[data-font-size="large"] {
+  --editor-font-size: 18px;
+  --preview-font-size: 18px;
+}
+
 .dark,
 [data-theme="dark"] {
   /* Semantic Tokens — Dark Mode (Section 2.2) */
@@ -325,6 +339,7 @@
   color: var(--color-primary-text);
   background-color: var(--color-preview-bg);
   font-family: var(--font-body, var(--font-sans));
+  font-size: var(--preview-font-size, 17px);
   line-height: 1.7;
   direction: rtl;
 }

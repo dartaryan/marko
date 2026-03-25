@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 
 vi.mock("next/font/google", () => ({
-  Noto_Sans_Hebrew: () => ({ variable: "--mock-font", className: "mock-font" }),
+  Varela_Round: () => ({ variable: "--mock-font", className: "mock-font" }),
   JetBrains_Mono: () => ({ variable: "--mock-font", className: "mock-font" }),
 }));
 

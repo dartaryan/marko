@@ -73,4 +73,14 @@ export default defineSchema({
     .index("by_stripeSessionId", ["stripeSessionId"])
     .index("by_stripeInvoiceId", ["stripeInvoiceId"])
     .index("by_subscriptionId", ["subscriptionId"]),
+
+  userSettings: defineTable({
+    userId: v.id("users"),
+    docDirection: v.union(v.literal("auto"), v.literal("rtl"), v.literal("ltr")),
+    autoSave: v.boolean(),
+    activeThemeId: v.string(),
+    darkLightModePref: v.union(v.literal("system"), v.literal("light"), v.literal("dark")),
+    fontSize: v.union(v.literal("small"), v.literal("medium"), v.literal("large")),
+    updatedAt: v.number(),
+  }).index("by_userId", ["userId"]),
 });
