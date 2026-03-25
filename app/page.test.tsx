@@ -1,6 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import LandingPage from "./page";
 import { setupComponentTest } from "@/components/landing/test-utils";
+
+vi.mock("@/components/landing/LandingRedirectGuard", () => ({
+  LandingRedirectGuard: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+}));
 
 const { render, getContainer } = setupComponentTest();
 
