@@ -53,7 +53,7 @@
 # WS3C: API connections (parallel track)
 
 generated: 2026-03-06
-last_updated: 2026-03-26 (Story 7.3r done)
+last_updated: 2026-03-26 (Story 15.1 done)
 project: marko
 project_key: NOKEY
 tracking_system: file-system
@@ -197,8 +197,8 @@ development_status:
   # Source: N3
   # Priority: P3
   # Dependencies: S15.1 (UI) -> S15.2 (save) -> S15.3 (Convex backend)
-  epic-15: backlog
-  15-1-document-sidebar-ui: backlog  # WS3-P3
+  epic-15: in-progress
+  15-1-document-sidebar-ui: done  # WS3-P3, code review fixes applied 2026-03-26
   15-2-auto-save-and-document-crud: backlog  # WS3-P3, depends on S15.1
   15-3-convex-backend-for-documents: backlog  # WS3-P3, depends on S15.2
   epic-15-retrospective: optional
