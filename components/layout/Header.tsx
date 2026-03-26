@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Palette, Copy, FileDown, ClipboardCopy, Clipboard, Code, FileType, Sparkles, ChevronDown } from 'lucide-react';
+import { Palette, Copy, FileDown, ClipboardCopy, Clipboard, Code, FileType, Sparkles, ChevronDown, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { ViewModeToggle } from './ViewModeToggle';
 import { ThemeToggle } from '@/components/theme/ThemeToggle';
@@ -143,6 +143,8 @@ interface HeaderProps {
   onExportRequest: (type: ExportType) => void;
   onCopyRequest: (type: CopyType) => void;
   onAiClick?: () => void;
+  onToggleSidebar?: () => void;
+  isSidebarOpen?: boolean;
 }
 
 export function Header({
@@ -157,6 +159,8 @@ export function Header({
   onExportRequest,
   onCopyRequest,
   onAiClick,
+  onToggleSidebar,
+  isSidebarOpen,
 }: HeaderProps) {
   return (
     <header
@@ -173,6 +177,24 @@ export function Header({
         </div>
 
         <ZoneSeparator className="marko-header-separator--after-brand" />
+
+        {/* Zone 1.5: Document Sidebar Toggle */}
+        {onToggleSidebar && (
+          <div className="marko-header-zone marko-header-zone--documents">
+            <button
+              type="button"
+              onClick={onToggleSidebar}
+              aria-label="רשימת מסמכים (Ctrl+\)"
+              title="רשימת מסמכים (Ctrl+\)"
+              aria-expanded={isSidebarOpen}
+              className={`marko-header-btn ${isSidebarOpen ? 'marko-header-btn--active' : ''}`}
+            >
+              <FileText className="size-5" aria-hidden="true" />
+            </button>
+          </div>
+        )}
+
+        {onToggleSidebar && <ZoneSeparator className="marko-header-separator--after-documents" />}
 
         {/* Zone 2: View Modes */}
         <div className="marko-header-zone marko-header-zone--viewmodes">

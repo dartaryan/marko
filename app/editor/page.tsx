@@ -35,6 +35,8 @@ import { PreviewPanel } from '@/components/preview/PreviewPanel';
 import { PresentationView } from '@/components/preview/PresentationView';
 import { MobileBottomToolbar } from '@/components/layout/MobileBottomToolbar';
 import { DirectionIndicator } from '@/components/layout/DirectionIndicator';
+import { DocumentSidebar } from '@/components/documents/DocumentSidebar';
+import { useDocuments } from '@/lib/hooks/useDocuments';
 import { SAMPLE_DOCUMENT } from '@/lib/editor/sample-document';
 
 type AiTriggerSource = 'header' | 'slash' | 'selection' | 'keyboard';
@@ -77,6 +79,92 @@ export default function EditorPage() {
   const acceptTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const isAiUnavailable = aiErrorCode === 'AI_UNAVAILABLE';
   const isAtLimit = usage !== undefined && usage.limit !== null && usage.count >= usage.limit;
+
+  // Document sidebar state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [sidebarSearchQuery, setSidebarSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(sidebarSearchQuery, 150);
+  const {
+    documents,
+    activeDocument,
+    activeDocumentId,
+    isLoading: isDocumentsLoading,
+    setActiveDocumentId,
+    createDocument,
+    updateDocument,
+    deleteDocument,
+    pinDocument,
+    duplicateDocument,
+  } = useDocuments();
+
+  // Filtered documents for search (debounced)
+  const filteredDocuments = debouncedSearchQuery.trim()
+    ? documents.filter((doc) => {
+        const q = debouncedSearchQuery.toLowerCase();
+        return doc.title.toLowerCase().includes(q) || doc.content.toLowerCase().includes(q);
+      })
+    : documents;
+
+  const handleToggleSidebar = useCallback(() => {
+    setIsSidebarOpen((prev) => !prev);
+  }, []);
+
+  // Sync editor content when active document changes (covers initial load, delete, switch)
+  const prevActiveDocIdRef = useRef<string | null>(null);
+  const prevSaveContentRef = useRef<string>('');
+  useEffect(() => {
+    if (activeDocumentId === prevActiveDocIdRef.current) return;
+    prevActiveDocIdRef.current = activeDocumentId;
+    if (activeDocument) {
+      setContent(activeDocument.content);
+      prevSaveContentRef.current = activeDocument.content;
+    } else if (activeDocumentId === null) {
+      setContent('');
+      prevSaveContentRef.current = '';
+    }
+  }, [activeDocumentId, activeDocument, setContent]);
+
+  const handleSelectDocument = useCallback((id: string) => {
+    setActiveDocumentId(id);
+  }, [setActiveDocumentId]);
+
+  const isCreatingRef = useRef(false);
+  const handleCreateDocument = useCallback(async () => {
+    if (isCreatingRef.current) return;
+    isCreatingRef.current = true;
+    try {
+      await createDocument('', '', 'auto');
+    } catch {
+      // IndexedDB error — ignore
+    } finally {
+      isCreatingRef.current = false;
+    }
+  }, [createDocument]);
+
+  const handleDeleteDocument = useCallback(async (id: string) => {
+    try {
+      await deleteDocument(id);
+    } catch {
+      // IndexedDB error — ignore
+    }
+  }, [deleteDocument]);
+
+  const handleDuplicateDocument = useCallback(async (id: string) => {
+    try {
+      await duplicateDocument(id);
+    } catch {
+      // IndexedDB error — ignore
+    }
+  }, [duplicateDocument]);
+
+  // Sync editor content changes back to active document in IndexedDB
+  const debouncedContentForSave = useDebounce(content, 500);
+  useEffect(() => {
+    if (activeDocumentId === null) return;
+    if (debouncedContentForSave === prevSaveContentRef.current) return;
+    prevSaveContentRef.current = debouncedContentForSave;
+    void updateDocument(activeDocumentId, { content: debouncedContentForSave });
+  }, [activeDocumentId, debouncedContentForSave, updateDocument]);
 
   // Track login once per browser session (fire-and-forget; skips if unauthenticated)
   useEffect(() => {
@@ -342,41 +430,63 @@ export default function EditorPage() {
         onExportRequest={handleExportRequest}
         onCopyRequest={handleCopyRequest}
         onAiClick={handleHeaderAiClick}
+        onToggleSidebar={handleToggleSidebar}
+        isSidebarOpen={isSidebarOpen}
       />
-      <PanelLayout
-        viewMode={viewMode}
-        onViewModeChange={handleViewModeChange}
-        hasBottomToolbar={!isPresentationMode && viewMode !== 'preview'}
-        editorPanel={
-          <div className="flex flex-col flex-1 min-h-0">
-            <div className="relative flex-1 min-h-0 overflow-hidden">
-              <EditorPanel
-                content={content}
-                onChange={setContent}
-                dir={docDirection}
-                onSlashCommand={handleSlashCommand}
-                onSelectionAiClick={handleSelectionAiClick}
-                textareaRef={editorTextareaRef}
-              />
-              <DirectionIndicator value={docDirection} onChange={setDocDirection} />
-            </div>
-            <AiSuggestionCard
-              isLoading={isAiLoading}
-              result={aiResult}
-              onAccept={handleAiAccept}
-              onDismiss={clearAiResult}
-              onRegenerate={lastAiActionType ? handleRegenerate : undefined}
-              isBlurred={isAtLimit}
-            />
-          </div>
-        }
-        previewPanel={
-          <PreviewPanel content={debouncedContent} dir={docDirection} contentRef={previewContentRef} />
-        }
-      />
-      {!isPresentationMode && (
-        <MobileBottomToolbar viewMode={viewMode} textareaRef={editorTextareaRef} onContentChange={setContent} />
-      )}
+      {/* Main content row: editor grid + optional desktop sidebar */}
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        <div className="flex-1 min-w-0 flex flex-col">
+          <PanelLayout
+            viewMode={viewMode}
+            onViewModeChange={handleViewModeChange}
+            hasBottomToolbar={!isPresentationMode && viewMode !== 'preview'}
+            editorPanel={
+              <div className="flex flex-col flex-1 min-h-0">
+                <div className="relative flex-1 min-h-0 overflow-hidden">
+                  <EditorPanel
+                    content={content}
+                    onChange={setContent}
+                    dir={docDirection}
+                    onSlashCommand={handleSlashCommand}
+                    onSelectionAiClick={handleSelectionAiClick}
+                    textareaRef={editorTextareaRef}
+                  />
+                  <DirectionIndicator value={docDirection} onChange={setDocDirection} />
+                </div>
+                <AiSuggestionCard
+                  isLoading={isAiLoading}
+                  result={aiResult}
+                  onAccept={handleAiAccept}
+                  onDismiss={clearAiResult}
+                  onRegenerate={lastAiActionType ? handleRegenerate : undefined}
+                  isBlurred={isAtLimit}
+                />
+              </div>
+            }
+            previewPanel={
+              <PreviewPanel content={debouncedContent} dir={docDirection} contentRef={previewContentRef} />
+            }
+          />
+          {!isPresentationMode && (
+            <MobileBottomToolbar viewMode={viewMode} textareaRef={editorTextareaRef} onContentChange={setContent} />
+          )}
+        </div>
+        <DocumentSidebar
+          isOpen={isSidebarOpen}
+          onOpenChange={setIsSidebarOpen}
+          documents={documents}
+          activeDocumentId={activeDocumentId}
+          isLoading={isDocumentsLoading}
+          onSelectDocument={handleSelectDocument}
+          onCreateDocument={handleCreateDocument}
+          onPinDocument={pinDocument}
+          onDeleteDocument={handleDeleteDocument}
+          onDuplicateDocument={handleDuplicateDocument}
+          searchQuery={sidebarSearchQuery}
+          onSearchChange={setSidebarSearchQuery}
+          filteredDocuments={filteredDocuments}
+        />
+      </div>
       {isPresentationMode && (
         <PresentationView
           content={debouncedContent}
