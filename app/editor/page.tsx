@@ -37,6 +37,10 @@ import { MobileBottomToolbar } from '@/components/layout/MobileBottomToolbar';
 import { DirectionIndicator } from '@/components/layout/DirectionIndicator';
 import { DocumentSidebar } from '@/components/documents/DocumentSidebar';
 import { useDocuments } from '@/lib/hooks/useDocuments';
+import { useThemeSelection } from '@/lib/hooks/useThemeSelection';
+import { useAutoSave } from '@/lib/hooks/useAutoSave';
+import { useSaveStatus } from '@/lib/hooks/useSaveStatus';
+import { CURATED_THEME_MAP } from '@/lib/colors/themes';
 import { SAMPLE_DOCUMENT } from '@/lib/editor/sample-document';
 
 type AiTriggerSource = 'header' | 'slash' | 'selection' | 'keyboard';
@@ -73,6 +77,9 @@ export default function EditorPage() {
   const { track } = useAnalytics();
   useSubscriptionReturn();
   useSubscriptionExpiredNotification();
+  const { activeThemeId, setActiveThemeId } = useThemeSelection();
+  const [isAutoSave] = useAutoSave();
+  const { status: saveStatus, startSave, completeSave, failSave } = useSaveStatus();
   const [pendingAiAction, setPendingAiAction] = useState<AiActionType | null>(null);
   const [pendingForceOpus, setPendingForceOpus] = useState(false);
   const [pendingFreeText, setPendingFreeText] = useState<string | undefined>();
@@ -112,34 +119,91 @@ export default function EditorPage() {
   // Sync editor content when active document changes (covers initial load, delete, switch)
   const prevActiveDocIdRef = useRef<string | null>(null);
   const prevSaveContentRef = useRef<string>('');
+  const prevThemeIdRef = useRef<string>(activeThemeId);
+  const prevDirectionRef = useRef<typeof docDirection>(docDirection);
+  const isSavingRef = useRef(false);
+  const lastDocSwitchTimeRef = useRef(0);
   useEffect(() => {
     if (activeDocumentId === prevActiveDocIdRef.current) return;
     prevActiveDocIdRef.current = activeDocumentId;
+    lastDocSwitchTimeRef.current = Date.now();
     if (activeDocument) {
       setContent(activeDocument.content);
       prevSaveContentRef.current = activeDocument.content;
+
+      // Restore theme if document has one
+      if (activeDocument.themeId && CURATED_THEME_MAP[activeDocument.themeId]) {
+        setActiveThemeId(activeDocument.themeId);
+        const theme = CURATED_THEME_MAP[activeDocument.themeId];
+        if (theme) setColorTheme(theme.colors);
+        prevThemeIdRef.current = activeDocument.themeId;
+      } else {
+        prevThemeIdRef.current = activeThemeId;
+      }
+
+      // Restore direction
+      if (activeDocument.direction) {
+        setDocDirection(activeDocument.direction);
+        prevDirectionRef.current = activeDocument.direction;
+      } else {
+        prevDirectionRef.current = docDirection;
+      }
     } else if (activeDocumentId === null) {
       setContent('');
       prevSaveContentRef.current = '';
     }
-  }, [activeDocumentId, activeDocument, setContent]);
+  }, [activeDocumentId, activeDocument, setContent, setActiveThemeId, setColorTheme, setDocDirection, activeThemeId, docDirection]);
 
-  const handleSelectDocument = useCallback((id: string) => {
+  // Flush-before-switch: immediately save current state (bypasses debounce).
+  // Runs regardless of isAutoSave preference — switching must never lose work.
+  const flushSave = useCallback(async () => {
+    if (activeDocumentId === null) return;
+    if (content === prevSaveContentRef.current
+        && activeThemeId === prevThemeIdRef.current
+        && docDirection === prevDirectionRef.current) return;
+    if (isSavingRef.current) return;
+
+    isSavingRef.current = true;
+    startSave();
+    try {
+      await updateDocument(activeDocumentId, {
+        content,
+        themeId: activeThemeId,
+        direction: docDirection,
+      });
+      prevSaveContentRef.current = content;
+      prevThemeIdRef.current = activeThemeId;
+      prevDirectionRef.current = docDirection;
+      completeSave();
+    } catch {
+      failSave();
+      toast.error('שגיאה בשמירה');
+    } finally {
+      isSavingRef.current = false;
+    }
+  }, [activeDocumentId, content, activeThemeId, docDirection, updateDocument, startSave, completeSave, failSave]);
+
+  const handleSelectDocument = useCallback(async (id: string) => {
+    await flushSave();
     setActiveDocumentId(id);
-  }, [setActiveDocumentId]);
+  }, [flushSave, setActiveDocumentId]);
 
   const isCreatingRef = useRef(false);
   const handleCreateDocument = useCallback(async () => {
     if (isCreatingRef.current) return;
     isCreatingRef.current = true;
     try {
-      await createDocument('', '', 'auto');
+      await flushSave();
+      await createDocument('', activeThemeId, docDirection);
+      requestAnimationFrame(() => {
+        editorTextareaRef.current?.focus();
+      });
     } catch {
       // IndexedDB error — ignore
     } finally {
       isCreatingRef.current = false;
     }
-  }, [createDocument]);
+  }, [flushSave, createDocument, activeThemeId, docDirection]);
 
   const handleDeleteDocument = useCallback(async (id: string) => {
     try {
@@ -160,11 +224,40 @@ export default function EditorPage() {
   // Sync editor content changes back to active document in IndexedDB
   const debouncedContentForSave = useDebounce(content, 500);
   useEffect(() => {
+    if (!isAutoSave) return;
     if (activeDocumentId === null) return;
-    if (debouncedContentForSave === prevSaveContentRef.current) return;
-    prevSaveContentRef.current = debouncedContentForSave;
-    void updateDocument(activeDocumentId, { content: debouncedContentForSave });
-  }, [activeDocumentId, debouncedContentForSave, updateDocument]);
+    if (isSavingRef.current) return;
+    // Skip auto-save while debounced content is stale from a recent document switch
+    if (Date.now() - lastDocSwitchTimeRef.current < 600) return;
+
+    const contentChanged = debouncedContentForSave !== prevSaveContentRef.current;
+    const themeChanged = activeThemeId !== prevThemeIdRef.current;
+    const directionChanged = docDirection !== prevDirectionRef.current;
+
+    if (!contentChanged && !themeChanged && !directionChanged) return;
+
+    const doSave = async () => {
+      isSavingRef.current = true;
+      startSave();
+      try {
+        await updateDocument(activeDocumentId, {
+          content: debouncedContentForSave,
+          themeId: activeThemeId,
+          direction: docDirection,
+        });
+        prevSaveContentRef.current = debouncedContentForSave;
+        prevThemeIdRef.current = activeThemeId;
+        prevDirectionRef.current = docDirection;
+        completeSave();
+      } catch {
+        failSave();
+        toast.error('שגיאה בשמירה');
+      } finally {
+        isSavingRef.current = false;
+      }
+    };
+    void doSave();
+  }, [activeDocumentId, debouncedContentForSave, activeThemeId, docDirection, updateDocument, isAutoSave, startSave, completeSave, failSave]);
 
   // Track login once per browser session (fire-and-forget; skips if unauthenticated)
   useEffect(() => {
@@ -432,6 +525,7 @@ export default function EditorPage() {
         onAiClick={handleHeaderAiClick}
         onToggleSidebar={handleToggleSidebar}
         isSidebarOpen={isSidebarOpen}
+        saveStatus={saveStatus}
       />
       {/* Main content row: editor grid + optional desktop sidebar */}
       <div className="flex flex-1 min-h-0 overflow-hidden">

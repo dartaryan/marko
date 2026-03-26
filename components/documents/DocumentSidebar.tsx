@@ -13,7 +13,7 @@ interface DocumentSidebarProps {
   documents: Document[];
   activeDocumentId: string | null;
   isLoading: boolean;
-  onSelectDocument: (id: string) => void;
+  onSelectDocument: (id: string) => void | Promise<void>;
   onCreateDocument: () => void;
   onPinDocument: (id: string) => void;
   onDeleteDocument: (id: string) => void;

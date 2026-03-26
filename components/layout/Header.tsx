@@ -8,6 +8,8 @@ import { ToolbarDropdown } from '@/components/editor/ToolbarDropdown';
 import { AuthGate } from '@/components/auth/AuthGate';
 import { OverflowMenu } from './OverflowMenu';
 import type { ViewMode, DocDirection, ExportType, CopyType } from '@/types/editor';
+import type { SaveStatus } from '@/lib/hooks/useSaveStatus';
+import { SaveStatusIndicator } from '@/components/documents/SaveStatusIndicator';
 
 const copyItems = [
   { label: 'Word', value: 'word', icon: <ClipboardCopy className="size-5" aria-hidden="true" /> },
@@ -145,6 +147,7 @@ interface HeaderProps {
   onAiClick?: () => void;
   onToggleSidebar?: () => void;
   isSidebarOpen?: boolean;
+  saveStatus?: SaveStatus;
 }
 
 export function Header({
@@ -161,6 +164,7 @@ export function Header({
   onAiClick,
   onToggleSidebar,
   isSidebarOpen,
+  saveStatus,
 }: HeaderProps) {
   return (
     <header
@@ -195,6 +199,9 @@ export function Header({
         )}
 
         {onToggleSidebar && <ZoneSeparator className="marko-header-separator--after-documents" />}
+
+        {/* Zone: Save Status */}
+        {saveStatus !== undefined && <SaveStatusIndicator status={saveStatus} />}
 
         {/* Zone 2: View Modes */}
         <div className="marko-header-zone marko-header-zone--viewmodes">
