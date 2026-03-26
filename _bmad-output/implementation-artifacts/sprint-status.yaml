@@ -1,5 +1,5 @@
 # generated: 2026-03-06
-# last_updated: 2026-03-25 (Story 7.1r done)
+# last_updated: 2026-03-26 (Story 7.2r done)
 # project: marko
 # project_key: NOKEY
 # tracking_system: file-system
@@ -53,7 +53,7 @@
 # WS3C: API connections (parallel track)
 
 generated: 2026-03-06
-last_updated: 2026-03-25 (Story 7.1r done)
+last_updated: 2026-03-26 (Story 7.2r review)
 project: marko
 project_key: NOKEY
 tracking_system: file-system
@@ -121,7 +121,7 @@ development_status:
   7-2-structured-data-meta-tags-and-seo-assets: superseded  # SUPERSEDED by S7.3r
   # New stories (from D7 + N1 landing redesign):
   7-1r-landing-page-structure-and-content: done  # WS3-P3, code review fixes applied 2026-03-25
-  7-2r-landing-animations-framer-motion: backlog  # WS3-P3, depends on S7.1r
+  7-2r-landing-animations-framer-motion: done  # WS3-P3, code review fixes applied 2026-03-26
   7-3r-seo-preservation: backlog  # WS3-P3, depends on S7.1r
   epic-7-retrospective: optional
 
