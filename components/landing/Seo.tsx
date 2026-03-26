@@ -12,6 +12,7 @@ export function Seo() {
     operatingSystem: "Web",
     offers: { "@type": "Offer", price: "0", priceCurrency: "ILS" },
     inLanguage: "he",
+    screenshot: `${SITE_URL}/opengraph-image`,
   };
 
   return (

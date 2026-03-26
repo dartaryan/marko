@@ -42,6 +42,12 @@ describe("Seo", () => {
     expect(data.offers.priceCurrency).toBe("ILS");
   });
 
+  it("includes screenshot property pointing to OG image", () => {
+    const data = getJsonLd();
+    expect(data.screenshot).toBeDefined();
+    expect(data.screenshot).toContain("/opengraph-image");
+  });
+
   it("does not contain unescaped < characters (XSS safety)", () => {
     render(<Seo />);
     const script = getContainer().querySelector('script[type="application/ld+json"]');

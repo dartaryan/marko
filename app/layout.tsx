@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     siteName: "מארקו",
     images: [
       {
-        url: "/og-image.png",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
         alt: "מארקו — עורך מארקדאון בעברית",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
       "כלי מארקדאון עברי עם תמיכה מלאה ב-RTL, ייצוא מעוצב, ערכות עיצוב וכלי AI. חינמי ובלי הרשמה.",
     images: [
       {
-        url: "/og-image.png",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
         alt: "מארקו — עורך מארקדאון בעברית",

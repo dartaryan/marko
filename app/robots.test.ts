@@ -9,14 +9,21 @@ describe("robots", () => {
   });
 
   it("allows all crawlers on /", () => {
-    const rules = config.rules as { userAgent: string; allow: string; disallow: string };
+    const rules = config.rules as { userAgent: string; allow: string };
     expect(rules.userAgent).toBe("*");
     expect(rules.allow).toBe("/");
   });
 
-  it("disallows /editor", () => {
-    const rules = config.rules as { disallow: string };
-    expect(rules.disallow).toBe("/editor");
+  it("disallows /editor, /settings, and /subscription", () => {
+    const rules = config.rules as { disallow: string[] };
+    expect(rules.disallow).toContain("/editor");
+    expect(rules.disallow).toContain("/settings");
+    expect(rules.disallow).toContain("/subscription");
+  });
+
+  it("disallows exactly 3 routes", () => {
+    const rules = config.rules as { disallow: string[] };
+    expect(rules.disallow).toHaveLength(3);
   });
 
   it("references sitemap URL", () => {

@@ -63,6 +63,6 @@ describe("layout metadata", () => {
 
   it("references og-image in openGraph images", () => {
     const og = meta.openGraph as { images: Array<{ url: string }> };
-    expect(og.images[0].url).toBe("/og-image.png");
+    expect(og.images[0].url).toBe("/opengraph-image");
   });
 });
