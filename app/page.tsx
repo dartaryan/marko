@@ -3,6 +3,7 @@ import { Hero } from "@/components/landing/Hero";
 import { Features } from "@/components/landing/Features";
 import { TabbedDemos } from "@/components/landing/TabbedDemos";
 import { CtaSection } from "@/components/landing/CtaSection";
+import { ScrollReveal } from "@/components/landing/ScrollReveal";
 import { Seo } from "@/components/landing/Seo";
 import { LandingRedirectGuard } from "@/components/landing/LandingRedirectGuard";
 export const runtime = "edge";
@@ -14,10 +15,18 @@ export default function LandingPage() {
         <LandingRedirectGuard>
           <main className="landing-warm min-h-screen">
             <Hero />
-            <TabbedDemos />
-            <CtaSection />
-            <Features />
-            <CtaSection variant="bottom" />
+            <ScrollReveal>
+              <TabbedDemos />
+            </ScrollReveal>
+            <ScrollReveal>
+              <CtaSection />
+            </ScrollReveal>
+            <ScrollReveal>
+              <Features />
+            </ScrollReveal>
+            <ScrollReveal>
+              <CtaSection variant="bottom" />
+            </ScrollReveal>
           </main>
         </LandingRedirectGuard>
       </Suspense>

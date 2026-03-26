@@ -16,6 +16,19 @@ vi.mock("next/link", () => ({
     React.createElement("a", { href, ...props }, children),
 }));
 
+// Mock framer-motion for ScrollReveal and Hero
+vi.mock("framer-motion", () => ({
+  m: {
+    div: React.forwardRef(({ children, initial: _i, whileInView: _w, viewport: _v, transition: _t, ...props }: Record<string, unknown> & { children?: React.ReactNode }, ref: React.Ref<HTMLDivElement>) =>
+      React.createElement("div", { ...props, ref } as React.HTMLAttributes<HTMLDivElement>, children as React.ReactNode)
+    ),
+    section: React.forwardRef(({ children, initial: _i, animate: _a, transition: _t, ...props }: Record<string, unknown> & { children?: React.ReactNode }, ref: React.Ref<HTMLElement>) =>
+      React.createElement("section", { ...props, ref } as React.HTMLAttributes<HTMLElement>, children as React.ReactNode)
+    ),
+  },
+  useReducedMotion: () => false,
+}));
+
 const { render, getContainer } = setupComponentTest();
 
 describe("LandingPage", () => {

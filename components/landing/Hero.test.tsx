@@ -14,6 +14,16 @@ vi.mock("@clerk/nextjs", () => ({
   useAuth: () => mockUseAuth(),
 }));
 
+// Mock framer-motion
+vi.mock("framer-motion", () => ({
+  m: {
+    section: React.forwardRef(({ children, initial: _i, animate: _a, transition: _t, ...props }: Record<string, unknown> & { children?: React.ReactNode }, ref: React.Ref<HTMLElement>) =>
+      React.createElement("section", { ...props, ref } as React.HTMLAttributes<HTMLElement>, children as React.ReactNode)
+    ),
+  },
+  useReducedMotion: () => false,
+}));
+
 const { render, getContainer } = setupComponentTest();
 
 describe("Hero", () => {

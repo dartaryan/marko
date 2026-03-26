@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Varela_Round, JetBrains_Mono } from "next/font/google";
 import { ConvexClientProvider } from "./ConvexClientProvider";
+import { MotionProvider } from "@/components/providers/MotionProvider";
 import { Toaster } from '@/components/ui/sonner';
 import { SITE_URL } from "@/lib/constants";
 import "./globals.css";
@@ -70,9 +71,12 @@ export default function RootLayout({
     <html lang="he" dir="rtl" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: FOUC_SCRIPT }} />
+        <noscript><style dangerouslySetInnerHTML={{ __html: `.landing-warm section, .landing-warm div { opacity: 1 !important; transform: none !important; }` }} /></noscript>
       </head>
       <body className={`${varelaRound.variable} ${jetBrainsMono.variable} font-sans antialiased`}>
-        <ConvexClientProvider>{children}</ConvexClientProvider>
+        <MotionProvider>
+          <ConvexClientProvider>{children}</ConvexClientProvider>
+        </MotionProvider>
         <Toaster dir="rtl" position="bottom-center" duration={3000} />
       </body>
     </html>

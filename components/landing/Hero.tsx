@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
+import { m, useReducedMotion } from "framer-motion";
 import { EditorMockup } from "./EditorMockup";
 
 export function Hero() {
   const { isSignedIn } = useAuth();
+  const shouldReduceMotion = useReducedMotion();
   const ctaText = isSignedIn === true ? "פתח את מארקו" : "התחל בחינם";
   const ctaHref = "/editor";
 
@@ -15,8 +17,10 @@ export function Hero() {
   };
 
   return (
-    <section
-      className="animate-fade-in"
+    <m.section
+      initial={shouldReduceMotion ? undefined : { opacity: 0, y: 20 }}
+      animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+      transition={shouldReduceMotion ? { duration: 0 } : { duration: 0.6, ease: "easeOut" }}
       style={{
         paddingBlockStart: "calc(var(--header-height) + var(--space-16))",
         paddingBlockEnd: "var(--space-20)",
@@ -91,6 +95,6 @@ export function Hero() {
         {/* Editor mockup */}
         <EditorMockup />
       </div>
-    </section>
+    </m.section>
   );
 }
