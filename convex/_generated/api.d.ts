@@ -12,6 +12,7 @@ import type * as abuse from "../abuse.js";
 import type * as ai from "../ai.js";
 import type * as analytics from "../analytics.js";
 import type * as crons from "../crons.js";
+import type * as documents from "../documents.js";
 import type * as http from "../http.js";
 import type * as lib_authorization from "../lib/authorization.js";
 import type * as lib_stripe from "../lib/stripe.js";
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   ai: typeof ai;
   analytics: typeof analytics;
   crons: typeof crons;
+  documents: typeof documents;
   http: typeof http;
   "lib/authorization": typeof lib_authorization;
   "lib/stripe": typeof lib_stripe;

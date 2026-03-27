@@ -74,6 +74,29 @@ export default defineSchema({
     .index("by_stripeInvoiceId", ["stripeInvoiceId"])
     .index("by_subscriptionId", ["subscriptionId"]),
 
+  documents: defineTable({
+    userId: v.id("users"),
+    content: v.string(),
+    title: v.string(),
+    snippet: v.string(),
+    themeId: v.string(),
+    direction: v.union(v.literal("auto"), v.literal("rtl"), v.literal("ltr")),
+    isPinned: v.boolean(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_userId", ["userId"])
+    .index("by_userId_updatedAt", ["userId", "updatedAt"])
+    .index("by_userId_isPinned", ["userId", "isPinned"])
+    .searchIndex("search_content", {
+      searchField: "content",
+      filterFields: ["userId"],
+    })
+    .searchIndex("search_title", {
+      searchField: "title",
+      filterFields: ["userId"],
+    }),
+
   userSettings: defineTable({
     userId: v.id("users"),
     docDirection: v.union(v.literal("auto"), v.literal("rtl"), v.literal("ltr")),

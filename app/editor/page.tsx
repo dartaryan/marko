@@ -36,7 +36,7 @@ import { PresentationView } from '@/components/preview/PresentationView';
 import { MobileBottomToolbar } from '@/components/layout/MobileBottomToolbar';
 import { DirectionIndicator } from '@/components/layout/DirectionIndicator';
 import { DocumentSidebar } from '@/components/documents/DocumentSidebar';
-import { useDocuments } from '@/lib/hooks/useDocuments';
+import { useDocumentStore } from '@/lib/hooks/useDocumentStore';
 import { useThemeSelection } from '@/lib/hooks/useThemeSelection';
 import { useAutoSave } from '@/lib/hooks/useAutoSave';
 import { useSaveStatus } from '@/lib/hooks/useSaveStatus';
@@ -102,7 +102,7 @@ export default function EditorPage() {
     deleteDocument,
     pinDocument,
     duplicateDocument,
-  } = useDocuments();
+  } = useDocumentStore();
 
   // Filtered documents for search (debounced)
   const filteredDocuments = debouncedSearchQuery.trim()
